@@ -5,50 +5,51 @@
 
 namespace parc {
 
+  // Saves 76 bytes. Every virtual method has a pointer (two bytes) in the virtual table.
+  enum class VirtualAction {
+    Dispose,
+    Tick
+  };
+    
   template<typename TLOGGER>
   class ProgramStep {
   public:
     ProgramStep(TLOGGER& logger, uint8_t length);
-
-    virtual void dispose();
-
     void play();
-
     void rewind();
-
-    //virtual void cancel() = 0;
-    void setNext(ProgramStep* next);
-
     size_t duration();
-    void appendStep(ProgramStep<TLOGGER>* step);
+
+    ProgramStep<TLOGGER>* appendStep(ProgramStep<TLOGGER>* step);
+    
+    virtual void action(VirtualAction type);
 
   protected:
-    virtual void onTick() = 0;
-
     TLOGGER& _log;
+    ProgramStep* _next;
 
     uint8_t _tick;
     uint8_t _duration;
-    ProgramStep* _next;
   };
-
-template<typename TLOGGER>
+  
+  template<typename TLOGGER>
   inline ProgramStep<TLOGGER>::ProgramStep(TLOGGER& logger, uint8_t duration)
     : _log(logger), _duration(duration), _tick(0), _next(0) {}
 
   template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::dispose() {
-    if (_next != 0) {
-      _next->dispose();
-      delete _next;
-      _next = 0;
+  inline void ProgramStep<TLOGGER>::action(VirtualAction type) {
+    if (type == VirtualAction::Dispose) {
+      if (_next != 0) {
+        _next->action(VirtualAction::Dispose);
+        delete _next;
+        _next = 0;
+      }
     }
   }
 
   template<typename TLOGGER>
   inline void ProgramStep<TLOGGER>::play() {
     if (_tick < _duration) {
-      onTick();
+      action(VirtualAction::Tick);
       _tick++;
     }
     else if (_next != 0) {
@@ -62,10 +63,6 @@ template<typename TLOGGER>
     if (_next != 0) { _next->rewind(); }
   }
 
-  //virtual void cancel() = 0;
-  template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::setNext(ProgramStep* next) { _next = next; }
-
   template<typename TLOGGER>
   inline size_t ProgramStep<TLOGGER>::duration() {
     if (_next != 0) { return _duration + _next->duration(); }
@@ -73,12 +70,12 @@ template<typename TLOGGER>
   }
   
   template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::appendStep(ProgramStep<TLOGGER>* step) {
+  inline ProgramStep<TLOGGER>* ProgramStep<TLOGGER>::appendStep(ProgramStep<TLOGGER>* step) {
     if (_next == 0) {
-      _next = step;
+      _next = step; return _next;
     }
     else {
-      _next->appendStep(step);
+      return _next->appendStep(step);
     }
   }
 

@@ -14,7 +14,6 @@ namespace parc {
     MemoryMonitorAo(TLOGGER& logger, RegisterData_t* registers)
       : Ao(registers), _log(logger) {}
 
-  protected:
     void checkRegisters() {
 
       if (_registers[TERMINAL_MEMORY_CHANGE] != 0) {
@@ -61,7 +60,6 @@ namespace parc {
     }
 
     TLOGGER& _log;
-
   };
 
 }

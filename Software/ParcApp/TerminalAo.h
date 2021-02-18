@@ -14,34 +14,20 @@ namespace parc {
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
       : Ao(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
 
-    void onTick() {
-      // Todo check registers for cancel to abort the wait
-      bool cancel = false;
-
-      switch (_state) {
-        case State::Idle: stateIdle(); break;
-        case State::ReadingProgramCode: stateReadingProgramCode(); break;
-        case State::ReadingProgramSteps: stateReadingProgramSteps(); break;
-        case State::ReadingPin: stateReadingPin(); break;
-      };
-    }
-
-  protected:
     void checkRegisters() {
-      /*if (_registers[KEYPAD_TERMINAL_INPUT] != 0) {
-        _keyPadState = _registers[KEYPAD_TERMINAL_INPUT];
-
-        _log.print("Terminal received: "); _log.println(_keyPadState.programIndex());
-        _registers[KEYPAD_TERMINAL_INPUT] = 0;
-      }*/
-
       if (_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
-        onTick();
+        switch (_state) {
+          case State::Idle: stateIdle(); break;
+          case State::ReadingProgramCode: stateReadingProgramCode(); break;
+          case State::ReadingProgramSteps: stateReadingProgramSteps(); break;
+          case State::ReadingPin: stateReadingPin(); break;
+        };
 
         _registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
       }
     }
 
+  private:
     void stateIdle() {
       char ch = 0;
       while (_serial.available() && _state == State::Idle) {
@@ -308,7 +294,7 @@ namespace parc {
       // _log.print("TEXT: "); _log.println(text);
       return new ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>(_log, _usb, text);
     }
-
+    
   private:
     enum class State {
       Blocked,

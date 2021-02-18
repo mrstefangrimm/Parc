@@ -12,13 +12,7 @@ namespace parc {
     Ao(RegisterData_t* registers)
       : _registers(registers) {}
 
-    void dispatch() {
-      checkRegisters();
-    }
-
   protected:
-    virtual void checkRegisters() = 0;
-
     RegisterData_t* _registers;
   };
 

@@ -17,10 +17,9 @@ namespace parc {
       : Ao(registers), _log(logger), _programs(programs) {
       //  _log.println(freeMemory());
     }
-
+    
     Program<TLOGGER>* programs() { return _programs; }
 
-  protected:
     void checkRegisters() {
       switch (_state) {
         case State::Idle: stateIdle(); break;
@@ -28,7 +27,8 @@ namespace parc {
       };
       _registers[KEYPAD_HID_INPUT] = 0;
     }
-
+    
+  private:
     void stateIdle() {
       if (_registers[KEYPAD_HID_INPUT] != 0) {
 
@@ -45,7 +45,7 @@ namespace parc {
         _registers[HID_HID_TIMEOUT] = TimerRegData(len);
       }
     }
-    
+   
     void stateExecute() {
 
       if (_registers[HID_HID_TIMEOUT] > 0) {

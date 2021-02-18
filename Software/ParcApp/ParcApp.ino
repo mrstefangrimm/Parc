@@ -34,10 +34,10 @@ public:
   void println(T ch, uint8_t mode) {}
 };
 
-typedef FakeLogger Logger_t; // Serial_, HardwareSerial, SoftwareSerial, FakeLogger
+typedef SoftwareSerial Logger_t; // Serial_, HardwareSerial, SoftwareSerial, FakeLogger
 Logger_t logger(Usb_ORA, Usb_YEL); // #define logger Serial
 
-Program<Logger_t> programs[29];
+Program<Logger_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
 
 KeypadHw<Logger_t> keypadHw(logger); 
@@ -77,14 +77,20 @@ void setup() {
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
   registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(10);
+
+  logger.println(sizeof(ProgramStep<Logger_t>));  
+  logger.println(sizeof(ProgramStepWait<Logger_t>));
+  logger.println(sizeof(ProgramStepWait<Logger_t>));
+  logger.println(sizeof(ProgramStepBleKeyboardCode<Logger_t, HidBle_t>));
+  
 }
 
 void loop() {
 
-  keypad.dispatch();
-  hid.dispatch();
-  terminal.dispatch();
-  memoryMonitor.dispatch();
-
+  keypad.checkRegisters();
+  hid.checkRegisters();
+  terminal.checkRegisters();
+  memoryMonitor.checkRegisters();
+  
   delay(TimerPeriod);  
 }

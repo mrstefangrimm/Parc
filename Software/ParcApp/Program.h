@@ -2,6 +2,7 @@
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
+#include "ProgramStep.h"
 
 namespace parc {
   
@@ -13,14 +14,14 @@ namespace parc {
       else { return 0; }
     }
 
-    void appendStep(ProgramStep<TLOGGER>* step) {
-      if (_root == 0) { _root = step; }
-      else { _root->appendStep(step); }
+    ProgramStep<TLOGGER>* appendStep(ProgramStep<TLOGGER>* step) {
+      if (_root == 0) { _root = step; return _root; }
+      else { return _root->appendStep(step); }
     }
 
     void dispose() {
       if (_root != 0) {
-        _root->dispose();
+        _root->action(VirtualAction::Dispose);
         delete _root;
         _root = 0;
       }
@@ -38,7 +39,6 @@ namespace parc {
       }
     }
 
-    void steps(ProgramStep<TLOGGER>* root) { _root = root; }
     ProgramStep<TLOGGER>* steps() { return _root; }
 
   private:

@@ -25,7 +25,7 @@ namespace parc {
   const uint8_t Usb_YEL = 11;
   const uint8_t Usb_ORA = 12;
 
-  const uint8_t NumberOfPrograms = 29;
+  const uint8_t NumberOfPrograms = 20;
 
   // 20210209 - having hexCode in a separate argument uses the same amount of memory.
   struct KeyCode {

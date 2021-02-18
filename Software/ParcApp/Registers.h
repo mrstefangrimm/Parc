@@ -17,7 +17,7 @@ namespace parc {
     TOTAL_REGISTERS
   };
 
-  // TODO: this typedef should be application specific
+  // TODO: this typedef could be application specific
   typedef uint8_t RegisterData_t;
 
   typedef RegisterData_t TimerRegData;
@@ -30,7 +30,7 @@ namespace parc {
     KeypadRegData(RegisterData_t rawValue) : raw(rawValue) {}
 
     uint8_t programIndex() {
-      return ((profile << 3) | button) - 1;
+      return ((profile << 3) | button) - 3 * profile - 1;
     }
 
     union {

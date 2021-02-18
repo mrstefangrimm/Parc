@@ -21,10 +21,9 @@ namespace parc {
     KeypadAo(RegisterData_t* registers, TLOGGER& logger, TKEYPADHW& keypadHw)
       : Ao(registers), _log(logger), _hw(keypadHw) {}
 
-  protected:
     void checkRegisters() {
 
-      if (_registers[TERMINAL_KEYPAD_PIN] != 0) {        
+      if (_registers[TERMINAL_KEYPAD_PIN] != 0) {
         if (_pin.raw == 0) {
           _pin = _registers[TERMINAL_KEYPAD_PIN];
         }
@@ -34,22 +33,22 @@ namespace parc {
         _registers[TERMINAL_KEYPAD_PIN] = 0;
       }
       else if (_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
-        
+
         _registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
         if (_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
 
           KeypadRegData args = 0;
-  
+
           // Profiles 1 - 4
           if (_hw.pressed(Btn_P0, true)) {
             args.profile = 1;
           }
-  
+
           if (_hw.pressed(Btn_P1, true)) {
             args.profile |= (1 << 1);
           }
           //;
-  
+
           // Buttons A - E, Multiple button presses is not supported
           if (_hw.pressed(Btn_A, true)) {
             args.button = A;
@@ -67,7 +66,7 @@ namespace parc {
             args.button = E;
           }
 
-          uint8_t pin = 0;  
+          uint8_t pin = 0;
           if (_hw.pressed(Code_0, false)) {
             pin = 1;
           }
@@ -86,7 +85,7 @@ namespace parc {
           // Debug: if (args.code != 0) { _log.println(args.code, BIN); }
           bool longTimeout = false;
           if (args.button != 0) {
-            
+
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
@@ -94,7 +93,7 @@ namespace parc {
               _registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
             }
             else if (_pin.raw != 0 && pin != 0) {
-              _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);              
+              _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
                 _log.print(F("Say goodbye"));
               }
@@ -109,7 +108,7 @@ namespace parc {
 
           if (longTimeout) {
             // Debug: _log.print(F("1"));
-            _registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);            
+            _registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
           }
           else {
             // Debug: _log.print(F("5"));
