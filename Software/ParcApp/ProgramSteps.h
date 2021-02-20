@@ -12,7 +12,7 @@ namespace parc {
   public:
     ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStep<TLOGGER>(logger, waitMs / TimerPeriod) {}
  
-    void action(VirtualAction type) {
+    void action(VirtualAction type) override {
      if (type == VirtualAction::Tick) {
         onTick();
       }
@@ -36,9 +36,9 @@ namespace parc {
       strncpy(_text, text, len);
     }
 
-    void action(VirtualAction type) {
+    void action(VirtualAction type) override {
       if (type == VirtualAction::Dispose) {
-        dispose();
+        onDispose();
       }
       else if (type == VirtualAction::Tick) {
         onTick();
@@ -46,7 +46,7 @@ namespace parc {
     }
 
   private:
-    void dispose() {
+    void onDispose() {
       if (ProgramStep<TLOGGER>::_next != 0) {
         ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
         delete ProgramStep<TLOGGER>::_next;
@@ -80,6 +80,12 @@ namespace parc {
     ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
       : ProgramStep<TLOGGER>(logger, 5), _ble(ble), _keyCode(keyCode) {}
 
+    void action(VirtualAction type) override {
+      if (type == VirtualAction::Tick) {
+        onTick();
+      }
+    }
+    
   protected:
     void onTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
@@ -105,9 +111,9 @@ namespace parc {
       strncpy(_ctrlKey, ctrlKey, len);
     }
 
-    void action(VirtualAction type) {
+    void action(VirtualAction type) override {
       if (type == VirtualAction::Dispose) {
-        dispose();
+        onDispose();
       }
       else if (type == VirtualAction::Tick) {
         onTick();
@@ -115,7 +121,7 @@ namespace parc {
     }
 
   private:
-    void dispose() {
+    void onDispose() {
       if (ProgramStep<TLOGGER>::_next != 0) {
         ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
         delete ProgramStep<TLOGGER>::_next;
@@ -153,9 +159,9 @@ namespace parc {
       strncpy(_text, text, len);
     }
 
-    void action(VirtualAction type) {
+    void action(VirtualAction type) override {
       if (type == VirtualAction::Dispose) {
-        dispose();
+        onDispose();
       }
       else if (type == VirtualAction::Tick) {
         onTick();
@@ -163,7 +169,7 @@ namespace parc {
     }
 
   private:
-    void dispose() {
+    void onDispose() {
       if (ProgramStep<TLOGGER>::_next != 0) {
         ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
         delete ProgramStep<TLOGGER>::_next;
@@ -191,14 +197,14 @@ namespace parc {
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStep<TLOGGER>(logger, 1), _usb(usb), _keyCode(keyCode) {}
 
-    void action(ProgramStep<TLOGGER> type) {
-      if (type == ProgramStep<TLOGGER>::Tick) {
+    void action(VirtualAction type) override {
+      if (type == VirtualAction::Tick) {
         onTick();
       }
     }
 
   private:
-    void onTick() {
+    inline void onTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UK "));
         //ProgramStep<TSERIAL>::_log.println(_ctrl);
