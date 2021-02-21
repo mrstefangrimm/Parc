@@ -27,6 +27,7 @@ namespace parc {
 
   const uint8_t NumberOfPrograms = 20;
 
+  // Should not be in this file
   // 20210209 - having hexCode in a separate argument uses the same amount of memory.
   struct KeyCode {
     KeyCode() : raw(0) {}
@@ -43,6 +44,11 @@ namespace parc {
       };
       uint16_t raw;
     };
+  };
+
+  template<uint8_t V>
+  struct Int2Type {
+    enum { value = V };
   };
 
 }

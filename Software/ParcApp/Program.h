@@ -2,6 +2,7 @@
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
+
 #include "ProgramStep.h"
 
 namespace parc {
@@ -9,7 +10,7 @@ namespace parc {
   template<typename TLOGGER>
   class Program {
   public:
-    size_t duration() {
+    size_t duration() const {
       if (_root != 0) { return _root->duration(); }
       else { return 0; }
     }
@@ -21,28 +22,30 @@ namespace parc {
 
     void dispose() {
       if (_root != 0) {
-        _root->action(VirtualAction::Dispose);
+        _root->dispose();
         delete _root;
         _root = 0;
       }
     }
 
-    void play() {
+    void play() const {
       if (_root != 0) {
         _root->play();
       }
     }
 
-    void rewind() {
+    void rewind() const {
       if (_root != 0) {
         _root->rewind();
       }
     }
 
-    ProgramStep<TLOGGER>* steps() { return _root; }
+    bool hasSteps() const {
+      return _root != 0;
+    }
 
   private:
-    ProgramStep<TLOGGER>* _root;
+    ProgramStep<TLOGGER>* _root = 0;
   };
 
 }

@@ -19,7 +19,7 @@ namespace parc {
 
     void pinMode(uint8_t port, uint8_t mode, bool expander) {
       if (mode != INPUT_PULLUP) {
-        error(F("E: Mode not supported"));
+        error(F("Pin mode not supported"));
       }
       if (expander) {
         _log.print(F("Set MCP28003 port: ")); _log.print(port); _log.println(F(" to INPUT HIGH."));
@@ -45,7 +45,7 @@ namespace parc {
   private:
     void error(const __FlashStringHelper* err) {
       _log.println(err);
-      while (1);
+      while (true);
     }
     TLOGGER& _log;
     Adafruit_MCP23008 _mcp;

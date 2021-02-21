@@ -6,20 +6,42 @@
 #include "ProgramStep.h"
 
 namespace parc {
-    
-  template<typename TLOGGER>
-  class ProgramStepWait : public ProgramStep<TLOGGER> {
+
+  template<typename TLOGGER, typename TDERIVED, bool DISPOSABLE>
+  class ProgramStepBase : public ProgramStep<TLOGGER> {
   public:
-    ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStep<TLOGGER>(logger, waitMs / TimerPeriod) {}
- 
-    void action(VirtualAction type) override {
-     if (type == VirtualAction::Tick) {
-        onTick();
+    ProgramStepBase(TLOGGER& logger, uint8_t duration)
+      : ProgramStep<TLOGGER>(logger, duration) {}
+
+  protected:
+    void action(VirtualAction type) final {
+      action(type, Int2Type<DISPOSABLE>());
+    }
+
+  private:
+    void action(VirtualAction type, Int2Type<true>) {
+      if (type == VirtualAction::Dispose) {
+        static_cast<TDERIVED*>(this)->doDispose();
+      }
+      else if (type == VirtualAction::Tick) {
+        static_cast<TDERIVED*>(this)->doTick();
       }
     }
-  
-  private:
-    void onTick() {
+
+    void action(VirtualAction type, Int2Type<false>) {
+      if (type == VirtualAction::Tick) {
+        static_cast<TDERIVED*>(this)->doTick();
+      }
+    }
+
+  };
+      
+  template<typename TLOGGER>
+  class ProgramStepWait : public ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false> {
+  public:
+    ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false>(logger, waitMs / TimerPeriod) {}
+   
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("W "));
       }
@@ -27,36 +49,21 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename THIDBLE>
-  class ProgramStepBleKeyboardText : public ProgramStep<TLOGGER> {
+  class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardText<TLOGGER, THIDBLE>, true> {
   public:
     ProgramStepBleKeyboardText(TLOGGER& logger, THIDBLE& ble, const char* text)
-      : ProgramStep<TLOGGER>(logger, max(10, strlen(text) * 100 / TimerPeriod)), _ble(ble) {
+      : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardText<TLOGGER, THIDBLE>, true>(logger, max(10, strlen(text) * 100 / TimerPeriod)), _ble(ble) {
       auto len = strlen(text) + 1;
       _text = new char[len];
       strncpy(_text, text, len);
     }
-
-    void action(VirtualAction type) override {
-      if (type == VirtualAction::Dispose) {
-        onDispose();
-      }
-      else if (type == VirtualAction::Tick) {
-        onTick();
-      }
-    }
-
-  private:
-    void onDispose() {
-      if (ProgramStep<TLOGGER>::_next != 0) {
-        ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
-        delete ProgramStep<TLOGGER>::_next;
-        ProgramStep<TLOGGER>::_next = 0;
-      }
+     
+    void doDispose() {
       delete[] _text;
       _text = 0;
     }
 
-    void onTick() {
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BT "));
         //ProgramStep<TLOGGER>::_log.println(_text);
@@ -75,19 +82,12 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename THIDBLE>
-  class ProgramStepBleKeyboardCode : public ProgramStep<TLOGGER> {
+  class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false> {
   public:
     ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
-      : ProgramStep<TLOGGER>(logger, 5), _ble(ble), _keyCode(keyCode) {}
-
-    void action(VirtualAction type) override {
-      if (type == VirtualAction::Tick) {
-        onTick();
-      }
-    }
-    
-  protected:
-    void onTick() {
+      : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false>(logger, 5), _ble(ble), _keyCode(keyCode) {}
+  
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BK "));
         //ProgramStep<TLOGGER>::_log.println(_hexCode);
@@ -102,36 +102,21 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename THIDBLE>
-  class ProgramStepBleControlKey : public ProgramStep<TLOGGER> {
+  class ProgramStepBleControlKey : public ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true> {
   public:
     ProgramStepBleControlKey(TLOGGER& logger, THIDBLE& ble, const char* ctrlKey, uint16_t duration)
-      : ProgramStep<TLOGGER>(logger, max(1, duration / TimerPeriod)), _ble(ble) {
+      : ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true>(logger, max(1, duration / TimerPeriod)), _ble(ble) {
       auto len = strlen(ctrlKey) + 1;
       _ctrlKey = new char[len];
       strncpy(_ctrlKey, ctrlKey, len);
     }
 
-    void action(VirtualAction type) override {
-      if (type == VirtualAction::Dispose) {
-        onDispose();
-      }
-      else if (type == VirtualAction::Tick) {
-        onTick();
-      }
-    }
-
-  private:
-    void onDispose() {
-      if (ProgramStep<TLOGGER>::_next != 0) {
-        ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
-        delete ProgramStep<TLOGGER>::_next;
-        ProgramStep<TLOGGER>::_next = 0;
-      }
+    void doDispose() {
       delete[] _ctrlKey;
       _ctrlKey = 0;
     }
 
-    void onTick() {
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BC "));
         //ProgramStep<TLOGGER>::_log.println(_ctrlKey);
@@ -150,36 +135,21 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename THIDUSB>
-  class ProgramStepUsbKeyboardText : public ProgramStep<TLOGGER> {
+  class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true> {
   public:
     ProgramStepUsbKeyboardText(TLOGGER& logger, THIDUSB& usb, const char* text)
-      : ProgramStep<TLOGGER>(logger, strlen(text) * 100 / TimerPeriod), _usb(usb) {
+      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true>(logger, strlen(text) * 100 / TimerPeriod), _usb(usb) {
       auto len = strlen(text) + 1;
       _text = new char[len];
       strncpy(_text, text, len);
     }
 
-    void action(VirtualAction type) override {
-      if (type == VirtualAction::Dispose) {
-        onDispose();
-      }
-      else if (type == VirtualAction::Tick) {
-        onTick();
-      }
-    }
-
-  private:
-    void onDispose() {
-      if (ProgramStep<TLOGGER>::_next != 0) {
-        ProgramStep<TLOGGER>::_next->action(VirtualAction::Dispose);
-        delete ProgramStep<TLOGGER>::_next;
-        ProgramStep<TLOGGER>::_next = 0;
-      }
+    void doDispose() {
       delete[] _text;
       _text = 0;
     }
 
-    void onTick() {
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UT "));
         _usb.println(_text);
@@ -192,19 +162,12 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename THIDUSB>
-  class ProgramStepUsbKeyboardCode : public ProgramStep<TLOGGER> {
+  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
   public:
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
-      : ProgramStep<TLOGGER>(logger, 1), _usb(usb), _keyCode(keyCode) {}
-
-    void action(VirtualAction type) override {
-      if (type == VirtualAction::Tick) {
-        onTick();
-      }
-    }
-
-  private:
-    inline void onTick() {
+      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
+       
+    void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UK "));
         //ProgramStep<TSERIAL>::_log.println(_ctrl);

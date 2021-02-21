@@ -9,6 +9,7 @@ namespace parc {
     KEYPAD_KEYPAD_TIMEOUT = 1,
     KEYPAD_HID_INPUT,
     KEYPAD_MEMORY_WRONG,
+    KEYPAD_TERMINAL_PINALREADYDEFINED,
     HID_HID_TIMEOUT,
     TERMINAL_TERMINAL_TIMEOUT,
     TERMINAL_MEMORY_CHANGE,
@@ -19,10 +20,9 @@ namespace parc {
 
   // TODO: this typedef could be application specific
   typedef uint8_t RegisterData_t;
-
   typedef RegisterData_t TimerRegData;
-
   typedef RegisterData_t MemoryChangedRegData;
+  typedef RegisterData_t PinAlreadyDefinedRegData;
 
   struct KeypadRegData {
     KeypadRegData() : raw(0) {}

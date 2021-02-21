@@ -25,6 +25,11 @@ namespace parc {
 
         _registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
       }
+
+      if (_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
+        _serial.println(F("PIN was not accepted. A PIN is already active."));
+        _registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
+      }
     }
 
   private:
@@ -45,8 +50,8 @@ namespace parc {
           _serial.println(F("Programs defined:"));
           for (int n = 0; n < NumberOfPrograms; n++) {
             KeypadRegData input(n);
-            _serial.print(input.profile); _serial.print(" "); _serial.print(char(input.button + 'A')); _serial.print(" : ");
-            _programs[input.programIndex()].steps() == 0 ? _serial.println(F("No")) : _serial.println(F("Yes"));
+            _serial.print(input.profile); _serial.print(F(" ")); _serial.print(char(input.button + 'A')); _serial.print(F(" : "));
+            _programs[input.programIndex()].hasSteps() ? _serial.println(F("No")) : _serial.println(F("Yes"));
           }
         }
         else if (isprint(ch)) {
@@ -57,7 +62,7 @@ namespace parc {
         // YAT sends 0b1101 and 0b1010, PuTTY sends 0b1101 and powershell sends 0b1010
         // Debug: Serial.println("Enter pressed");
         // Debug: Serial.println(); //eol of repeated command
-        _serial.println("Start defining your dull programs.");
+        _serial.println(F("Start defining your dull programs."));
       }
     }
 
@@ -87,19 +92,19 @@ namespace parc {
           memset(_buf, 0, BUFLEN);
 
           if (_keyPadState.isPin) {
-            _log.print(F("got pin"));
+            _log.println(F("got pin"));
             _state = State::ReadingPin;
           }
           else {
             auto idx = _keyPadState.programIndex();
-            _log.print(_keyPadState.profile); _log.print(" "); _log.print(_keyPadState.button);_log.print(" > "); _log.print(idx);
+            // Debug: _log.print(_keyPadState.profile); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
-              //_log.print(_keyPadState.profile); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(": "));
+              _log.println(F("got program"));
               _state = State::ReadingProgramSteps;
               _programs[idx].dispose();
             }
             else {
-              _serial.println(F(" This ain't dull, by."));
+              _serial.println(F(" This ain't dull, bye."));
               _state = State::Idle;
             }
           }

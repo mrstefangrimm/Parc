@@ -29,6 +29,7 @@ namespace parc {
         }
         else {
           _log.println(F("PIN not accepted."));
+          _registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
         }
         _registers[TERMINAL_KEYPAD_PIN] = 0;
       }

@@ -5,7 +5,7 @@
 
 namespace parc {
 
-  // Saves 76 bytes. Every virtual method has a pointer (two bytes) in the virtual table.
+  // Saves 12 bytes. Every virtual method has a pointer (two bytes) in the virtual table, i.e per class.
   enum class VirtualAction {
     Dispose,
     Tick
@@ -14,14 +14,17 @@ namespace parc {
   template<typename TLOGGER>
   class ProgramStep {
   public:
-    ProgramStep(TLOGGER& logger, uint8_t length);
+    ProgramStep(TLOGGER& logger, uint8_t duration);
+
+    void dispose();
     void play();
     void rewind();
-    size_t duration();
+    size_t duration() const;
 
     ProgramStep<TLOGGER>* appendStep(ProgramStep<TLOGGER>* step);
-    
-    virtual void action(VirtualAction type);
+
+  protected:
+    virtual void action(VirtualAction type) = 0;
 
   protected:
     TLOGGER& _log;
@@ -36,14 +39,13 @@ namespace parc {
     : _log(logger), _duration(duration), _tick(0), _next(0) {}
 
   template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::action(VirtualAction type) {
-    if (type == VirtualAction::Dispose) {
-      if (_next != 0) {
-        _next->action(VirtualAction::Dispose);
-        delete _next;
-        _next = 0;
-      }
+  inline void ProgramStep<TLOGGER>::dispose() {
+    if (_next != 0) {
+      _next->dispose();
+      delete _next;
+      _next = 0;
     }
+    action(VirtualAction::Dispose);
   }
 
   template<typename TLOGGER>
@@ -64,7 +66,7 @@ namespace parc {
   }
 
   template<typename TLOGGER>
-  inline size_t ProgramStep<TLOGGER>::duration() {
+  inline size_t ProgramStep<TLOGGER>::duration() const {
     if (_next != 0) { return _duration + _next->duration(); }
     else { return _duration; }
   }
