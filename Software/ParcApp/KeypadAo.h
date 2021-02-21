@@ -16,27 +16,27 @@ namespace parc {
   };
 
   template<typename TLOGGER, typename TKEYPADHW>
-  class KeypadAo : public Ao {
+  class KeypadAo : public Ao<KeypadAo<TLOGGER, TKEYPADHW>> {
   public:
     KeypadAo(RegisterData_t* registers, TLOGGER& logger, TKEYPADHW& keypadHw)
-      : Ao(registers), _log(logger), _hw(keypadHw) {}
+      : Ao<KeypadAo<TLOGGER, TKEYPADHW>>(registers), _log(logger), _hw(keypadHw) {}
 
     void checkRegisters() {
 
-      if (_registers[TERMINAL_KEYPAD_PIN] != 0) {
+      if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN] != 0) {
         if (_pin.raw == 0) {
-          _pin = _registers[TERMINAL_KEYPAD_PIN];
+          _pin = Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN];
         }
         else {
           _log.println(F("PIN not accepted."));
-          _registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
+          Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
         }
-        _registers[TERMINAL_KEYPAD_PIN] = 0;
+        Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN] = 0;
       }
-      else if (_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
+      else if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
 
-        _registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
-        if (_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
+        Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
+        if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
 
           KeypadRegData args = 0;
 
@@ -48,7 +48,6 @@ namespace parc {
           if (_hw.pressed(Btn_P1, true)) {
             args.profile |= (1 << 1);
           }
-          //;
 
           // Buttons A - E, Multiple button presses is not supported
           if (_hw.pressed(Btn_A, true)) {
@@ -90,8 +89,8 @@ namespace parc {
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
-              _registers[KEYPAD_HID_INPUT] = args.raw;
-              _registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_HID_INPUT] = args.raw;
+              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
             }
             else if (_pin.raw != 0 && pin != 0) {
               _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);
@@ -100,7 +99,7 @@ namespace parc {
               }
               _pin.failed++;
               longTimeout = true;
-              _registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
             }
             else {
               _log.print(F("Buttion press ignored.")); _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
@@ -109,11 +108,11 @@ namespace parc {
 
           if (longTimeout) {
             // Debug: _log.print(F("1"));
-            _registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
+            Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
           }
           else {
             // Debug: _log.print(F("5"));
-            _registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
+            Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
           }
         }
       }

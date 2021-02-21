@@ -9,13 +9,13 @@
 namespace parc {
 
   template<typename TSERIAL, typename TLOGGER, typename THIDBLE, typename THIDUSB, uint8_t BUFLEN>
-  class TerminalAo : public Ao {
+  class TerminalAo : public Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
-      : Ao(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
+      : Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
 
     void checkRegisters() {
-      if (_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
+      if (Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
         switch (_state) {
           case State::Idle: stateIdle(); break;
           case State::ReadingProgramCode: stateReadingProgramCode(); break;
@@ -23,12 +23,12 @@ namespace parc {
           case State::ReadingPin: stateReadingPin(); break;
         };
 
-        _registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+        Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
       }
 
-      if (_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
+      if (Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
         _serial.println(F("PIN was not accepted. A PIN is already active."));
-        _registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
+        Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
       }
     }
 
@@ -153,7 +153,7 @@ namespace parc {
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            _registers[TERMINAL_KEYPAD_PIN] = pin.raw;
+            Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -213,7 +213,7 @@ namespace parc {
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            _registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
+            Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
           }
           //else {
           //  _serial.println(F(" This ain't dull, bye bye."));

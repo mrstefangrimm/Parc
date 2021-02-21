@@ -10,11 +10,11 @@
 namespace parc {
   
   template<typename TLOGGER>
-  class HidAo : public Ao {
+  class HidAo : public Ao<HidAo<TLOGGER>> {
 
   public:
     HidAo(TLOGGER& logger, RegisterData_t* registers, Program<TLOGGER>* programs)
-      : Ao(registers), _log(logger), _programs(programs) {
+      : Ao<HidAo<TLOGGER>>(registers), _log(logger), _programs(programs) {
       //  _log.println(freeMemory());
     }
     
@@ -25,14 +25,14 @@ namespace parc {
         case State::Idle: stateIdle(); break;
         case State::Execute: stateExecute(); break;
       };
-      _registers[KEYPAD_HID_INPUT] = 0;
+      Ao<HidAo<TLOGGER>>::_registers[KEYPAD_HID_INPUT] = 0;
     }
     
   private:
     void stateIdle() {
-      if (_registers[KEYPAD_HID_INPUT] != 0) {
+      if (Ao<HidAo<TLOGGER>>::_registers[KEYPAD_HID_INPUT] != 0) {
 
-        KeypadRegData args(_registers[KEYPAD_HID_INPUT]);
+        KeypadRegData args(Ao<HidAo<TLOGGER>>::_registers[KEYPAD_HID_INPUT]);
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
         size_t len = _program->duration();
@@ -42,14 +42,14 @@ namespace parc {
 
         _log.print(F("Execute { "));
         _state = State::Execute;
-        _registers[HID_HID_TIMEOUT] = TimerRegData(len);
+        Ao<HidAo<TLOGGER>>::_registers[HID_HID_TIMEOUT] = TimerRegData(len);
       }
     }
    
     void stateExecute() {
 
-      if (_registers[HID_HID_TIMEOUT] > 0) {
-        _registers[HID_HID_TIMEOUT] -= 1;
+      if (Ao<HidAo<TLOGGER>>::_registers[HID_HID_TIMEOUT] > 0) {
+        Ao<HidAo<TLOGGER>>::_registers[HID_HID_TIMEOUT] -= 1;
         //_log.println(_registers[HID_HID_TIMEOUT]);
 
         if (_program != 0) {

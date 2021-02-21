@@ -7,10 +7,15 @@
 
 namespace parc {
 
+  template<typename TDERIVED>
   class Ao {
   public:
     Ao(RegisterData_t* registers)
       : _registers(registers) {}
+
+    void checkRegisters() {
+      static_cast<TDERIVED*>(this)->checkRegisters();
+    }
 
   protected:
     RegisterData_t* _registers;
