@@ -25,7 +25,17 @@ namespace parc {
   const uint8_t Usb_YEL = 11;
   const uint8_t Usb_ORA = 12;
 
+  // Program specific: UnoParcApp has less programs
   const uint8_t NumberOfPrograms = 20;
+
+  enum PsType {
+    Wait,
+    UsbKeycode,
+    UsbText,
+    BleKeycode,
+    BleText,
+    BleControlkey
+  };
 
   // Should not be in this file
   // 20210209 - having hexCode in a separate argument uses the same amount of memory.
@@ -50,5 +60,59 @@ namespace parc {
   struct Int2Type {
     enum { value = V };
   };
+
+  class NullType {};
+
+  template<class T, typename U>
+  struct Typelist {
+    typedef T Head;
+    typedef U Tail;
+  };
+
+  template<class TL, uint8_t INDEX> struct TypeAt;
+
+  template<class HEAD, class TAIL>
+  struct TypeAt<Typelist<HEAD, TAIL>, 0>
+  {
+    typedef HEAD Result;
+  };
+
+  template<class HEAD, class TAIL, uint8_t INDEX>
+  struct TypeAt<Typelist<HEAD, TAIL>, INDEX>
+  {
+    typedef typename TypeAt<TAIL, INDEX - 1>::Result Result;
+  };
+
+  template<class TLIST, class T> struct IndexOf;
+
+  template<class T>
+  struct IndexOf<NullType, T> {
+    enum { Result = -1 };
+  };
+
+  template<class T, class TAIL>
+  struct IndexOf<Typelist<T, TAIL>, T> {
+    enum { Result = 0 };
+  };
+
+  template<class HEAD, class TAIL, class T>
+  struct IndexOf<Typelist<HEAD, TAIL>, T> {
+  private:
+    enum { Temp = IndexOf<TAIL, T>::Result };
+  public:
+    enum { Result = Temp == -1 ? -1 : 1 + Temp };
+  };
+
+  template<uint8_t CMDTYPE>
+  struct CmdComparator {
+    
+    bool operator()(const char* another) {
+      return equals(another);
+    }
+    bool equals(const char* another) { return false; }
+  };
+
+  
+
 
 }

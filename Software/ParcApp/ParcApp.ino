@@ -48,8 +48,25 @@ typedef Keyboard_ HidUsb_t;
 HidBle_t hidBle(logger);
 
 HidAo<Logger_t> hid(logger, registers, programs);
-TerminalAo<Serial_, Logger_t, HidBle_t, HidUsb_t, 25> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 MemoryMonitorAo<Logger_t> memoryMonitor(logger, registers);
+
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) { return 'W' == another[0]; }
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) { return 'U' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) { return 'U' == another[0] && 'T' == another[1]; }
+template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) { return 'B' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::BleText>::equals(const char* another) { return 'B' == another[0] && 'T' == another[1]; }
+template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) { return 'B' == another[0] && 'C' == another[1]; }
+
+// Has to filled in the same order as the enum PsType
+typedef Typelist<ProgramStepWait<Logger_t>,
+  Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
+  Typelist<ProgramStepUsbKeyboardText<Logger_t, HidUsb_t>,
+  Typelist<ProgramStepBleKeyboardCode<Logger_t, HidBle_t>,
+  Typelist<ProgramStepBleKeyboardText<Logger_t, HidBle_t>,
+  Typelist<ProgramStepBleControlKey<Logger_t, HidBle_t>,
+  NullType>>>>>> ProgramStepList;
+
+TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, HidUsb_t, 25> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 
 void setup() {
   for (int n=0; n<5 && !Serial; n++) { delay(100); }

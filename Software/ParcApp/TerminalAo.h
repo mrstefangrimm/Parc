@@ -5,17 +5,18 @@
 
 #include "Ao.h"
 #include "StringAlgo.h"
+#include "Constants.h"
 
 namespace parc {
 
-  template<typename TSERIAL, typename TLOGGER, typename THIDBLE, typename THIDUSB, uint8_t BUFLEN>
-  class TerminalAo : public Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> {
+  template<typename PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, uint8_t BUFLEN>
+  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
-      : Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
+      : Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
 
     void checkRegisters() {
-      if (Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
+      if (Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
         switch (_state) {
           case State::Idle: stateIdle(); break;
           case State::ReadingProgramCode: stateReadingProgramCode(); break;
@@ -23,12 +24,12 @@ namespace parc {
           case State::ReadingPin: stateReadingPin(); break;
         };
 
-        Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+        Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
       }
 
-      if (Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
+      if (Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
         _serial.println(F("PIN was not accepted. A PIN is already active."));
-        Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
+        Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
       }
     }
 
@@ -112,7 +113,7 @@ namespace parc {
             auto idx = _keyPadState.programIndex();
             // Debug: _log.print(_keyPadState.profile); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
-              _log.println(F("got program"));
+              _log.println(F("got program index. current program is being disposed."));
               _state = State::ReadingProgramSteps;
               _programs[idx].dispose();
             }
@@ -167,7 +168,7 @@ namespace parc {
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -207,34 +208,37 @@ namespace parc {
           parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
 
           ProgramStep<TLOGGER>* progStep = 0;
-          if (subStrs[0][0] == 'W') {
+         
+          if (CmdComparator<PsType::Wait>()(subStrs[0])) {
             progStep = createProgramStepWait(subStrs[1]);
           }
-          else if (parc::strcmp2(subStrs[0], 'B', 'K')) {
+          else if (CmdComparator<PsType::BleKeycode>()(subStrs[0])) {
             progStep = createProgramStepBleKeyboardCode(subStrs, numSubStr);
           }
-          else if (parc::strcmp2(subStrs[0], 'B', 'T')) {
+          else if (CmdComparator<PsType::BleText>()(subStrs[0])) {
             progStep = createProgramStepBleKeyboardText(subStrs[1]);
           }
-          else if (parc::strcmp2(subStrs[0], 'B', 'C')) {
+          else if (CmdComparator<PsType::BleControlkey>()(subStrs[0])) {
             progStep = createProgramStepBleControlKey(subStrs, numSubStr);
           }
-          else if (parc::strcmp2(subStrs[0], 'U', 'K')) {
+          else if (CmdComparator<PsType::UsbKeycode>()(subStrs[0])) {
             progStep = createProgramStepUsbKeyboardCode(subStrs, numSubStr);
           }
-          else if (parc::strcmp2(subStrs[0], 'U', 'T')) {
+          else if (CmdComparator<PsType::UsbText>()(subStrs[0])) {
             progStep = createProgramStepUsbKeyboardText(subStrs[1]);
           }
 
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            Ao<TerminalAo<TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
           }
-          //else {
-          //  _serial.println(F(" This ain't dull, bye bye."));
-          //  _state = State::Idle;
-          //}
+          else {
+            _serial.println(F(" Unknown command. This ain't dull, bye."));
+            uint8_t progIdx = _keyPadState.programIndex();
+            _programs[progIdx].dispose();
+            _state = State::Idle;
+          }
 
           _itBuf = 0;
           memset(_buf, 0, BUFLEN);
@@ -251,8 +255,10 @@ namespace parc {
 
     ProgramStep<TLOGGER>* createProgramStepWait(const char* delay) {
       uint16_t waitMs = atoi(delay);
-      //_log.print("DELAY: "); _log.println(waitMs);
-      return new ProgramStepWait<TLOGGER>(_log, waitMs);
+      _log.print("DELAY: "); _log.println(waitMs);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
+      
+      return new Wait_t(_log, waitMs);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardCode(char* subStrs[], uint8_t numSubStr) {
@@ -271,12 +277,14 @@ namespace parc {
       keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? 0x2C : keyCode.hexCode : keyCode.hexCode;
 
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
-      return new ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>(_log, _ble, keyCode);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
+      return new BleKeycode_t(_log, _ble, keyCode);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardText(char* text) {
       //_log.print("TEXT: "); _log.println(text);
-      return new ProgramStepBleKeyboardText<TLOGGER, THIDBLE>(_log, _ble, text);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result BleText_t;
+      return new BleText_t(_log, _ble, text);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleControlKey(char* subStrs[], uint8_t numSubStr) {
@@ -285,7 +293,8 @@ namespace parc {
 
       if (strcmp(subStrs[1], "Volume+") == 0) { return new ProgramStepBleControlKey<TLOGGER, THIDBLE>(_log, _ble, "0xE9", duration); }
       if (strcmp(subStrs[1], "Volume-") == 0) { return new ProgramStepBleControlKey<TLOGGER, THIDBLE>(_log, _ble, "0xEA", duration); }
-      return new ProgramStepBleControlKey<TLOGGER, THIDBLE>(_log, _ble, subStrs[1], duration);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
+      return new BleControlkey_t(_log, _ble, subStrs[1], duration);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {
@@ -308,12 +317,14 @@ namespace parc {
       keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? ' ' : keyCode.hexCode : keyCode.hexCode;
 
       // _log.print("createProgramStepUsbKeyboardCode "); _log.print(hexCode, HEX);
-      return new ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>(_log, _usb, keyCode);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
+      return new UsbKeycode_t(_log, _usb, keyCode);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardText(char* text) {
       // _log.print("TEXT: "); _log.println(text);
-      return new ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>(_log, _usb, text);
+      typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
+      return new UsbText_t(_log, _usb, text);
     }
     
   private:
