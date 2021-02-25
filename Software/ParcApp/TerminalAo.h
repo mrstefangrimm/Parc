@@ -47,12 +47,15 @@ namespace parc {
           _state = State::ReadingProgramCode;
         }
         else if (ch == '?') {
-          _serial.println(F("Programs defined:"));
-          for (int n = 0; n < NumberOfPrograms; n++) {
-            KeypadRegData input(n);
-            _serial.print(input.profile); _serial.print(F(" ")); _serial.print(char(input.button + 'A')); _serial.print(F(" : "));
-            _programs[input.programIndex()].hasSteps() ? _serial.println(F("No")) : _serial.println(F("Yes"));
+          _serial.println(F("Programmed:"));
+          for (int m = 0; m < 4; m++) {
+            for (int n = 1; n < 6; n++) {
+              KeypadRegData input(m, n);
+              _serial.print(input.profile); _serial.print(F(" ")); _serial.print(char(input.button - 1 + 'A')); _serial.print(F(" : "));
+              _programs[input.programIndex()].hasSteps() ? _serial.println(F("Yes")) : _serial.println(F("No"));
+            }
           }
+         
         }
         else if (isprint(ch)) {
           _serial.print(ch);
@@ -73,18 +76,28 @@ namespace parc {
         if (ch == ':') {
           parc::trimFront(_buf, BUFLEN);
           parc::trimBack(_buf, BUFLEN);
+          parc::squeeze(_buf);
+          // Debug: _serial.println(_buf);
           uint8_t numSubStr;
           char* subStrs[2] = { 0 };
-          parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
+          parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
 
           if (numSubStr == 2) {
             if (subStrs[0][0] == 'P' && subStrs[1][0] == 'N') {
               _keyPadState.isPin = 1;
             }
-            else {
+            else {              
+              // Debug: _serial.println(subStrs[0][0]); // Does not work when backspace is used in putty
+              // Debug: _serial.println(subStrs[1][0]); // Does not work when backspace is used in putty
+              // Debug: _serial.println(subStrs[0][strlen(subStrs[0])-1]);
+              // Debug: _serial.println(subStrs[1][strlen(subStrs[1])-1]);
+          
               _keyPadState.isPin = 0;
               _keyPadState.profile = subStrs[0][0] - '0';
               _keyPadState.button = subStrs[1][0] - 'A' + 1;
+
+              // Debug: _serial.println(_keyPadState.profile);
+              // Debug: _serial.println(_keyPadState.button);
             }
           }
 
@@ -141,6 +154,7 @@ namespace parc {
           //_log.print(_buf);
           parc::trimFront(_buf, BUFLEN);
           parc::trimBack(_buf, BUFLEN);
+          parc::squeeze(_buf);
           uint8_t numSubStr;
           char* subStrs[6] = { 0 };
           parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
@@ -183,9 +197,11 @@ namespace parc {
         }
         else if (ch == ';') {
           // create programstep. If failed, go to wait state
-          //_log.print(_buf);
           parc::trimFront(_buf, BUFLEN);
           parc::trimBack(_buf, BUFLEN);
+          parc::squeeze(_buf);
+          // Debug: _serial.println(_buf);
+          
           uint8_t numSubStr;
           char* subStrs[6] = { 0 };
           parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);

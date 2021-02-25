@@ -21,6 +21,25 @@ namespace parc {
     }
   }
 
+  void squeeze(char* buf) {
+    const size_t bufLen = strlen(buf);
+    uint8_t lenNew = 0;
+    for (uint8_t n = 0; n < bufLen; n++) {
+      if (buf[n] == 0x7F || buf[n] == '\b') {
+        // backspace in putty is 0x7F; \b is just for testing
+        // Debug: Serial.println(buf[n], HEX);
+        lenNew--;
+      }
+      else {
+        buf[lenNew] = buf[n];
+        lenNew++;
+      }
+    }
+    for (uint8_t n = lenNew; n < bufLen; n++) {
+      buf[n] = 0;
+    }
+  }
+
   uint8_t count(char* buf, uint8_t bufLen, char seperator) {
     uint8_t cnt = 0;
     bool enclosedText = false;
@@ -35,7 +54,7 @@ namespace parc {
   void split(char* buf, uint8_t bufLen, char seperator, char** subStr, uint8_t* numSubStr) {
     (*numSubStr) = parc::count(buf, bufLen, seperator) + 1;
 
-    // first substring point always to the begin of the buffer
+    // first substring points always to the begin of the buffer
     subStr[0] = buf;
     uint8_t subStrIdx = 1;
     bool enclosedText = false;

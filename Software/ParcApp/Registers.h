@@ -28,6 +28,7 @@ namespace parc {
     KeypadRegData() : raw(0) {}
     KeypadRegData(const KeypadRegData& t) : raw(t.raw) {}
     KeypadRegData(RegisterData_t rawValue) : raw(rawValue) {}
+    KeypadRegData(uint8_t profile, uint8_t button) : profile(profile), button(button), isPin(0) {}
 
     uint8_t programIndex() {
       return ((profile << 3) | button) - 3 * profile - 1;
