@@ -4,7 +4,6 @@
 
 #include <SoftwareSerial.h>
 
-#include "Constants.h"
 #include "Registers.h"
 
 #include "KeypadHw.h"
@@ -17,6 +16,8 @@
 #include "TerminalAo.h"
 
 #include "MemoryMonitorAo.h"
+
+#include "Constants.h"
 
 using namespace parc;
 

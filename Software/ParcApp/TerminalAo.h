@@ -5,18 +5,37 @@
 
 #include "Ao.h"
 #include "StringAlgo.h"
-#include "Constants.h"
+#include "Shared.h"
 
 namespace parc {
+
+  enum PsType {
+    Wait,
+    UsbKeycode,
+    UsbText,
+    BleKeycode,
+    BleText,
+    BleControlkey
+  };
+
+  template<uint8_t CMDTYPE>
+  struct CmdComparator {
+
+    bool operator()(const char* another) {
+      return equals(another);
+    }
+    bool equals(const char* another) { return false; }
+  };
+
 
   template<typename PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, uint8_t BUFLEN>
   class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
-      : Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
+      : Ao_t(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
 
     void checkRegisters() {
-      if (Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
+      if (Ao_t::_registers[TERMINAL_TERMINAL_TIMEOUT] != 0) {
         switch (_state) {
           case State::Idle: stateIdle(); break;
           case State::ReadingProgramCode: stateReadingProgramCode(); break;
@@ -24,12 +43,12 @@ namespace parc {
           case State::ReadingPin: stateReadingPin(); break;
         };
 
-        Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+        Ao_t::_registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
       }
 
-      if (Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
+      if (Ao_t::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] != 0) {
         _serial.println(F("PIN was not accepted. A PIN is already active."));
-        Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
+        Ao_t::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = 0;
       }
     }
 
@@ -113,7 +132,7 @@ namespace parc {
             auto idx = _keyPadState.programIndex();
             // Debug: _log.print(_keyPadState.profile); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
-              _log.println(F("got program index. current program is being disposed."));
+              _log.println(F("got program index. Current program is being disposed."));
               _state = State::ReadingProgramSteps;
               _programs[idx].dispose();
             }
@@ -121,15 +140,7 @@ namespace parc {
               _serial.println(F(" This ain't dull, bye."));
               _state = State::Idle;
             }
-          }
-
-         /* if (_keyPadState.raw == 0) {
-            _serial.println(F(" This ain't dull, bye."));
-            _state = State::Idle;
-          }
-          else {
-           
-          }   */      
+          }    
         }
         else if (_itBuf < BUFLEN) {
           // omit preceding spaces to save the buffer for the data.
@@ -256,7 +267,6 @@ namespace parc {
     ProgramStep<TLOGGER>* createProgramStepWait(const char* delay) {
       uint16_t waitMs = atoi(delay);
       _log.print("DELAY: "); _log.println(waitMs);
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
       
       return new Wait_t(_log, waitMs);
     }
@@ -277,13 +287,11 @@ namespace parc {
       keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? 0x2C : keyCode.hexCode : keyCode.hexCode;
 
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
       return new BleKeycode_t(_log, _ble, keyCode);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardText(char* text) {
       //_log.print("TEXT: "); _log.println(text);
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result BleText_t;
       return new BleText_t(_log, _ble, text);
     }
 
@@ -291,9 +299,8 @@ namespace parc {
       auto duration = numSubStr > 2 ? atoi(subStrs[2]) : 1;
       // _log.print("Control Key: "); _log.print(subStrs[1]); _log.print(" for: "); _log.println(duration);   
 
-      if (strcmp(subStrs[1], "Volume+") == 0) { return new ProgramStepBleControlKey<TLOGGER, THIDBLE>(_log, _ble, "0xE9", duration); }
-      if (strcmp(subStrs[1], "Volume-") == 0) { return new ProgramStepBleControlKey<TLOGGER, THIDBLE>(_log, _ble, "0xEA", duration); }
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
+      if (strcmp(subStrs[1], "Volume+") == 0) { return new BleControlkey_t(_log, _ble, "0xE9", duration); }
+      if (strcmp(subStrs[1], "Volume-") == 0) { return new BleControlkey_t(_log, _ble, "0xEA", duration); }
       return new BleControlkey_t(_log, _ble, subStrs[1], duration);
     }
 
@@ -317,17 +324,23 @@ namespace parc {
       keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? ' ' : keyCode.hexCode : keyCode.hexCode;
 
       // _log.print("createProgramStepUsbKeyboardCode "); _log.print(hexCode, HEX);
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
       return new UsbKeycode_t(_log, _usb, keyCode);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardText(char* text) {
       // _log.print("TEXT: "); _log.println(text);
-      typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
       return new UsbText_t(_log, _usb, text);
     }
     
   private:
+    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> Ao_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result BleText_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
+
     enum class State {
       Blocked,
       Idle,

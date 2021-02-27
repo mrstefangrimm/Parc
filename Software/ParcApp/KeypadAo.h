@@ -4,9 +4,23 @@
 #pragma once
 
 #include "Ao.h"
+#include "Shared.h"
 
 namespace parc {
 
+  // external constants (avoids multiple usage)
+  extern const uint8_t Btn_A;
+  extern const uint8_t Btn_B;
+  extern const uint8_t Btn_C;
+  extern const uint8_t Btn_D;
+  extern const uint8_t Btn_E;
+  extern const uint8_t Btn_P0;
+  extern const uint8_t Btn_P1;
+  extern const uint8_t Code_0;
+  extern const uint8_t Code_1;
+  extern const uint8_t Code_2;
+  extern const uint8_t Code_3;
+  
   enum KeypadProfile {
     P1 = 0, P2, P3, P4
   };
@@ -95,11 +109,14 @@ namespace parc {
             else if (_pin.raw != 0 && pin != 0) {
               _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
-                _log.print(F("Say goodbye"));
+                _log.println(F("Game Over."));
+                Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
               }
-              _pin.failed++;
-              longTimeout = true;
-              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              else {
+                _pin.failed++;
+                longTimeout = true;
+                Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              }
             }
             else {
               _log.print(F("Buttion press ignored.")); _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
