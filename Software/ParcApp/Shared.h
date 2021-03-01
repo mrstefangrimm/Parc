@@ -37,6 +37,10 @@ namespace parc {
   };
 
   // From Modern C++ 
+  template<bool> struct CTAssert;
+  template<> struct CTAssert<true> {};
+  
+  // From Modern C++ 
   class NullType {};
 
   // From Modern C++ 

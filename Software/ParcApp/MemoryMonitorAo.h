@@ -12,17 +12,17 @@ namespace parc {
   class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER>> {
   public:
     MemoryMonitorAo(TLOGGER& logger, RegisterData_t* registers)
-      : Ao<MemoryMonitorAo<TLOGGER>>(registers), _log(logger) {}
+      : Ao_t(registers), _log(logger) {}
 
     void checkRegisters() {
 
-      if (Ao<MemoryMonitorAo<TLOGGER>>::_registers[TERMINAL_MEMORY_CHANGE] != 0) {
+      if (Ao_t::_registers[TERMINAL_MEMORY_CHANGE] != 0) {
         logMemory();
-        Ao<MemoryMonitorAo<TLOGGER>>::_registers[TERMINAL_MEMORY_CHANGE] = 0;
+        Ao_t::_registers[TERMINAL_MEMORY_CHANGE] = 0;
       }
 
-      if (Ao<MemoryMonitorAo<TLOGGER>>::_registers[KEYPAD_MEMORY_WRONG] != 0) {
-        PinRegData pinData(Ao<MemoryMonitorAo<TLOGGER>>::_registers[KEYPAD_MEMORY_WRONG]);
+      if (Ao_t::_registers[KEYPAD_MEMORY_WRONG] != 0) {
+        PinRegData pinData(Ao_t::_registers[KEYPAD_MEMORY_WRONG]);
         if (pinData.failed > 0) {
           digitalWrite(LED_BUILTIN, HIGH);
         }
@@ -35,19 +35,21 @@ namespace parc {
              digitalWrite(LED_BUILTIN, LOW);
            }
         }
-        Ao<MemoryMonitorAo<TLOGGER>>::_registers[KEYPAD_MEMORY_WRONG] = 0;
+        Ao_t::_registers[KEYPAD_MEMORY_WRONG] = 0;
       }
 
-      if (Ao<MemoryMonitorAo<TLOGGER>>::_registers[MEMORY_MEMORY_TIMEOUT] > 1) {
-        Ao<MemoryMonitorAo<TLOGGER>>::_registers[MEMORY_MEMORY_TIMEOUT]--;
+      if (Ao_t::_registers[MEMORY_MEMORY_TIMEOUT] > 1) {
+        Ao_t::_registers[MEMORY_MEMORY_TIMEOUT]--;
       }
-      else if (Ao<MemoryMonitorAo<TLOGGER>>::_registers[MEMORY_MEMORY_TIMEOUT] == 1) {
+      else if (Ao_t::_registers[MEMORY_MEMORY_TIMEOUT] == 1) {
         logMemory();
-        Ao<MemoryMonitorAo<TLOGGER>>::_registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(60000 / TimerPeriod);
+        Ao_t::_registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(60000 / TimerPeriod);
       }
     }
 
   private:
+    typedef Ao<MemoryMonitorAo<TLOGGER>> Ao_t;
+    
     void logMemory() {
       auto freeMem = freeMemory();
       _log.print(F("Free Memory: ")); _log.println(freeMem);

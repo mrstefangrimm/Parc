@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Adafruit_MCP23008.h"
+#include "Shared.h"
 
 namespace parc {
 
@@ -17,29 +18,24 @@ namespace parc {
       _mcp.begin();
     }
 
-    void pinMode(uint8_t port, uint8_t mode, bool expander) {
-      if (mode != INPUT_PULLUP) {
-        error(F("Pin mode not supported"));
-      }
-      if (expander) {
-        _log.print(F("Set MCP28003 port: ")); _log.print(port); _log.println(F(" to INPUT HIGH."));
-        _mcp.pinMode(port, INPUT);
-        _mcp.pullUp(port, HIGH);
-      }
-      else {
-        _log.print(F("Set Arduino port: ")); _log.print(port); _log.println(F(" to INPUT_PULLUP."));
-        ::pinMode(port, INPUT_PULLUP);
-      }
+    template<bool EXPANDERPORT, uint8_t MODE, uint8_t PIN>
+    void pinMode() {
+      CTAssert<MODE == INPUT_PULLUP>();
+      return pinMode(Int2Type<EXPANDERPORT>(), PIN, MODE);
     }
 
-    bool pressed(uint8_t port, bool expander) {
-      if (expander) {
-        return _mcp.digitalRead(port) == LOW;
+    bool pressed(bool expanderPort, uint8_t pin) {
+      if (expanderPort) {
+        return _mcp.digitalRead(pin) == LOW;
       }
       else {
-        if (port == 9) { return false; }
-        return ::digitalRead(port) == HIGH;
+        return ::digitalRead(pin) == HIGH;
       }
+    }
+    
+    template<class EXPANDERPORT, uint8_t PIN>
+    bool pressed() {
+      return false; //pressed(Int2Type<EXPANDERPORT>(), pin);
     }
 
   private:
@@ -47,6 +43,18 @@ namespace parc {
       _log.println(err);
       while (true);
     }
+
+    void pinMode(Int2Type<true>, uint8_t pin, uint8_t mode) {
+      _log.print(F("Set MCP28003 port: ")); _log.print(pin); _log.println(F(" to INPUT HIGH."));
+      _mcp.pinMode(pin, INPUT);
+      _mcp.pullUp(pin, HIGH);
+    }
+    
+    void pinMode(Int2Type<false>, uint8_t pin, uint8_t mode) {
+      _log.print(F("Set Arduino port: ")); _log.print(pin); _log.println(F(" to INPUT_PULLUP."));
+      ::pinMode(pin, INPUT_PULLUP);
+    }
+
     TLOGGER& _log;
     Adafruit_MCP23008 _mcp;
 

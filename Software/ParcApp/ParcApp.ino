@@ -58,7 +58,8 @@ template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) {
 template<> bool CmdComparator<PsType::BleText>::equals(const char* another) { return 'B' == another[0] && 'T' == another[1]; }
 template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) { return 'B' == another[0] && 'C' == another[1]; }
 
-// Has to filled in the same order as the enum PsType
+// Has to filled in the order of the enum PsType, that is:
+//  Wait, USB Keycode, USB Text, BLE Keycode, BLE Text, BLE Control Key
 typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
   Typelist<ProgramStepUsbKeyboardText<Logger_t, HidUsb_t>,
@@ -77,17 +78,17 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   
   keypadHw.begin();
-  keypadHw.pinMode(Btn_A, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_B, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_C, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_D, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_E, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_P0, INPUT_PULLUP, true);
-  keypadHw.pinMode(Btn_P1, INPUT_PULLUP, true);
-  keypadHw.pinMode(Code_0, INPUT_PULLUP, false);
-  keypadHw.pinMode(Code_1, INPUT_PULLUP, false);
-  keypadHw.pinMode(Code_2, INPUT_PULLUP, false);
-  keypadHw.pinMode(Code_3, INPUT_PULLUP, false);
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_A>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_B>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_C>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_D>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_E>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_P0>();
+  keypadHw.pinMode<true, INPUT_PULLUP, Btn_P1>();
+  keypadHw.pinMode<false, INPUT_PULLUP, Code_0>();
+  keypadHw.pinMode<false, INPUT_PULLUP, Code_1>();
+  keypadHw.pinMode<false, INPUT_PULLUP, Code_2>();
+  keypadHw.pinMode<false, INPUT_PULLUP, Code_3>();
 
   hidBle.begin(false, false);
   Keyboard.begin();

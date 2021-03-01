@@ -21,79 +21,75 @@ namespace parc {
   extern const uint8_t Code_2;
   extern const uint8_t Code_3;
   
-  enum KeypadProfile {
-    P1 = 0, P2, P3, P4
-  };
-
   enum KeypadButton {
     A = 1, B, C, D, E
   };
 
-  template<typename TLOGGER, typename TKEYPADHW>
+  template<class TLOGGER, class TKEYPADHW>
   class KeypadAo : public Ao<KeypadAo<TLOGGER, TKEYPADHW>> {
   public:
     KeypadAo(RegisterData_t* registers, TLOGGER& logger, TKEYPADHW& keypadHw)
-      : Ao<KeypadAo<TLOGGER, TKEYPADHW>>(registers), _log(logger), _hw(keypadHw) {}
+      : Ao_t(registers), _log(logger), _hw(keypadHw) {}
 
     void checkRegisters() {
 
-      if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN] != 0) {
+      if (Ao_t::_registers[TERMINAL_KEYPAD_PIN] != 0) {
         if (_pin.raw == 0) {
-          _pin = Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN];
+          _pin = Ao_t::_registers[TERMINAL_KEYPAD_PIN];
         }
         else {
           _log.println(F("PIN not accepted."));
-          Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
+          Ao_t::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
         }
-        Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[TERMINAL_KEYPAD_PIN] = 0;
+        Ao_t::_registers[TERMINAL_KEYPAD_PIN] = 0;
       }
-      else if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
+      else if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
 
-        Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
-        if (Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
+        Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
+        if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
 
           KeypadRegData args = 0;
 
           // Profiles 1 - 4
-          if (_hw.pressed(Btn_P0, true)) {
+          if (_hw.pressed(true, Btn_P0)) {
             args.profile = 1;
           }
 
-          if (_hw.pressed(Btn_P1, true)) {
+          if (_hw.pressed(true, Btn_P1)) {
             args.profile |= (1 << 1);
           }
 
           // Buttons A - E, Multiple button presses is not supported
-          if (_hw.pressed(Btn_A, true)) {
+          if (_hw.pressed(true, Btn_A)) {
             args.button = A;
           }
-          else if (_hw.pressed(Btn_B, true)) {
+          else if (_hw.pressed(true, Btn_B)) {
             args.button = B;
           }
-          else if (_hw.pressed(Btn_C, true)) {
+          else if (_hw.pressed(true, Btn_C)) {
             args.button = C;
           }
-          else if (_hw.pressed(Btn_D, true)) {
+          else if (_hw.pressed(true, Btn_D)) {
             args.button = D;
           }
-          else if (_hw.pressed(Btn_E, true)) {
+          else if (_hw.pressed(true, Btn_E)) {
             args.button = E;
           }
 
           uint8_t pin = 0;
-          if (_hw.pressed(Code_0, false)) {
+          if (_hw.pressed(false, Code_0)) {
             pin = 1;
           }
-          if (_hw.pressed(Code_1, false)) {
+          if (_hw.pressed(false, Code_1)) {
             pin |= (1 << 1);
           }
-          if (_hw.pressed(Code_2, false)) {
+          if (_hw.pressed(false, Code_2)) {
             pin |= (1 << 2);
           }
-          if (_hw.pressed(Code_3, false)) {
+          if (_hw.pressed(false, Code_3)) {
             pin |= (1 << 3);
-          }
-
+          } 
+          
           // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);          
           // Debug: if (args.profile != 0) { _log.println(args.profile); }
           // Debug: if (args.code != 0) { _log.println(args.code, BIN); }
@@ -103,19 +99,19 @@ namespace parc {
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
-              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_HID_INPUT] = args.raw;
-              Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              Ao_t::_registers[KEYPAD_HID_INPUT] = args.raw;
+              Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
             }
             else if (_pin.raw != 0 && pin != 0) {
               _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
                 _log.println(F("Game Over."));
-                Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+                Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
               }
               else {
                 _pin.failed++;
                 longTimeout = true;
-                Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+                Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
               }
             }
             else {
@@ -125,17 +121,21 @@ namespace parc {
 
           if (longTimeout) {
             // Debug: _log.print(F("1"));
-            Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
+            Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
           }
           else {
             // Debug: _log.print(F("5"));
-            Ao<KeypadAo<TLOGGER, TKEYPADHW>>::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
+            Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
           }
         }
       }
-    }
+    }   
 
   private:
+    typedef Ao<KeypadAo<TLOGGER, TKEYPADHW>> Ao_t;
+
+    enum KeypadButton { A = 1, B, C, D, E };
+
     TLOGGER& _log;
     TKEYPADHW& _hw;
 

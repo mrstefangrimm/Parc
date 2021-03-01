@@ -7,6 +7,8 @@ namespace parc {
 
   // Constants to avoids multiple usage of GPIOs.
   // No additional memory is used because of the external constants.
+
+  // MCP expander pins
   const uint8_t Btn_A = 7;
   const uint8_t Btn_B = 6;
   const uint8_t Btn_C = 5;
@@ -15,6 +17,7 @@ namespace parc {
   const uint8_t Btn_P0 = 1;
   const uint8_t Btn_P1 = 2;
 
+  // Arduino pins
   const uint8_t Code_0 = 10;
   const uint8_t Code_1 = 9;
   const uint8_t Code_2 = 6;
