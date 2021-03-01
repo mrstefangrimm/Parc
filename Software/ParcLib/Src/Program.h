@@ -5,7 +5,7 @@
 
 #include "ProgramStep.h"
 
-namespace parc {
+namespace parclib {
   
   template<typename TLOGGER>
   class Program {

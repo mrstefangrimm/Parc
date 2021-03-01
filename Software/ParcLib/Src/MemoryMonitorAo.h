@@ -6,7 +6,7 @@
 #include "Ao.h"
 #include "FreeMemory.h"
 
-namespace parc {
+namespace parclib {
 
   template<typename TLOGGER>
   class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER>> {

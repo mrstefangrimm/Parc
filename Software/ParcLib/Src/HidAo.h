@@ -4,10 +4,10 @@
 #pragma once
 
 #include "Ao.h"
-#include "ProgramSteps.h"
+#include "ProgramStep.h"
 #include "Program.h"
 
-namespace parc {
+namespace parclib {
   
   template<typename TLOGGER>
   class HidAo : public Ao<HidAo<TLOGGER>> {

@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace parc {
+namespace parclib {
 
   // Constants to avoids multiple usage of GPIOs.
   // No additional memory is used because of the external constants.

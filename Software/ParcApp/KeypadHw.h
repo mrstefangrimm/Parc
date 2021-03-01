@@ -4,9 +4,11 @@
 #pragma once
 
 #include "Adafruit_MCP23008.h"
-#include "Shared.h"
+#include "Src/Shared.h"
 
 namespace parc {
+
+  using namespace parclib;
 
   template<typename TLOGGER>
   class KeypadHw {
@@ -29,15 +31,11 @@ namespace parc {
         return _mcp.digitalRead(pin) == LOW;
       }
       else {
+        //if (pin == 9) { return false; }
         return ::digitalRead(pin) == HIGH;
       }
     }
     
-    template<class EXPANDERPORT, uint8_t PIN>
-    bool pressed() {
-      return false; //pressed(Int2Type<EXPANDERPORT>(), pin);
-    }
-
   private:
     void error(const __FlashStringHelper* err) {
       _log.println(err);

@@ -5,7 +5,7 @@
 
 #include "Registers.h"
 
-namespace parc {
+namespace parclib {
 
   template<typename TDERIVED>
   class Ao {

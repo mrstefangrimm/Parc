@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace parc {
+namespace parclib {
 
   // Saves 12 bytes. Every virtual method has a pointer (two bytes) in the virtual table, i.e per class.
   enum class VirtualAction {

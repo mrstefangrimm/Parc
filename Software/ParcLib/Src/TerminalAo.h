@@ -7,7 +7,7 @@
 #include "StringAlgo.h"
 #include "Shared.h"
 
-namespace parc {
+namespace parclib {
 
   enum PsType {
     Wait,
@@ -94,13 +94,13 @@ namespace parc {
         char ch = _serial.read();
         _serial.print(ch);
         if (ch == ':') {
-          parc::trimFront(_buf, BUFLEN);
-          parc::trimBack(_buf, BUFLEN);
-          parc::squeeze(_buf);
+          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimBack(_buf, BUFLEN);
+          parclib::squeeze(_buf);
           // Debug: _serial.println(_buf);
           uint8_t numSubStr;
           char* subStrs[2] = { 0 };
-          parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
+          parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
 
           if (numSubStr == 2) {
             if (subStrs[0][0] == 'P' && subStrs[1][0] == 'N') {
@@ -164,12 +164,12 @@ namespace parc {
         else if (ch == ';') {
           // create programstep. If failed, go to wait state
           //_log.print(_buf);
-          parc::trimFront(_buf, BUFLEN);
-          parc::trimBack(_buf, BUFLEN);
-          parc::squeeze(_buf);
+          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimBack(_buf, BUFLEN);
+          parclib::squeeze(_buf);
           uint8_t numSubStr;
           char* subStrs[6] = { 0 };
-          parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
+          parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
 
           if (numSubStr == 5) {
             PinRegData pin;
@@ -209,14 +209,14 @@ namespace parc {
         }
         else if (ch == ';') {
           // create programstep. If failed, go to wait state
-          parc::trimFront(_buf, BUFLEN);
-          parc::trimBack(_buf, BUFLEN);
-          parc::squeeze(_buf);
+          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimBack(_buf, BUFLEN);
+          parclib::squeeze(_buf);
           // Debug: _serial.println(_buf);
           
           uint8_t numSubStr;
           char* subStrs[6] = { 0 };
-          parc::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
+          parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
 
           ProgramStep<TLOGGER>* progStep = 0;
          

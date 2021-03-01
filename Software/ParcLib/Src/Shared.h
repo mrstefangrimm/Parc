@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace parc {
+namespace parclib {
 
   // Intervals per ActiveObject (BSP_Tick)
   const uint8_t TimerPeriod = 100;

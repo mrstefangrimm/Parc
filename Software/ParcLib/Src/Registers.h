@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace parc {
+namespace parclib {
   
   enum Register {
     KEYPAD_KEYPAD_TIMEOUT = 1,

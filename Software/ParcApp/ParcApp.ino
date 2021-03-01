@@ -4,22 +4,25 @@
 
 #include <SoftwareSerial.h>
 
-#include "Registers.h"
+#include "ParcLib.h"
+#include "Src/Registers.h"
 
 #include "KeypadHw.h"
-#include "KeypadAo.h"
+#include "Src/KeypadAo.h"
 
 #include <Keyboard.h>
 #include "HidBle.h"
-#include "HidAo.h"
+#include "Src/HidAo.h"
 
-#include "TerminalAo.h"
+#include "Src/TerminalAo.h"
 
-#include "MemoryMonitorAo.h"
+#include "Src/MemoryMonitorAo.h"
 
 #include "Constants.h"
+#include "ProgramSteps.h"
 
 using namespace parc;
+using namespace parclib;
 
 class FakeLogger {
 public:

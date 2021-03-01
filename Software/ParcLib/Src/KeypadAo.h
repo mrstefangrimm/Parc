@@ -6,7 +6,7 @@
 #include "Ao.h"
 #include "Shared.h"
 
-namespace parc {
+namespace parclib {
 
   // external constants (avoids multiple usage)
   extern const uint8_t Btn_A;

@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace parc {
+namespace parclib {
 
   void trimFront(char* buf, uint8_t bufLen) {
     uint8_t pos = 0;
@@ -52,7 +52,7 @@ namespace parc {
   }
 
   void split(char* buf, uint8_t bufLen, char seperator, char** subStr, uint8_t* numSubStr) {
-    (*numSubStr) = parc::count(buf, bufLen, seperator) + 1;
+    (*numSubStr) = parclib::count(buf, bufLen, seperator) + 1;
 
     // first substring points always to the begin of the buffer
     subStr[0] = buf;
