@@ -53,13 +53,13 @@ HidBle_t hidBle(logger);
 HidAo<Logger_t> hid(logger, registers, programs);
 MemoryMonitorAo<Logger_t> memoryMonitor(logger, registers);
 
-template<> bool CmdComparator<PsType::Wait>::equals(const char* another) { return 'W' == another[0]; }
-template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) { return 'U' == another[0] && 'K' == another[1]; }
-template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) { return 'U' == another[0] && 'T' == another[1]; }
-template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) { return 'B' == another[0] && 'K' == another[1]; }
-template<> bool CmdComparator<PsType::BleText>::equals(const char* another) { return 'B' == another[0] && 'T' == another[1]; }
-template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) { return 'B' == another[0] && 'C' == another[1]; }
-template<> bool CmdComparator<CmdType::Pin>::equals(const char* another) { return 'P' == another[0] && 'N' == another[1]; }
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) const { return 'U' == another[0] && 'T' == another[1]; }
+template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) const { return 'B' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::BleText>::equals(const char* another) const { return 'B' == another[0] && 'T' == another[1]; }
+template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) const { return 'B' == another[0] && 'C' == another[1]; }
+template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Text, BLE Keycode, BLE Text, BLE Control Key

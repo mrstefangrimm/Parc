@@ -57,8 +57,8 @@ KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
 HidAo<Logger_t> hid(logger, registers, programs);
 MemoryMonitorAo<Logger_t> memoryMonitor(logger, registers);
 
-template<> bool CmdComparator<PsType::Wait>::equals(const char* another) { return 'W' == another[0]; }
-template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) { return 'U' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
 
 struct ProgramStepFake : public ProgramStep<Logger_t> {
   static const uint8_t Radix = 0;

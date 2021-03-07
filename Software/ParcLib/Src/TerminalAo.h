@@ -26,10 +26,16 @@ namespace parclib {
   template<uint8_t CMDTYPE>
   struct CmdComparator {
 
-    bool operator()(const char* another) {
+    bool operator()(const char* another) const {
       return equals(another);
     }
-    bool equals(const char* another) { return false; }
+    bool equals(const char* another) const { return false; }
+
+    bool operator()(char** another) const {
+      return equals(another);
+    }
+    bool equals(char** another) const { return false; }
+
   };
 
 
@@ -108,7 +114,7 @@ namespace parclib {
           parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
 
           if (numSubStr == 2) {
-            if (CmdComparator<CmdType::Pin>()(subStrs[0])) {
+            if (CmdComparator<CmdType::Pin>()(subStrs)) {
               _keyPadState.isPin = 1;
             }
             else {              
