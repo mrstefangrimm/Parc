@@ -18,6 +18,11 @@ namespace parclib {
     BleControlkey
   };
 
+  enum CmdType {
+    _LastStep = BleControlkey,
+    Pin
+  };
+
   template<uint8_t CMDTYPE>
   struct CmdComparator {
 
@@ -103,7 +108,7 @@ namespace parclib {
           parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
 
           if (numSubStr == 2) {
-            if (subStrs[0][0] == 'P' && subStrs[1][0] == 'N') {
+            if (CmdComparator<CmdType::Pin>()(subStrs[0])) {
               _keyPadState.isPin = 1;
             }
             else {              
@@ -280,11 +285,11 @@ namespace parclib {
         keyCode.win |= strcmp(subStrs[n], "<Win>") == 0;
       }
 
-      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, 16);
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? 0x4C : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? 0x28 : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? 0x2B : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? 0x2C : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, BleKeycode_t::Radix);
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? BleKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? BleKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? BleKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? BleKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
 
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
       return new BleKeycode_t(_log, _ble, keyCode);
@@ -313,15 +318,15 @@ namespace parclib {
         keyCode.win |= strcmp(subStrs[n], "<Win>") == 0;
       }
 
-      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, 16); // 0x0;
+      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, BleKeycode_t::Radix);
       auto code = subStrs[numSubStr - 1];
       if (strlen(code) == 3 && code[0] == '\'' && code[2] == '\'') {
         keyCode.hexCode = code[1];
       }
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? 0xD4 : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? 0xB0 : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? 0xB3 : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? ' ' : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? UsbKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? UsbKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? UsbKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? UsbKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
 
       // _log.print("createProgramStepUsbKeyboardCode "); _log.print(hexCode, HEX);
       return new UsbKeycode_t(_log, _usb, keyCode);

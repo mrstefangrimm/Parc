@@ -44,11 +44,10 @@ Logger_t logger(Usb_ORA, Usb_YEL); // #define logger Serial
 Program<Logger_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
 
-KeypadHw<Logger_t> keypadHw(logger); 
+KeypadHw<Logger_t> keypadHw(logger);
 KeypadAo<Logger_t, KeypadHw<Logger_t>> keypad(registers, logger, keypadHw);
 
 typedef HidBle<Logger_t> HidBle_t;
-typedef Keyboard_ HidUsb_t;
 HidBle_t hidBle(logger);
 
 HidAo<Logger_t> hid(logger, registers, programs);
@@ -60,18 +59,19 @@ template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) { re
 template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) { return 'B' == another[0] && 'K' == another[1]; }
 template<> bool CmdComparator<PsType::BleText>::equals(const char* another) { return 'B' == another[0] && 'T' == another[1]; }
 template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) { return 'B' == another[0] && 'C' == another[1]; }
+template<> bool CmdComparator<CmdType::Pin>::equals(const char* another) { return 'P' == another[0] && 'N' == another[1]; }
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Text, BLE Keycode, BLE Text, BLE Control Key
 typedef Typelist<ProgramStepWait<Logger_t>,
-  Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
-  Typelist<ProgramStepUsbKeyboardText<Logger_t, HidUsb_t>,
+  Typelist<ProgramStepUsbKeyboardCode<Logger_t, Keyboard_>,
+  Typelist<ProgramStepUsbKeyboardText<Logger_t, Keyboard_>,
   Typelist<ProgramStepBleKeyboardCode<Logger_t, HidBle_t>,
   Typelist<ProgramStepBleKeyboardText<Logger_t, HidBle_t>,
   Typelist<ProgramStepBleControlKey<Logger_t, HidBle_t>,
   NullType>>>>>> ProgramStepList;
 
-TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, HidUsb_t, 25> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
+TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, 25> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 
 void setup() {
   for (int n=0; n<5 && !Serial; n++) { delay(100); }
@@ -100,11 +100,6 @@ void setup() {
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
   registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(10);
 
-  logger.println(sizeof(ProgramStep<Logger_t>));  
-  logger.println(sizeof(ProgramStepWait<Logger_t>));
-  logger.println(sizeof(ProgramStepWait<Logger_t>));
-  logger.println(sizeof(ProgramStepBleKeyboardCode<Logger_t, HidBle_t>));
-  
 }
 
 void loop() {

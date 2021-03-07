@@ -84,6 +84,12 @@ namespace parc {
   template<typename TLOGGER, typename THIDBLE>
   class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false> {
   public:
+    static const uint8_t Radix = 16;
+    static const uint8_t KeyCodeDel = 0x4C;
+    static const uint8_t KeyCodeTab = 0x2B;
+    static const uint8_t KeyCodeEnter = 0x28;
+    static const uint8_t KeyCodeSpace = 0x2C;
+              
     ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false>(logger, 5), _ble(ble), _keyCode(keyCode) {}
   
@@ -164,17 +170,23 @@ namespace parc {
   template<typename TLOGGER, typename THIDUSB>
   class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
   public:
+    static const uint8_t Radix = 16;
+    static const uint8_t KeyCodeDel = 0xD4;
+    static const uint8_t KeyCodeTab = 0xB3;
+    static const uint8_t KeyCodeEnter = 0xB0;
+    static const uint8_t KeyCodeSpace = ' ';
+
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
        
     void doTick() {
       if (ProgramStep<TLOGGER>::_tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UK "));
-        //ProgramStep<TSERIAL>::_log.println(_ctrl);
-        //ProgramStep<TSERIAL>::_log.println(_shift);
-        //ProgramStep<TSERIAL>::_log.println(_alt);
-        //ProgramStep<TSERIAL>::_log.println(_win);
-        //ProgramStep<TSERIAL>::_log.println(_hexCode);
+        //ProgramStep<TSERIAL>::_log.println(_keyCode.ctrl);
+        //ProgramStep<TSERIAL>::_log.println(_keyCode.shift);
+        //ProgramStep<TSERIAL>::_log.println(_keyCode.alt);
+        //ProgramStep<TSERIAL>::_log.println(_keyCode.win);
+        //ProgramStep<TSERIAL>::_log.println(_keyCode.hexCode);
         if (_keyCode.ctrl) { _usb.press(0x80); }
         if (_keyCode.shift) { _usb.press(0x81); }
         if (_keyCode.alt) { _usb.press(0x82); }
