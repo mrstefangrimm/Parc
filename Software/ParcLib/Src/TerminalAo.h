@@ -82,7 +82,7 @@ namespace parclib {
           for (int m = 0; m < 4; m++) {
             for (int n = 1; n < 6; n++) {
               KeypadRegData input(m, n);
-              _serial.print(input.profile); _serial.print(F(" ")); _serial.print(char(input.button - 1 + 'A')); _serial.print(F(" : "));
+              _serial.print(input.mode); _serial.print(F(" ")); _serial.print(char(input.button - 1 + 'A')); _serial.print(F(" : "));
               _programs[input.programIndex()].hasSteps() ? _serial.println(F("Yes")) : _serial.println(F("No"));
             }
           }
@@ -124,10 +124,10 @@ namespace parclib {
               // Debug: _serial.println(subStrs[1][strlen(subStrs[1])-1]);
           
               _keyPadState.isPin = 0;
-              _keyPadState.profile = subStrs[0][0] - '0';
+              _keyPadState.mode = subStrs[0][0] - '0';
               _keyPadState.button = subStrs[1][0] - 'A' + 1;
 
-              // Debug: _serial.println(_keyPadState.profile);
+              // Debug: _serial.println(_keyPadState.mode);
               // Debug: _serial.println(_keyPadState.button);
             }
           }
@@ -141,7 +141,7 @@ namespace parclib {
           }
           else {
             auto idx = _keyPadState.programIndex();
-            // Debug: _log.print(_keyPadState.profile); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
+            // Debug: _log.print(_keyPadState.mode); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
               _log.println(F("got program index. Current program is being disposed."));
               _state = State::ReadingProgramSteps;

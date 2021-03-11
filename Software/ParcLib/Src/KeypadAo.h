@@ -50,13 +50,13 @@ namespace parclib {
 
           KeypadRegData args = 0;
 
-          // Profiles 1 - 4
+          // modes 1 - 4
           if (_hw.pressed(true, Btn_P0)) {
-            args.profile = 1;
+            args.mode = 1;
           }
 
           if (_hw.pressed(true, Btn_P1)) {
-            args.profile |= (1 << 1);
+            args.mode |= (1 << 1);
           }
 
           // Buttons A - E, Multiple button presses is not supported
@@ -91,7 +91,7 @@ namespace parclib {
           } 
           
           // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);          
-          // Debug: if (args.profile != 0) { _log.println(args.profile); }
+          // Debug: if (args.mode != 0) { _log.println(args.mode); }
           // Debug: if (args.code != 0) { _log.println(args.code, BIN); }
           bool longTimeout = false;
           if (args.button != 0) {

@@ -8,7 +8,7 @@ namespace parclib {
   // Intervals per ActiveObject (BSP_Tick)
   const uint8_t TimerPeriod = 100;
 
-  // Given by 5 buttons (A-E) and 4 profiles (0-3)
+  // Given by 5 buttons (A-E) and 4 modes (0-3)
   const uint8_t NumberOfPrograms = 20;
   
   // Should it be in this file?

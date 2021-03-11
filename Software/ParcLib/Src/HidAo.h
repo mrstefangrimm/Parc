@@ -37,7 +37,7 @@ namespace parclib {
         _program = &_programs[progIdx];
         size_t len = _program->duration();
 
-        _log.print(F("HidAo:stateIdle() Received Profile: ")); _log.print(args.profile); _log.print(F(" Button: ")); _log.print(args.button); 
+        _log.print(F("HidAo:stateIdle() Received Mode: ")); _log.print(args.mode); _log.print(F(" Button: ")); _log.print(args.button);
         _log.print(F(" Prog. ")); _log.print(progIdx); _log.print(F(" Length: ")); _log.println(len);
 
         _log.print(F("Execute { "));
