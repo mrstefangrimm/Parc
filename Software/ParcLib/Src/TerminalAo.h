@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Ao.h"
-#include "StringAlgo.h"
+#include "StringParc.h"
 #include "Shared.h"
 
 namespace parclib {

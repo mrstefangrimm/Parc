@@ -48,7 +48,7 @@ namespace parclib {
       else if (buf[n] == '"') { enclosedText = !enclosedText; }
       else if (!enclosedText && buf[n] == seperator) { cnt++; }
     }
-    return 0;
+    return cnt;
   }
 
   void split(char* buf, uint8_t bufLen, char seperator, char** subStr, uint8_t* numSubStr) {
@@ -79,17 +79,4 @@ namespace parclib {
     }
   }
 
-  //strcmp2 saves program and dyn. memory, strcmp5,6,7 consume more prog. mem. than strcmp
-  inline bool strcmp2(const char* a, char b0, char b1) { return a[0] == b0 && a[1] == b1; };
-  //inline bool strcmp5(const char* a, char b0, char b1, char b2, char b3, char b4) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4; };
-  //inline bool strcmp6(const char* a, char b0, char b1, char b2, char b3, char b4, char b5) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5; };
-  //inline bool strcmp7(const char* a, char b0, char b1, char b2, char b3, char b4, char b5, char b6) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5 && a[6] == b6; };
- 
-  //bool contains(char* buf, uint8_t bufLen, char* cmp) {
-  //  uint8_t cmpLen = strlen(cmp);
-  //  for (uint8_t n = 0; n < bufLen - cmpLen; n++) {
-  //    if (strncmp(&buf[n], cmp, cmpLen) == 0) { return true; }
-  //    return false;
-  //  }
-  //}
 }
