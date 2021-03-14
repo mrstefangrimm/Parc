@@ -58,6 +58,20 @@ test(given_text_with_three_spaces_when_split_then_four_substrings_are_found) {
   assertEqual(0, strcmp("txt", subStr[3]));
 }
 
+test(given_text_with_more_spaces_in_between_when_split_then_four_substrings_do_not_have_leading_or_trailing_spaces) {
+  char text[30];
+  char* subStr[4];
+  uint8_t numSubStr;
+  strcpy(text, "Text  text    text      txt");
+  parclib::split(text, strlen(text), ' ', subStr, &numSubStr);
+
+  assertEqual(4, numSubStr);
+  assertEqual(0, strcmp("Text", subStr[0]));
+  assertEqual(0, strcmp("text", subStr[1]));
+  assertEqual(0, strcmp("text", subStr[2]));
+  assertEqual(0, strcmp("txt", subStr[3]));
+}
+
 test(given_text_with_three_spaces_one_in_textstring_when_split_then_three_substrings_are_found) {
   char text[30];
   char* subStr[3];

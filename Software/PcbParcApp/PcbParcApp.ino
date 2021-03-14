@@ -21,7 +21,7 @@
 #include "Constants.h"
 #include "ProgramSteps.h"
 
-using namespace parc;
+using namespace pcbparc;
 using namespace parclib;
 
 class FakeLogger {
@@ -39,7 +39,7 @@ public:
 };
 
 typedef SoftwareSerial Logger_t; // Serial_, HardwareSerial, SoftwareSerial, FakeLogger
-Logger_t logger(Usb_ORA, Usb_YEL); // #define logger Serial
+Logger_t logger(Usb_ORA, Usb_YEL); // typedef Serial_ Logger_t; #define logger Serial
 
 Program<Logger_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
@@ -101,7 +101,6 @@ void setup() {
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
   registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(10);
-
 }
 
 void loop() {

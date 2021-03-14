@@ -46,7 +46,8 @@ namespace parclib {
     for (uint8_t n = 0; n < bufLen; n++) {
       if (buf[n] == 0) { return cnt; }
       else if (buf[n] == '"') { enclosedText = !enclosedText; }
-      else if (!enclosedText && buf[n] == seperator) { cnt++; }
+      else if (!enclosedText && buf[n] == seperator) { cnt++; while (buf[n] == seperator) { n++; }
+      }
     }
     return cnt;
   }
@@ -59,11 +60,10 @@ namespace parclib {
     uint8_t subStrIdx = 1;
     bool enclosedText = false;
     for (uint8_t n = 1; n < bufLen && subStrIdx < (*numSubStr); n++) {
-      if (buf[n] == '"') { enclosedText = !enclosedText; }
+      if (buf[n] == '"' || buf[n] == '[' || buf[n] == ']') { enclosedText = !enclosedText; }
       else if (!enclosedText && buf[n] == seperator) {
-        buf[n] = 0;
-        n++;
-        if (buf[n] != '"') {
+        while (buf[n] == seperator) { buf[n] = 0; n++; }
+        if (buf[n] != '"' && buf[n] != '[') {
           subStr[subStrIdx] = &buf[n];
         }
         else {
@@ -71,12 +71,26 @@ namespace parclib {
           buf[n] = 0;
           n++;
           subStr[subStrIdx] = &buf[n];
-          do { n++; } while (buf[n] != '"');
+          do { n++; } while (buf[n] != '"' && buf[n] != ']');
           buf[n] = 0;
         }
         subStrIdx++;
       }
     }
   }
+
+  //strcmp2 saves program and dyn. memory, strcmp5,6,7 consume more prog. mem. than strcmp
+  inline bool strcmp2(const char* a, char b0, char b1) { return a[0] == b0 && a[1] == b1; };
+  //inline bool strcmp5(const char* a, char b0, char b1, char b2, char b3, char b4) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4; };
+  //inline bool strcmp6(const char* a, char b0, char b1, char b2, char b3, char b4, char b5) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5; };
+  //inline bool strcmp7(const char* a, char b0, char b1, char b2, char b3, char b4, char b5, char b6) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5 && a[6] == b6; };
+
+  //bool contains(char* buf, uint8_t bufLen, char* cmp) {
+  //  uint8_t cmpLen = strlen(cmp);
+  //  for (uint8_t n = 0; n < bufLen - cmpLen; n++) {
+  //    if (strncmp(&buf[n], cmp, cmpLen) == 0) { return true; }
+  //    return false;
+  //  }
+  //}
 
 }

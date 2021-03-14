@@ -12,8 +12,10 @@ namespace parclib {
   enum PsType {
     Wait,
     UsbKeycode,
+    UsbKeycodeRepeated,
     UsbText,
     BleKeycode,
+    BleKeycodeRepeated,
     BleText,
     BleControlkey
   };
@@ -284,21 +286,30 @@ namespace parclib {
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardCode(char* subStrs[], uint8_t numSubStr) {
       KeyCode keyCode;
+      uint8_t repetitions = 0;
       for (int n = 1; n < numSubStr; n++) {
         keyCode.ctrl |= strcmp(subStrs[n], "<Ctrl>") == 0;
         keyCode.shift |= strcmp(subStrs[n], "<Shift>") == 0;
         keyCode.alt |= strcmp(subStrs[n], "<Alt>") == 0;
         keyCode.win |= strcmp(subStrs[n], "<Win>") == 0;
+
+        if (strcmp2("-r", subStrs[n][0], subStrs[n][1])) {
+          repetitions = atoi(&subStrs[n][2]);
+        }
       }
 
+      auto code = subStrs[numSubStr - 1];
       keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, BleKeycode_t::Radix);
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? BleKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? BleKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? BleKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? BleKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Del>") == 0 ? BleKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Tab>") == 0 ? BleKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Enter>") == 0 ? BleKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Space>") == 0 ? BleKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
 
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
-      return new BleKeycode_t(_log, _ble, keyCode);
+      if (repetitions == 0) {
+        return new BleKeycode_t(_log, _ble, keyCode);
+      }
+      return new BleKeycodeRepeated_t(_log, _ble, keyCode, repetitions);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardText(char* text) {
@@ -317,25 +328,38 @@ namespace parclib {
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {
       KeyCode keyCode;
+      uint8_t repetitions = 0;
       for (int n = 1; n < numSubStr; n++) {
         keyCode.ctrl |= strcmp(subStrs[n], "<Ctrl>") == 0;
         keyCode.shift |= strcmp(subStrs[n], "<Shift>") == 0;
         keyCode.alt |= strcmp(subStrs[n], "<Alt>") == 0;
         keyCode.win |= strcmp(subStrs[n], "<Win>") == 0;
+
+        if (strcmp2("-r", subStrs[n][0], subStrs[n][1])) {
+          repetitions = atoi(&subStrs[n][2]);
+        }
       }
 
-      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, BleKeycode_t::Radix);
       auto code = subStrs[numSubStr - 1];
+      //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(code);
       if (strlen(code) == 3 && code[0] == '\'' && code[2] == '\'') {
         keyCode.hexCode = code[1];
       }
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Del>") == 0 ? UsbKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Tab>") == 0 ? UsbKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Enter>") == 0 ? UsbKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(subStrs[numSubStr - 1], "<Space>") == 0 ? UsbKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
+      else {
+        keyCode.hexCode = strtol(code, 0, UsbKeycode_t::Radix);
+      }
+      //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(keyCode.hexCode, HEX);
 
-      // _log.print("createProgramStepUsbKeyboardCode "); _log.print(hexCode, HEX);
-      return new UsbKeycode_t(_log, _usb, keyCode);
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Del>") == 0 ? UsbKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Tab>") == 0 ? UsbKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Enter>") == 0 ? UsbKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
+      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Space>") == 0 ? UsbKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
+
+      //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(keyCode.hexCode, HEX);
+      if (repetitions == 0) {
+        return new UsbKeycode_t(_log, _usb, keyCode);
+      }
+      return new UsbKeycodeRepeated_t(_log, _usb, keyCode, repetitions);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardText(char* text) {
@@ -347,9 +371,11 @@ namespace parclib {
     typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> Ao_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result BleKeycodeRepeated_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result BleText_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result UsbKeycodeRepeated_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
 
     enum class State {

@@ -16,7 +16,6 @@
 #include "ProgramSteps.h"
 
 using namespace unoparc;
-using namespace parclib;
 
 struct LoggerFake {
   void begin(uint16_t a) {}
@@ -66,10 +65,12 @@ struct ProgramStepFake : public ProgramStep<Logger_t> {
   static const uint8_t KeyCodeTab = 0;
   static const uint8_t KeyCodeEnter = 0;
   static const uint8_t KeyCodeSpace = 0;
-    
+
+  ProgramStepFake(Logger_t& logger, HidUsb_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidUsb_t& usb, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* ctrlKey, uint16_t duration) : ProgramStep(logger, duration) {}
   void action(VirtualAction type) override {};
 };
@@ -82,28 +83,25 @@ typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
-  NullType>>>>>> ProgramStepList;
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  NullType>>>>>>>> ProgramStepList;
 
 TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, 25> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
 
 void setup() {
-  for (int n=0; n<5 && !Serial; n++) { delay(100); }
+  for (int n=0; n<50 && !Serial; n++) { delay(100); }
   Serial.begin(9600);
   terminalConsole.begin(9600);  
   
   pinMode(LED_BUILTIN, OUTPUT);
   
-  keypadHw.pinMode<INPUT_PULLUP, Btn_A>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_B>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_C>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_D>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_E>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_P0>();
-  keypadHw.pinMode<INPUT_PULLUP, Btn_P1>();
-  keypadHw.pinMode<INPUT_PULLUP, Code_0>();
-  keypadHw.pinMode<INPUT_PULLUP, Code_1>();
-  keypadHw.pinMode<INPUT_PULLUP, Code_2>();
-  keypadHw.pinMode<INPUT_PULLUP, Code_3>();
+  keypadHw.pinMode<KeyPadSwitch::Btn_A>();
+  keypadHw.pinMode<KeyPadSwitch::Btn_B>();
+  keypadHw.pinMode<KeyPadSwitch::Btn_C>();
+  keypadHw.pinMode<KeyPadSwitch::Btn_D>();
+  keypadHw.pinMode<KeyPadSwitch::Btn_E>();
+  keypadHw.pinMode<KeyPadSwitch::Sw_M0>();
 
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);

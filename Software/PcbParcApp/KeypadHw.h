@@ -7,7 +7,7 @@
 #include "Src/Shared.h"
 #include "Constants.h"
 
-namespace parc {
+namespace pcbparc {
 
   using namespace parclib;
 
@@ -33,17 +33,17 @@ namespace parc {
       while (true);
     }
 
-    void pinMode(Int2Type<KeyPadSwitch::Btn_A>) { pinMode(Int2Type<true>(), Pin_A); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_B>) { pinMode(Int2Type<true>(), Pin_B); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_C>) { pinMode(Int2Type<true>(), Pin_C); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_D>) { pinMode(Int2Type<true>(), Pin_D); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_A>) { pinMode(Int2Type<false>(), Pin_A); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_B>) { pinMode(Int2Type<false>(), Pin_B); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_C>) { pinMode(Int2Type<false>(), Pin_C); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_D>) { pinMode(Int2Type<false>(), Pin_D); }
     void pinMode(Int2Type<KeyPadSwitch::Btn_E>) { pinMode(Int2Type<true>(), Pin_E); }
     void pinMode(Int2Type<KeyPadSwitch::Sw_M0>) { pinMode(Int2Type<true>(), Pin_M0); }
     void pinMode(Int2Type<KeyPadSwitch::Sw_M1>) { pinMode(Int2Type<true>(), Pin_M1); }
-    void pinMode(Int2Type<KeyPadSwitch::Code_1>) { pinMode(Int2Type<false>(), Pin_C1); }
-    void pinMode(Int2Type<KeyPadSwitch::Code_2>) { pinMode(Int2Type<false>(), Pin_C2); }
-    void pinMode(Int2Type<KeyPadSwitch::Code_3>) { pinMode(Int2Type<false>(), Pin_C3); }
-    void pinMode(Int2Type<KeyPadSwitch::Code_4>) { pinMode(Int2Type<false>(), Pin_C4); }
+    void pinMode(Int2Type<KeyPadSwitch::Code_1>) { pinMode(Int2Type<true>(), Pin_C1); }
+    void pinMode(Int2Type<KeyPadSwitch::Code_2>) { pinMode(Int2Type<true>(), Pin_C2); }
+    void pinMode(Int2Type<KeyPadSwitch::Code_3>) { pinMode(Int2Type<true>(), Pin_C3); }
+    void pinMode(Int2Type<KeyPadSwitch::Code_4>) { pinMode(Int2Type<true>(), Pin_C4); }
     
     void pinMode(Int2Type<true>, uint8_t pin) {
       _log.print(F("Set MCP28003 port: ")); _log.print(pin); _log.println(F(" to INPUT HIGH."));
@@ -56,25 +56,24 @@ namespace parc {
       ::pinMode(pin, INPUT_PULLUP);
     }
 
-    bool pressed(Int2Type<KeyPadSwitch::Btn_A>) { return pressed(Int2Type<true>(), Pin_A); }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_B>) { return pressed(Int2Type<true>(), Pin_B); }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_C>) { return pressed(Int2Type<true>(), Pin_C); }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_D>) { return pressed(Int2Type<true>(), Pin_D); }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_A>) { return pressed(Int2Type<false>(), Pin_A); }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_B>) { return pressed(Int2Type<false>(), Pin_B); }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_C>) { return pressed(Int2Type<false>(), Pin_C); }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_D>) { return pressed(Int2Type<false>(), Pin_D); }
     bool pressed(Int2Type<KeyPadSwitch::Btn_E>) { return pressed(Int2Type<true>(), Pin_E); }
     bool pressed(Int2Type<KeyPadSwitch::Sw_M0>) { return pressed(Int2Type<true>(), Pin_M0); }
     bool pressed(Int2Type<KeyPadSwitch::Sw_M1>) { return pressed(Int2Type<true>(), Pin_M1); }
-    bool pressed(Int2Type<KeyPadSwitch::Code_1>) { return pressed(Int2Type<false>(), Pin_C1); }
-    bool pressed(Int2Type<KeyPadSwitch::Code_2>) { return pressed(Int2Type<false>(), Pin_C2); }
-    bool pressed(Int2Type<KeyPadSwitch::Code_3>) { return pressed(Int2Type<false>(), Pin_C3); }
-    bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return pressed(Int2Type<false>(), Pin_C4); }
+    bool pressed(Int2Type<KeyPadSwitch::Code_1>) { return pressed(Int2Type<true>(), Pin_C1); }
+    bool pressed(Int2Type<KeyPadSwitch::Code_2>) { return pressed(Int2Type<true>(), Pin_C2); }
+    bool pressed(Int2Type<KeyPadSwitch::Code_3>) { return pressed(Int2Type<true>(), Pin_C3); }
+    bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return pressed(Int2Type<true>(), Pin_C4); }
     
     bool pressed(Int2Type<true>, uint8_t pin) {
       return _mcp.digitalRead(pin) == LOW;
     }
     
     bool pressed(Int2Type<false>, uint8_t pin) {
-      //if (pin == 9) { return false; }
-      return ::digitalRead(pin) == HIGH;
+      return ::digitalRead(pin) == LOW;
     }
 
     TLOGGER& _log;

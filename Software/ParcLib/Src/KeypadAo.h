@@ -8,23 +8,6 @@
 
 namespace parclib {
 
-  // external constants (avoids multiple usage)
-  extern const uint8_t Btn_A;
-  extern const uint8_t Btn_B;
-  extern const uint8_t Btn_C;
-  extern const uint8_t Btn_D;
-  extern const uint8_t Btn_E;
-  extern const uint8_t Btn_P0;
-  extern const uint8_t Btn_P1;
-  extern const uint8_t Code_0;
-  extern const uint8_t Code_1;
-  extern const uint8_t Code_2;
-  extern const uint8_t Code_3;
-  
-  enum KeypadButton {
-    A = 1, B, C, D, E
-  };
-
   template<class TLOGGER, class TKEYPADHW>
   class KeypadAo : public Ao<KeypadAo<TLOGGER, TKEYPADHW>> {
   public:
@@ -51,42 +34,42 @@ namespace parclib {
           KeypadRegData args = 0;
 
           // modes 1 - 4
-          if (_hw.pressed(true, Btn_P0)) {
+          if (_hw.template pressed<KeyPadSwitch::Sw_M0>()) {
             args.mode = 1;
           }
 
-          if (_hw.pressed(true, Btn_P1)) {
+          if (_hw.template pressed<KeyPadSwitch::Sw_M1>()) {
             args.mode |= (1 << 1);
           }
 
           // Buttons A - E, Multiple button presses is not supported
-          if (_hw.pressed(true, Btn_A)) {
+          if (_hw.template pressed<KeyPadSwitch::Btn_A>()) {
             args.button = A;
           }
-          else if (_hw.pressed(true, Btn_B)) {
+          else if (_hw.template pressed<KeyPadSwitch::Btn_B>()) {
             args.button = B;
           }
-          else if (_hw.pressed(true, Btn_C)) {
+          else if (_hw.template pressed<KeyPadSwitch::Btn_C>()) {
             args.button = C;
           }
-          else if (_hw.pressed(true, Btn_D)) {
+          else if (_hw.template pressed<KeyPadSwitch::Btn_D>()) {
             args.button = D;
           }
-          else if (_hw.pressed(true, Btn_E)) {
+          else if (_hw.template pressed<KeyPadSwitch::Btn_E>()) {
             args.button = E;
           }
 
           uint8_t pin = 0;
-          if (_hw.pressed(false, Code_0)) {
+          if (_hw.template pressed<KeyPadSwitch::Code_1>()) {
             pin = 1;
           }
-          if (_hw.pressed(false, Code_1)) {
+          if (_hw.template pressed<KeyPadSwitch::Code_2>()) {
             pin |= (1 << 1);
           }
-          if (_hw.pressed(false, Code_2)) {
+          if (_hw.template pressed<KeyPadSwitch::Code_3>()) {
             pin |= (1 << 2);
           }
-          if (_hw.pressed(false, Code_3)) {
+          if (_hw.template pressed<KeyPadSwitch::Code_4>()) {
             pin |= (1 << 3);
           } 
           
@@ -133,11 +116,12 @@ namespace parclib {
 
   private:
     typedef Ao<KeypadAo<TLOGGER, TKEYPADHW>> Ao_t;
+    typedef TKEYPADHW Hw_t;
 
     enum KeypadButton { A = 1, B, C, D, E };
 
     TLOGGER& _log;
-    TKEYPADHW& _hw;
+    Hw_t& _hw;
 
     PinRegData _pin;
   };

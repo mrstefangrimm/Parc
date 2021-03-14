@@ -5,7 +5,7 @@
 
 #include "Src/ProgramStep.h"
 
-namespace parc {
+namespace pcbparc {
 
   template<typename TLOGGER, typename TDERIVED, bool DISPOSABLE>
   class ProgramStepBase : public ProgramStep<TLOGGER> {

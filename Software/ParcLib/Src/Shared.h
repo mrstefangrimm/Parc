@@ -10,6 +10,20 @@ namespace parclib {
 
   // Given by 5 buttons (A-E) and 4 modes (0-3)
   const uint8_t NumberOfPrograms = 20;
+
+  enum KeyPadSwitch {
+    Btn_A,
+    Btn_B,
+    Btn_C,
+    Btn_D,
+    Btn_E,
+    Sw_M0,
+    Sw_M1,
+    Code_1,
+    Code_2,
+    Code_3,
+    Code_4
+  };
   
   // Should it be in this file?
   // 20210209 - having hexCode in a separate argument uses the same amount of memory.
