@@ -31,16 +31,7 @@ namespace parclib {
         Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
         if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
 
-          KeypadRegData args = 0;
-
-          // modes 1 - 4
-          if (_hw.template pressed<KeyPadSwitch::Sw_M0>()) {
-            args.mode = 1;
-          }
-
-          if (_hw.template pressed<KeyPadSwitch::Sw_M1>()) {
-            args.mode |= (1 << 1);
-          }
+          KeypadRegData args = 0;          
 
           // Buttons A - E, Multiple button presses is not supported
           if (_hw.template pressed<KeyPadSwitch::Btn_A>()) {
@@ -57,27 +48,35 @@ namespace parclib {
           }
           else if (_hw.template pressed<KeyPadSwitch::Btn_E>()) {
             args.button = E;
-          }
-
-          uint8_t pin = 0;
-          if (_hw.template pressed<KeyPadSwitch::Code_1>()) {
-            pin = 1;
-          }
-          if (_hw.template pressed<KeyPadSwitch::Code_2>()) {
-            pin |= (1 << 1);
-          }
-          if (_hw.template pressed<KeyPadSwitch::Code_3>()) {
-            pin |= (1 << 2);
-          }
-          if (_hw.template pressed<KeyPadSwitch::Code_4>()) {
-            pin |= (1 << 3);
-          } 
-          
-          // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);          
-          // Debug: if (args.mode != 0) { _log.println(args.mode); }
-          // Debug: if (args.code != 0) { _log.println(args.code, BIN); }
+          }          
+         
           bool longTimeout = false;
           if (args.button != 0) {
+
+            // Read mode 0 - 3
+            if (_hw.template pressed<KeyPadSwitch::Sw_M0>()) {
+              args.mode = 1;
+            }
+            if (_hw.template pressed<KeyPadSwitch::Sw_M1>()) {
+              args.mode |= (1 << 1);
+            }
+            // Debug: _log.println(args.mode);
+
+            uint8_t pin = 0;
+            if (_hw.template pressed<KeyPadSwitch::Code_1>()) {
+              pin = 1;
+            }
+            if (_hw.template pressed<KeyPadSwitch::Code_2>()) {
+              pin |= (1 << 1);
+            }
+            if (_hw.template pressed<KeyPadSwitch::Code_3>()) {
+              pin |= (1 << 2);
+            }
+            if (_hw.template pressed<KeyPadSwitch::Code_4>()) {
+              pin |= (1 << 3);
+            }
+            
+            // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
 
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;

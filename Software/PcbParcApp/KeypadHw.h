@@ -69,7 +69,17 @@ namespace pcbparc {
     bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return pressed(Int2Type<true>(), Pin_C4); }
     
     bool pressed(Int2Type<true>, uint8_t pin) {
-      return _mcp.digitalRead(pin) == LOW;
+      // Button E is read out every 100 ms. The other can use _mcpGPIO
+      if (pin == 0) {
+        uint8_t tmp = _mcp.readGPIO();
+        // Sometimes readGPIO() returns 0xFF which cannot be correct if a button is pressed.
+        if (tmp == 0xFF) { return false; }
+        _mcpGPIO = tmp;        
+      }
+      // Debug: else _log.println(_mcpGPIO, BIN); // Binary M1-M0-unused-C4-C3-C2-C1-BtnE 
+
+      // Same as Adafruit_MCP23008.cpp - digitalRead()
+      return !((_mcpGPIO >> pin) & 0x1);
     }
     
     bool pressed(Int2Type<false>, uint8_t pin) {
@@ -78,7 +88,7 @@ namespace pcbparc {
 
     TLOGGER& _log;
     Adafruit_MCP23008 _mcp;
-
+    uint8_t _mcpGPIO;
   };
 
 }
