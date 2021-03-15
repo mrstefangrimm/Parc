@@ -15,7 +15,7 @@ namespace parc {
   class KeypadHw {
 
   public:
-    KeypadHw(TLOGGER& logger) : _log(logger) {}
+    KeypadHw(TLOGGER& logger) : _log(logger), _mcpGPIO(0xFF) {}
 
     void begin() {
       _mcp.begin();
@@ -69,17 +69,26 @@ namespace parc {
     bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return pressed(Int2Type<false>(), Pin_C4); }
     
     bool pressed(Int2Type<true>, uint8_t pin) {
-      return _mcp.digitalRead(pin) == LOW;
+      // Button A is read every 100 ms. The others can use _mcpGPIO.
+      if (pin == Pin_A) {
+        _mcpGPIO = _mcp.readGPIO();
+        // 0xFF means nothing is pressed.
+        if (_mcpGPIO == 0xFF) { return false; }
+      }
+      // Debug: else _log.println(_mcpGPIO, BIN); // see Constants.h
+
+      // Same as Adafruit_MCP23008.cpp - digitalRead()
+      return !((_mcpGPIO >> pin) & 0x1);
     }
     
     bool pressed(Int2Type<false>, uint8_t pin) {
-      //if (pin == 9) { return false; }
+      if (pin == 9) { return false; }
       return ::digitalRead(pin) == HIGH;
     }
 
     TLOGGER& _log;
     Adafruit_MCP23008 _mcp;
-
+    uint8_t _mcpGPIO;
   };
 
 }

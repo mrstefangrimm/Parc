@@ -15,10 +15,11 @@ namespace pcbparc {
   class KeypadHw {
 
   public:
-    KeypadHw(TLOGGER& logger) : _log(logger) {}
+    KeypadHw(TLOGGER& logger) : _log(logger), _mcpGPIO(0xFF) {}
 
     void begin() {
       _mcp.begin();
+      _mcp.pinMode(5, OUTPUT);
     }
     
     template<KeyPadSwitch SWITCH>
@@ -69,14 +70,15 @@ namespace pcbparc {
     bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return pressed(Int2Type<true>(), Pin_C4); }
     
     bool pressed(Int2Type<true>, uint8_t pin) {
-      // Button E is read out every 100 ms. The other can use _mcpGPIO
-      if (pin == 0) {
+      // Button E is read every 100 ms. The others can use _mcpGPIO.
+      if (pin == Pin_E) {        
         uint8_t tmp = _mcp.readGPIO();
-        // Sometimes readGPIO() returns 0xFF which cannot be correct if a button is pressed.
+        // 0xFF means nothing is pressed.
         if (tmp == 0xFF) { return false; }
+        // _mcpGPIO is only set if either Btn E is pressed or Modes and Codes are set. tmp is sometimes wrongly 0xFF.
         _mcpGPIO = tmp;        
       }
-      // Debug: else _log.println(_mcpGPIO, BIN); // Binary M1-M0-unused-C4-C3-C2-C1-BtnE 
+      // Debug: else _log.println(_mcpGPIO, BIN); // // see Constants.h, M1-M0-unused-C4-C3-C2-C1-BtnE 
 
       // Same as Adafruit_MCP23008.cpp - digitalRead()
       return !((_mcpGPIO >> pin) & 0x1);
