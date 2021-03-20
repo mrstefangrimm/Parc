@@ -145,9 +145,12 @@ namespace parclib {
             auto idx = _keyPadState.programIndex();
             // Debug: _log.print(_keyPadState.mode); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
-              _log.println(F("got program index. Current program is being disposed."));
               _state = State::ReadingProgramSteps;
-              _programs[idx].dispose();
+              Program<TLOGGER>& prog = _programs[idx];
+              if (prog.hasSteps()) {
+                _log.println(F("got program index. Current program is being disposed."));
+              }
+              prog.dispose();
             }
             else {
               _serial.println(F(" This ain't dull, bye."));
@@ -259,6 +262,7 @@ namespace parclib {
           }
           else {
             _serial.println(F(" Unknown command. This ain't dull, bye."));
+            // Remove the already processed program steps from the program.
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].dispose();
             _state = State::Idle;
@@ -274,13 +278,21 @@ namespace parclib {
             _itBuf++;
           }
         }
+        else {
+          _serial.println(F(" Command string too long. This ain't dull, bye."));
+          // Remove the already processed program steps from the program.
+          uint8_t progIdx = _keyPadState.programIndex();
+          _programs[progIdx].dispose();
+          _state = State::Idle;
+        }
       }
     }
 
     ProgramStep<TLOGGER>* createProgramStepWait(const char* delay) {
       uint16_t waitMs = atoi(delay);
-      _log.print("DELAY: "); _log.println(waitMs);
+      // Debug: _log.print(F("Delay: ")); _log.println(waitMs);
       
+      _log.println(F("Create Wait_t"));
       return new Wait_t(_log, waitMs);
     }
 
@@ -307,13 +319,16 @@ namespace parclib {
 
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
       if (repetitions == 0) {
+        _log.println(F("Create BleKeycode_t"));
         return new BleKeycode_t(_log, _ble, keyCode);
       }
+      _log.println(F("Create BleKeycodeRepeated_t"));
       return new BleKeycodeRepeated_t(_log, _ble, keyCode, repetitions);
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleKeyboardText(char* text) {
       //_log.print("TEXT: "); _log.println(text);
+      _log.println(F("Create BleText_t"));
       return new BleText_t(_log, _ble, text);
     }
 
@@ -323,6 +338,7 @@ namespace parclib {
 
       if (strcmp(subStrs[1], "Volume+") == 0) { return new BleControlkey_t(_log, _ble, "0xE9", duration); }
       if (strcmp(subStrs[1], "Volume-") == 0) { return new BleControlkey_t(_log, _ble, "0xEA", duration); }
+      _log.println(F("Create BleControlkey_t"));
       return new BleControlkey_t(_log, _ble, subStrs[1], duration);
     }
 
@@ -357,13 +373,16 @@ namespace parclib {
 
       //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(keyCode.hexCode, HEX);
       if (repetitions == 0) {
+        _log.println(F("Create UsbKeycode_t"));
         return new UsbKeycode_t(_log, _usb, keyCode);
       }
+      _log.println(F("Create UsbKeycodeRepeated_t"));
       return new UsbKeycodeRepeated_t(_log, _usb, keyCode, repetitions);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardText(char* text) {
       // _log.print("TEXT: "); _log.println(text);
+      _log.println(F("Create UsbText_t"));
       return new UsbText_t(_log, _usb, text);
     }
     

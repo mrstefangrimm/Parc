@@ -97,7 +97,8 @@ namespace parclib {
               }
             }
             else {
-              _log.print(F("Buttion press ignored.")); _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
+              _log.println(F("Button press ignored."));
+              // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
             }
           }
 

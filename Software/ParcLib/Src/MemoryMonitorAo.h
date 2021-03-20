@@ -28,7 +28,7 @@ namespace parclib {
         }
         else {
           auto freeMem = freeMemory();
-           if (freeMem < 200) {
+           if (freeMem < 150) {
              digitalWrite(LED_BUILTIN, HIGH);
            }
            else {

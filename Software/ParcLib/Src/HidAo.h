@@ -30,40 +30,36 @@ namespace parclib {
     
   private:
     void stateIdle() {
-      if (Ao_t::_registers[KEYPAD_HID_INPUT] != 0) {
+      if (_state == State::Idle &&  Ao_t::_registers[KEYPAD_HID_INPUT] != 0) {
 
         KeypadRegData args(Ao_t::_registers[KEYPAD_HID_INPUT]);
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
-        size_t len = _program->duration();
+        _ticksRemaining = _program->duration();
 
         _log.print(F("HidAo:stateIdle() Received Mode: ")); _log.print(args.mode); _log.print(F(" Button: ")); _log.print(args.button);
-        _log.print(F(" Prog. ")); _log.print(progIdx); _log.print(F(" Length: ")); _log.println(len);
+        _log.print(F(" Prog. ")); _log.print(progIdx); _log.print(F(" Duration: ")); _log.println(_ticksRemaining);
 
         _log.print(F("Execute { "));
         _state = State::Execute;
-        Ao_t::_registers[HID_HID_TIMEOUT] = TimerRegData(len);
+        Ao_t::_registers[HID_HID_TIMEOUT] = 1;
       }
     }
    
     void stateExecute() {
 
-      if (Ao_t::_registers[HID_HID_TIMEOUT] > 0) {
-        Ao_t::_registers[HID_HID_TIMEOUT] -= 1;
-        //_log.println(_registers[HID_HID_TIMEOUT]);
+      if (_state == State::Execute && Ao_t::_registers[HID_HID_TIMEOUT] != 0) {
 
-        if (_program != 0) {
-          _program->play();
+        _ticksRemaining--;
+        _program->play();
+
+        if (_ticksRemaining == 0) {
+          _log.println(F("}"));
+          _program->rewind();
+          _program = 0;
+          _state = State::Idle;
+          Ao_t::_registers[HID_HID_TIMEOUT] = 0;
         }
-        else {
-          _log.println(F("E: wrong state."));
-        }
-      }
-      else {
-        _log.println(F("}"));
-        _program->rewind();
-        _program = 0;
-        _state = State::Idle;
       }
     }
 
@@ -79,6 +75,7 @@ namespace parclib {
     };
     State _state = State::Idle;
     Program<TLOGGER>* _program = 0;
+    size_t _ticksRemaining = 0;
   };
 
 }

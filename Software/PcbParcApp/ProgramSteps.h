@@ -68,7 +68,7 @@ namespace pcbparc {
         ProgramStep<TLOGGER>::_log.print(F("BT "));
         //ProgramStep<TLOGGER>::_log.println(_text);
 
-        _ble.print("AT+BleKeyboard=");
+        _ble.print(F("AT+BleKeyboard="));
         _ble.println(_text);
 
         if (_ble.waitForOK()) { return; }

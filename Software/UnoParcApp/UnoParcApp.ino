@@ -87,7 +87,7 @@ typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepFake,
   NullType>>>>>>>> ProgramStepList;
 
-TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, 25> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
+TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }

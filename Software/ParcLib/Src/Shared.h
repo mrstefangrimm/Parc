@@ -78,21 +78,21 @@ namespace parclib {
   };
 
   // From Modern C++ 
-  template<class TLIST, class T> struct IndexOf;
-  template<class T>
-  struct IndexOf<NullType, T> {
-    enum { Result = -1 };
-  };
-  template<class T, class TAIL>
-  struct IndexOf<Typelist<T, TAIL>, T> {
-    enum { Result = 0 };
-  };
-  template<class HEAD, class TAIL, class T>
-  struct IndexOf<Typelist<HEAD, TAIL>, T> {
-  private:
-    enum { Temp = IndexOf<TAIL, T>::Result };
-  public:
-    enum { Result = Temp == -1 ? -1 : 1 + Temp };
-  };
+  //template<class TLIST, class T> struct IndexOf;
+  //template<class T>
+  //struct IndexOf<NullType, T> {
+  //  enum { Result = -1 };
+  //};
+  //template<class T, class TAIL>
+  //struct IndexOf<Typelist<T, TAIL>, T> {
+  //  enum { Result = 0 };
+  //};
+  //template<class HEAD, class TAIL, class T>
+  //struct IndexOf<Typelist<HEAD, TAIL>, T> {
+  //private:
+  //  enum { Temp = IndexOf<TAIL, T>::Result };
+  //public:
+  //  enum { Result = Temp == -1 ? -1 : 1 + Temp };
+  //};
   
 }
