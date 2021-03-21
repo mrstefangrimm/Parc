@@ -7,7 +7,7 @@
 
 namespace parclib {
   
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class Program {
   public:
     size_t duration() const {
@@ -16,7 +16,7 @@ namespace parclib {
     }
 
     ProgramStep<TLOGGER>* appendStep(ProgramStep<TLOGGER>* step) {
-      if (_root == 0) { _root = step; return _root; }
+      if (_root == 0) { _root = step; _currentStep = step; return _root; }
       else { return _root->appendStep(step); }
     }
 
@@ -28,16 +28,15 @@ namespace parclib {
       }
     }
 
-    void play() const {
-      if (_root != 0) {
-        _root->play();
+    void play() {
+      if (_currentStep != 0) {
+        _currentStep = _currentStep->play(_tick);
       }
     }
 
-    void rewind() const {
-      if (_root != 0) {
-        _root->rewind();
-      }
+    void rewind() {
+      _tick = 0;
+      _currentStep = _root;
     }
 
     bool hasSteps() const {
@@ -46,6 +45,8 @@ namespace parclib {
 
   private:
     ProgramStep<TLOGGER>* _root = 0;
+    ProgramStep<TLOGGER>* _currentStep = 0;
+    uint8_t _tick = 0;
   };
 
 }

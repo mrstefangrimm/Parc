@@ -7,30 +7,30 @@
 
 namespace unoparc {
 
-  template<typename TLOGGER, typename TDERIVED, bool DISPOSABLE>
+  template<class TLOGGER, class TDERIVED, bool DISPOSABLE>
   class ProgramStepBase : public ProgramStep<TLOGGER> {
   public:
     ProgramStepBase(TLOGGER& logger, uint8_t duration)
       : ProgramStep<TLOGGER>(logger, duration) {}
 
   protected:
-    void action(VirtualAction type) final {
-      action(type, Int2Type<DISPOSABLE>());
+    void action(VirtualAction type, uint8_t& tick) final {
+      action(type, tick, Int2Type<DISPOSABLE>());
     }
 
   private:
-    void action(VirtualAction type, Int2Type<true>) {
+    void action(VirtualAction type, uint8_t tick, Int2Type<true>) {
       if (type == VirtualAction::Dispose) {
         static_cast<TDERIVED*>(this)->doDispose();
       }
       else if (type == VirtualAction::Tick) {
-        static_cast<TDERIVED*>(this)->doTick();
+        static_cast<TDERIVED*>(this)->doTick(tick);
       }
     }
 
-    void action(VirtualAction type, Int2Type<false>) {
+    void action(VirtualAction type, uint8_t tick, Int2Type<false>) {
       if (type == VirtualAction::Tick) {
-        static_cast<TDERIVED*>(this)->doTick();
+        static_cast<TDERIVED*>(this)->doTick(tick);
       }
     }
 
@@ -41,8 +41,8 @@ namespace unoparc {
   public:
     ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false>(logger, waitMs / TimerPeriod) {}
    
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("W "));
       }
     }
@@ -60,8 +60,8 @@ namespace unoparc {
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
        
-    void doTick() {
-      if (Ps_t::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         Ps_t::_log.print(F("UK "));
 
         // Debug

@@ -9,7 +9,7 @@ namespace unoparc {
 
   using namespace parclib;
 
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class UnoBreadboard {
 
   public:

@@ -11,7 +11,7 @@ namespace parc {
 
   using namespace parclib;
 
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class KeypadHw {
 
   public:

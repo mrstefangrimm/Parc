@@ -7,48 +7,50 @@
 
 namespace pcbparc {
 
-  template<typename TLOGGER, typename TDERIVED, bool DISPOSABLE>
+  using namespace parclib;
+
+  template<class TLOGGER, class TDERIVED, bool DISPOSABLE>
   class ProgramStepBase : public ProgramStep<TLOGGER> {
   public:
     ProgramStepBase(TLOGGER& logger, uint8_t duration)
       : ProgramStep<TLOGGER>(logger, duration) {}
 
   protected:
-    void action(VirtualAction type) final {
-      action(type, Int2Type<DISPOSABLE>());
+    void action(VirtualAction type, uint8_t& tick) final {
+      action(type, tick, Int2Type<DISPOSABLE>());
     }
 
   private:
-    void action(VirtualAction type, Int2Type<true>) {
+    void action(VirtualAction type, uint8_t tick, Int2Type<true>) {
       if (type == VirtualAction::Dispose) {
         static_cast<TDERIVED*>(this)->doDispose();
       }
       else if (type == VirtualAction::Tick) {
-        static_cast<TDERIVED*>(this)->doTick();
+        static_cast<TDERIVED*>(this)->doTick(tick);
       }
     }
 
-    void action(VirtualAction type, Int2Type<false>) {
+    void action(VirtualAction type, uint8_t tick, Int2Type<false>) {
       if (type == VirtualAction::Tick) {
-        static_cast<TDERIVED*>(this)->doTick();
-      }
+        static_cast<TDERIVED*>(this)->doTick(tick);
+      }     
     }
 
   };
       
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class ProgramStepWait : public ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false> {
   public:
     ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false>(logger, waitMs / TimerPeriod) {}
    
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("W "));
       }
     }
   };
 
-  template<typename TLOGGER, typename THIDBLE>
+  template<class TLOGGER, class THIDBLE>
   class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardText<TLOGGER, THIDBLE>, true> {
   public:
     ProgramStepBleKeyboardText(TLOGGER& logger, THIDBLE& ble, const char* text)
@@ -63,8 +65,8 @@ namespace pcbparc {
       _text = 0;
     }
 
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BT "));
         //ProgramStep<TLOGGER>::_log.println(_text);
 
@@ -81,7 +83,7 @@ namespace pcbparc {
     char* _text;
   };
 
-  template<typename TLOGGER, typename THIDBLE>
+  template<class TLOGGER, class THIDBLE>
   class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false> {
   public:
     static const uint8_t Radix = 16;
@@ -93,8 +95,8 @@ namespace pcbparc {
     ProgramStepBleKeyboardCodeRepeated(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false>(logger, 5 * numRepetitions), _ble(ble), _keyCode(keyCode) {}
 
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick % 5 == 0) {
+    void doTick(uint8_t tick) {
+      if (tick % 5 == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BK "));
         //ProgramStep<TLOGGER>::_log.println(_hexCode);
 
@@ -107,7 +109,7 @@ namespace pcbparc {
     KeyCode _keyCode;
   };
 
-  template<typename TLOGGER, typename THIDBLE>
+  template<class TLOGGER, class THIDBLE>
   class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false> {
   public:
     static const uint8_t Radix = 16;
@@ -119,8 +121,8 @@ namespace pcbparc {
     ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false>(logger, 5), _ble(ble), _keyCode(keyCode) {}
   
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BK "));
         //ProgramStep<TLOGGER>::_log.println(_hexCode);
 
@@ -133,7 +135,7 @@ namespace pcbparc {
     KeyCode _keyCode;
   };
 
-  template<typename TLOGGER, typename THIDBLE>
+  template<class TLOGGER, class THIDBLE>
   class ProgramStepBleControlKey : public ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true> {
   public:
     ProgramStepBleControlKey(TLOGGER& logger, THIDBLE& ble, const char* ctrlKey, uint8_t duration)
@@ -148,8 +150,8 @@ namespace pcbparc {
       _ctrlKey = 0;
     }
 
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("BC "));
         //ProgramStep<TLOGGER>::_log.println(_ctrlKey);
 
@@ -166,7 +168,7 @@ namespace pcbparc {
     char* _ctrlKey;
   };
 
-  template<typename TLOGGER, typename THIDUSB>
+  template<class TLOGGER, class THIDUSB>
   class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true> {
   public:
     ProgramStepUsbKeyboardText(TLOGGER& logger, THIDUSB& usb, const char* text)
@@ -181,8 +183,8 @@ namespace pcbparc {
       _text = 0;
     }
 
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UT "));
         _usb.println(_text);
       }
@@ -193,7 +195,7 @@ namespace pcbparc {
     char* _text;
   };
 
-  template<typename TLOGGER, typename THIDUSB>
+  template<class TLOGGER, class THIDUSB>
   class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
   public:
     static const uint8_t Radix = 16;
@@ -205,8 +207,8 @@ namespace pcbparc {
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
        
-    void doTick() {
-      if (ProgramStep<TLOGGER>::_tick == 0) {
+    void doTick(uint8_t tick) {
+      if (tick == 0) {
         ProgramStep<TLOGGER>::_log.print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);
@@ -227,7 +229,7 @@ namespace pcbparc {
     KeyCode _keyCode;
   };
 
-  template<typename TLOGGER, typename THIDUSB>
+  template<class TLOGGER, class THIDUSB>
   class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false> {
   public:
     static const uint8_t Radix = 16;
@@ -239,9 +241,9 @@ namespace pcbparc {
     ProgramStepUsbKeyboardCodeRepeated(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false>(logger, numRepetitions), _usb(usb), _keyCode(keyCode) {}
 
-    void doTick() {
+    void doTick(uint8_t tick) {
       // _duration is equal to number of repetitions
-      if (ProgramStep<TLOGGER>::_tick % 1 == 0) {
+      if (tick < ProgramStep<TLOGGER>::_duration) {
         ProgramStep<TLOGGER>::_log.print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);

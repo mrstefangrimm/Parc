@@ -7,7 +7,7 @@
 
 namespace parclib {
 
-  template<typename TDERIVED>
+  template<class TDERIVED>
   class Ao {
   public:
     Ao(RegisterData_t* registers)

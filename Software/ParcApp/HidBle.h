@@ -9,7 +9,7 @@
 
 namespace parc { 
   
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class HidBle {
   public:
     HidBle(TLOGGER& logger)
@@ -52,7 +52,7 @@ namespace parc {
       if (keyCode.alt) { modifier |= 0x4; }
       if (keyCode.win) { modifier |= 0x8; }
       _ble.print(F("AT+BLEKEYBOARDCODE="));
-      if (modifier < 0x10) { _ble.print("0"); }
+      if (modifier < 0x10) { _ble.print(F("0")); }
       _ble.print(modifier, HEX);
       _ble.print(F("-00-"));
       if (keyCode.hexCode < 0x10) { _ble.print(F("0")); }

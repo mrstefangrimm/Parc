@@ -6,10 +6,12 @@
 #include "Ao.h"
 #include "FreeMemory.h"
 
+
+
 namespace parclib {
 
-  template<typename TLOGGER>
-  class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER>> {
+  template<class TLOGGER, uint8_t LOWMEMORY>
+  class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> {
   public:
     MemoryMonitorAo(TLOGGER& logger, RegisterData_t* registers)
       : Ao_t(registers), _log(logger) {}
@@ -28,7 +30,7 @@ namespace parclib {
         }
         else {
           auto freeMem = freeMemory();
-           if (freeMem < 150) {
+           if (freeMem < LOWMEMORY) {
              digitalWrite(LED_BUILTIN, HIGH);
            }
            else {
@@ -48,12 +50,13 @@ namespace parclib {
     }
 
   private:
-    typedef Ao<MemoryMonitorAo<TLOGGER>> Ao_t;
+    typedef Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> Ao_t;
+
     
     void logMemory() {
       auto freeMem = freeMemory();
       _log.print(F("Free Memory: ")); _log.println(freeMem);
-      if (freeMem < 200) {
+      if (freeMem < LOWMEMORY) {
         digitalWrite(LED_BUILTIN, HIGH);
       }
       else {

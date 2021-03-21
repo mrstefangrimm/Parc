@@ -9,7 +9,7 @@
 
 namespace parclib {
   
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class HidAo : public Ao<HidAo<TLOGGER>> {
 
   public:

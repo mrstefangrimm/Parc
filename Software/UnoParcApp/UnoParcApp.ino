@@ -54,7 +54,7 @@ Keypad_t keypadHw(logger);
 
 KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
 HidAo<Logger_t> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t> memoryMonitor(logger, registers);
+MemoryMonitorAo<Logger_t, 180> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -72,7 +72,7 @@ struct ProgramStepFake : public ProgramStep<Logger_t> {
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* ctrlKey, uint16_t duration) : ProgramStep(logger, duration) {}
-  void action(VirtualAction type) override {};
+  void action(VirtualAction type, uint8_t& tick) override {};
 };
 
 // Has to filled in the order of the enum PsType, that is:

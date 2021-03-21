@@ -51,7 +51,7 @@ typedef HidBle<Logger_t> HidBle_t;
 HidBle_t hidBle(logger);
 
 HidAo<Logger_t> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t> memoryMonitor(logger, registers);
+MemoryMonitorAo<Logger_t, 180> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }

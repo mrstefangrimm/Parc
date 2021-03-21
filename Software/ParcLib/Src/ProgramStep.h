@@ -11,67 +11,66 @@ namespace parclib {
     Tick
   };
     
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class ProgramStep {
   public:
     ProgramStep(TLOGGER& logger, uint8_t duration);
 
     void dispose();
-    void play();
-    void rewind();
+    ProgramStep<TLOGGER>* play(uint8_t& tick);
     size_t duration() const;
 
     ProgramStep<TLOGGER>* appendStep(ProgramStep<TLOGGER>* step);
 
   protected:
-    virtual void action(VirtualAction type) = 0;
+    virtual void action(VirtualAction type, uint8_t& tick) = 0;
 
   protected:
     TLOGGER& _log;
     ProgramStep* _next;
 
-    uint8_t _tick;
     uint8_t _duration;
-  };
-  
-  template<typename TLOGGER>
-  inline ProgramStep<TLOGGER>::ProgramStep(TLOGGER& logger, uint8_t duration)
-    : _log(logger), _duration(duration), _tick(0), _next(0) {}
 
-  template<typename TLOGGER>
+  };
+
+
+  template<class TLOGGER>
+  inline ProgramStep<TLOGGER>::ProgramStep(TLOGGER& logger, uint8_t duration)
+    : _log(logger), _duration(duration), _next(0) {
+    // Debug: static int numSteps = 0; numSteps++;_log.println(numSteps);
+  }
+
+  template<class TLOGGER>
   inline void ProgramStep<TLOGGER>::dispose() {
     if (_next != 0) {
       _next->dispose();
       delete _next;
       _next = 0;
     }
-    action(VirtualAction::Dispose);
+    action(VirtualAction::Dispose, _duration);
   }
 
-  template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::play() {
-    if (_tick < _duration) {
-      action(VirtualAction::Tick);
-      _tick++;
+  template<class TLOGGER>
+  inline ProgramStep<TLOGGER>* ProgramStep<TLOGGER>::play(uint8_t& tick) {
+    if (tick < _duration) {
+      action(VirtualAction::Tick, tick);
+      tick++;
+      return this;
     }
     else if (_next != 0) {
-      _next->play();
+      tick = 0;
+      _next->play(tick);
+      return _next;
     }
   }
-
-  template<typename TLOGGER>
-  inline void ProgramStep<TLOGGER>::rewind() {
-    _tick = 0;
-    if (_next != 0) { _next->rewind(); }
-  }
-
-  template<typename TLOGGER>
+  
+  template<class TLOGGER>
   inline size_t ProgramStep<TLOGGER>::duration() const {
     if (_next != 0) { return _duration + _next->duration(); }
     else { return _duration; }
   }
   
-  template<typename TLOGGER>
+  template<class TLOGGER>
   inline ProgramStep<TLOGGER>* ProgramStep<TLOGGER>::appendStep(ProgramStep<TLOGGER>* step) {
     if (_next == 0) {
       _next = step; return _next;

@@ -1,0 +1,275 @@
+# Parc Software Design
+
+## Concepts
+
+
+
+
+
+## Best practices
+
+### Memory optimization
+
+#### Use static polymorphism when possible (+1 int RAM)
+
+Instead of
+
+```C++
+class Ao {
+public:
+  virtual void checkRegisters() = 0;
+};
+
+class MemoryMonitorAo : public Ao {
+    void checkRegisters() override {}
+}
+```
+
+use:
+
+```C++
+template<class TDERIVED>
+class Ao {
+public:
+  void checkRegisters() {
+    static_cast<TDERIVED*>(this)->checkRegisters();
+  }
+};
+
+template<class TLOGGER, uint8_t LOWMEMORY>
+class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> {
+  void checkRegisters() {}
+}
+```
+
+Why? One int in the vtable per virtual method and derived class. This are 20 Bytes on a 16bit platform and 10 derived classes.
+
+#### Avoid const members (+1 Byte RAM)
+
+Instead of
+
+```C++ 
+template<class TLOGGER>
+class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER>> {
+private:
+  const uint8_t LOWMEMORY = 200;
+};
+```
+
+use:
+
+```C++
+const uint8_t LOWMEMORY = 200; // outside of the class, e.g. in Shared.h
+```
+
+or static:
+
+```C++
+template<class TLOGGER>
+class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER>> {
+private:
+  static const uint8_t LOWMEMORY = 200;
+};
+```
+
+even better:
+
+```C++
+template<class TLOGGER, uint8_t LOWMEMORY>
+class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> {
+};
+```
+
+Why? because then the value is defined in the application. Why? Different hardware ATMel, ARM, Windows, Tests etc. BTW, `#define LOWMEMORY 200` does not save memory; its just bad programming.
+
+Note: This applies to the parclib, in the parcapp const members are optimized away.
+
+#### Object vs. Class trade-off
+
+Instead of
+
+```C++
+template<class TLOGGER>
+class ProgramStep {
+public:
+  void play();
+private:
+  uint8_t _tick;
+};
+```
+
+consider:
+
+```C++
+template<class TLOGGER>
+class ProgramStep {
+public:
+  ProgramStep<TLOGGER>* play(uint8_t& tick);
+};
+
+
+```
+
+Why? The signature change increases the memory by 2 integers per class. Having more more than 40 objects by a given 10 derived classes makes this up. 
+
+
+
+### Patterns
+
+#### Compile-time switch
+
+Instead of
+
+```C++
+template<typename TLOGGER>
+class KeypadHw {
+public:
+  bool pressed(uint8_t hwswitch) {
+    switch(hwswitch) {
+      case KeyPadSwitch::Btn_A: return false;
+      case KeyPadSwitch::Btn_B: return false;
+      case KeyPadSwitch::Btn_C: return false;
+    }
+  }
+};
+```
+
+use:
+
+```C++
+template<typename TLOGGER>
+class KeypadHw {
+public:
+  template<KeyPadSwitch SWITCH>
+  bool pressed() { return pressed(Int2Type<SWITCH>()); }
+private:
+  bool pressed(Int2Type<KeyPadSwitch::Btn_A>) { return false; }
+  bool pressed(Int2Type<KeyPadSwitch::Btn_B>) { return false; }
+  bool pressed(Int2Type<KeyPadSwitch::Btn_C>) { return false; }
+};
+```
+
+Why? If the enum `KeyPadSwitch` changes, you are notified at compile time. `SWITCH` does not refer to the switch statement but to a hardware switch (e.g. toggle buttons).
+
+
+
+#### Aggregate instead of layering
+
+```C++
+template<class TLOGGER, class TKEYPADHW>
+class KeypadAo : public Ao<KeypadAo<TLOGGER, TKEYPADHW>> {
+public:
+  KeypadAo(RegisterData_t* registers, TLOGGER& logger, TKEYPADHW& keypadHw)
+    : Ao_t(registers), _log(logger), _hw(keypadHw) {}
+  void checkRegisters() {
+    if (_hw.template pressed<KeyPadSwitch::Btn_A>()) {}
+    else if (_hw.template pressed<KeyPadSwitch::Btn_B>()) {}
+    else if (_hw.template pressed<KeyPadSwitch::Btn_C>()) {}
+  }
+private:
+  Hw_t& _hw;
+};
+```
+
+Why? Any class with the used interface can be used. No inheritance (=> virtual methods) is required. Very good for testing with fake classes.
+
+
+
+#### Trust the optimizer
+
+```C++
+#include <SoftwareSerial.h>
+class FakeLogger {
+public:
+  FakeLogger(uint8_t a, uint8_t b) {}
+  void begin(uint16_t a) {}
+  template<typename T>
+  void print(T ch) { }
+  template<typename T>
+  void print(T ch, uint8_t mode) {}
+  template<typename T>
+  void println(T ch) {}
+  template<typename T>
+  void println(T ch, uint8_t mode) {}
+};
+typedef FakeLogger Logger_t; // typedef SoftwareSerial Logger_t
+Logger_t logger(Usb_ORA, Usb_YEL);
+```
+
+Why? If the logger type is changed for a serial to a fake logger (without base class as you can see), the optimizer will handle it:
+
+Free Memory: 1403
+
+Free Memory: 1519
+
+If inheritance was used, i guess this would not be possible.
+
+
+
+#### Use a typelist as factory
+
+```C++
+struct ProgramStepFake : public ProgramStep<Logger_t> {
+  ProgramStepFake(Logger_t& logger, HidUsb_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* ctrlKey, uint16_t duration) : ProgramStep(logger, duration) {}
+  void action(VirtualAction type, uint8_t& tick) override {};
+};
+
+typedef Typelist<ProgramStepWait<Logger_t>,
+  Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  Typelist<ProgramStepFake,
+  NullType>>>>>>>> ProgramStepList;
+```
+
+Why? in the Arduino project, only for "Wait" and "USB Keycode" a program step is implemented, the factory requires one a fake for the rest.
+
+Note: action has to be implemented and a run-time exception would be required to ensure it is never called. In my example, if a Dull program uses "BK" on an Uno, it is just ignored.
+
+
+
+#### Command pattern
+
+```C++
+template<uint8_t CMDTYPE>
+struct CmdComparator {
+  bool operator()(const char* another) const {
+    return equals(another);
+  }
+  bool equals(const char* another) const { return false; }
+  bool operator()(char** another) const {
+    return equals(another);
+  }
+  bool equals(char** another) const { return false; }
+};
+
+```
+
+```C++
+if (CmdComparator<PsType::Wait>()(subStrs[0])) {
+  progStep = createProgramStepWait(subStrs[1]);
+}
+else if (CmdComparator<PsType::BleKeycode>()(subStrs[0])) {
+  progStep = createProgramStepBleKeyboardCode(subStrs, numSubStr);
+}
+else if (CmdComparator<PsType::UsbKeycode>()(subStrs[0])) {
+  progStep = createProgramStepUsbKeyboardCode(subStrs, numSubStr);
+}
+```
+
+```C++
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const 
+{ return 'W' == another[0]; }
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const 
+{ return 'U' == another[0] && 'K' == another[1]; }
+```
+
+Why? Very simple, very efficient. Declared and used in the library, defined in the application. In the example, the Arduino Uno project only supports "Wait" and "USB Keycode".

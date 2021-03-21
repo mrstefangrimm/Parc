@@ -11,7 +11,7 @@ namespace pcbparc {
 
   using namespace parclib;
 
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class KeypadHw {
 
   public:
@@ -19,7 +19,6 @@ namespace pcbparc {
 
     void begin() {
       _mcp.begin();
-      _mcp.pinMode(5, OUTPUT);
     }
     
     template<KeyPadSwitch SWITCH>
@@ -27,7 +26,7 @@ namespace pcbparc {
 
     template<KeyPadSwitch SWITCH>
     bool pressed() { return pressed(Int2Type<SWITCH>()); }
-   
+
   private:
     void error(const __FlashStringHelper* err) {
       _log.println(err);

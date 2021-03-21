@@ -9,7 +9,7 @@
 
 namespace pcbparc { 
   
-  template<typename TLOGGER>
+  template<class TLOGGER>
   class HidBle {
   public:
     HidBle(TLOGGER& logger)
@@ -28,11 +28,11 @@ namespace pcbparc {
       }
       _ble.echo(false);
 
-      _ble.info();
-
+      /*
       if (!_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION)) {
         error(F("This sketch requires a higher firmware version."));
       }
+      */
 
       _log.println(F("Enable HID Services (including Control Key): "));
       if (!_ble.sendCommandCheckOK(F("AT+BLEHIDEN=On"))) {
@@ -52,7 +52,7 @@ namespace pcbparc {
       if (keyCode.alt) { modifier |= 0x4; }
       if (keyCode.win) { modifier |= 0x8; }
       _ble.print(F("AT+BLEKEYBOARDCODE="));
-      if (modifier < 0x10) { _ble.print("0"); }
+      if (modifier < 0x10) { _ble.print(F("0")); }
       _ble.print(modifier, HEX);
       _ble.print(F("-00-"));
       if (keyCode.hexCode < 0x10) { _ble.print(F("0")); }
@@ -68,9 +68,9 @@ namespace pcbparc {
       return false;
     }    
 
+    /*
     void info() {
       _log.println(F("BluefruitLE info (output on Serial): "));
-      _ble.info();
 
       _log.println(F("List of pre-defined control keys:"));
       _log.print(F(
@@ -102,15 +102,17 @@ namespace pcbparc {
         "- REFRESH" "\n"
         "- BOOKMARKS" "\n"
       ));
+      
     }
-    
+    */
+
     bool waitForOK() {
       return _ble.waitForOK();
     }
 
     void print(const char* const data) {
       _ble.print(data);
-    }
+    }    
     void print(const __FlashStringHelper* data) {
       _ble.print(data);
     }
@@ -120,7 +122,7 @@ namespace pcbparc {
     }
     void println(const __FlashStringHelper* data) {
       _ble.println(data);
-    }
+    }    
 
   private:
     void error(const __FlashStringHelper* err) {
@@ -128,7 +130,7 @@ namespace pcbparc {
       while(true);
     }
 
-    const char* MINIMUM_FIRMWARE_VERSION = "0.6.6";
+    //const char* MINIMUM_FIRMWARE_VERSION = "0.6.6";
     Adafruit_BluefruitLE_SPI _ble;
     TLOGGER& _log;
   };
