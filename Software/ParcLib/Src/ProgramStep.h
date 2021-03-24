@@ -5,7 +5,7 @@
 
 namespace parclib {
 
-  // Saves 12 bytes. Every virtual method has a pointer (two bytes) in the virtual table, i.e per class.
+  // Every virtual method has a pointer (two bytes) in the virtual table.
   enum class VirtualAction {
     Dispose,
     Tick

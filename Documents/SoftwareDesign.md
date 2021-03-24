@@ -10,7 +10,7 @@
 
 ### Memory optimization
 
-#### Use static polymorphism when possible (+1 int RAM)
+#### Use static polymorphism when possible
 
 Instead of
 
@@ -25,7 +25,7 @@ class MemoryMonitorAo : public Ao {
 }
 ```
 
-use:
+use
 
 ```C++
 template<class TDERIVED>
@@ -42,9 +42,9 @@ class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> {
 }
 ```
 
-Why? One int in the vtable per virtual method and derived class. This are 20 Bytes on a 16bit platform and 10 derived classes.
+Why? Per virtual method and derived class 1 `int` is required in a vtable . This are 20 Bytes on a 16bit platform and 10 derived classes.
 
-#### Avoid const members (+1 Byte RAM)
+#### Avoid const members in a library
 
 Instead of
 
@@ -56,13 +56,13 @@ private:
 };
 ```
 
-use:
+use
 
 ```C++
 const uint8_t LOWMEMORY = 200; // outside of the class, e.g. in Shared.h
 ```
 
-or static:
+or static
 
 ```C++
 template<class TLOGGER>
@@ -72,7 +72,7 @@ private:
 };
 ```
 
-even better:
+even better
 
 ```C++
 template<class TLOGGER, uint8_t LOWMEMORY>
@@ -80,9 +80,11 @@ class MemoryMonitorAo : public Ao<MemoryMonitorAo<TLOGGER, LOWMEMORY>> {
 };
 ```
 
-Why? because then the value is defined in the application. Why? Different hardware ATMel, ARM, Windows, Tests etc. BTW, `#define LOWMEMORY 200` does not save memory; its just bad programming.
+Why? Because then the value is defined in the application. The application can be for different hardware like: ATMel, ARM, Windows, Tests.
 
-Note: This applies to the parclib, in the parcapp const members are optimized away.
+BTW, `#define LOWMEMORY 200` instead of the discussed const values does not save memory.
+
+Note: In the parcapp, const members are optimized away.
 
 #### Object vs. Class trade-off
 
@@ -110,9 +112,7 @@ public:
 
 ```
 
-Why? The signature change increases the memory by 2 integers per class. Having more more than 40 objects by a given 10 derived classes makes this up. 
-
-
+Why? The signature change increases the memory by 2 integers per class. Given 40 objects and given 10 derived classes: 40 * `uint8_t` == 10 * 2 * `int`.
 
 ### Patterns
 
@@ -171,7 +171,7 @@ private:
 };
 ```
 
-Why? Any class with the used interface can be used. No inheritance (=> virtual methods) is required. Very good for testing with fake classes.
+Why? Any class with the used interface can be used as logger or keypad hardware. Inheritance and by that virtual methods is not required. Great for testing with fake classes.
 
 
 
@@ -273,3 +273,48 @@ template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) c
 ```
 
 Why? Very simple, very efficient. Declared and used in the library, defined in the application. In the example, the Arduino Uno project only supports "Wait" and "USB Keycode".
+
+
+
+#### Reduce number of virtual methods
+
+Instead of
+
+```C++
+template<class TLOGGER>
+class ProgramStep {
+public:
+  void dispose() { /*...*/ doDispose(); }
+  ProgramStep<TLOGGER>* play(uint8_t& tick) { /*...*/ doPlay(tick); 
+protected:
+  virtual void doDispose() = 0;
+  virtual void doPlay(uint8_t& tick) = 0;
+};
+```
+
+use
+
+```C++
+enum class VirtualAction {
+  Dispose,
+  Tick
+};
+template<class TLOGGER>
+class ProgramStep {
+public:
+  void dispose() { /*...*/ action(VirtualAction::Dispose, _duration); }
+  ProgramStep<TLOGGER>* play(uint8_t& tick) { /*...*/ action(VirtualAction::Tick, tick); }
+protected:
+  virtual void action(VirtualAction type, uint8_t& tick) = 0;
+};
+```
+
+Why? Every virtual method has a pointer (two bytes) in the virtual table, i.e. per class. Given 10 derived classes:
+
+- virtual void doDispose() = 0;
+  virtual void doPlay(uint8_t& tick) = 0;
+   => 2 * 2 bytes for the vtable + 2 bytes for the `&tick` => 6 bytes per class => 10 * 6 = 60 bytes
+
+- virtual void action(VirtualAction type, uint8_t& tick) = 0;
+
+   => 2 bytes for the vtable + 1 byte for `type` + 2 bytes for `&tick` => 5 bytes per class => 10 * 5 = 50 bytes

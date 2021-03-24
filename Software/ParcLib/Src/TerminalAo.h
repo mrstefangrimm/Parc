@@ -13,6 +13,7 @@ namespace parclib {
     Wait,
     UsbKeycode,
     UsbKeycodeRepeated,
+    UsbKeycodes,
     UsbText,
     BleKeycode,
     BleKeycodeRepeated,
@@ -41,8 +42,8 @@ namespace parclib {
   };
 
 
-  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, uint8_t BUFLEN>
-  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> {
+  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class KNOWNKEYCODES, uint8_t BUFLEN>
+  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
@@ -195,7 +196,7 @@ namespace parclib {
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -258,7 +259,7 @@ namespace parclib {
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
           }
           else {
             _serial.println(F(" Unknown command. This ain't dull, bye."));
@@ -311,12 +312,10 @@ namespace parclib {
       }
 
       auto code = subStrs[numSubStr - 1];
-      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, BleKeycode_t::Radix);
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Del>") == 0 ? BleKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Tab>") == 0 ? BleKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Enter>") == 0 ? BleKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Space>") == 0 ? BleKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
-
+      keyCode.hexCode = strtol(subStrs[numSubStr - 1], 0, KNOWNKEYCODES::BleRadix);
+      if (keyCode.hexCode == 0) {
+        keyCode.hexCode = symbolToBleKeyode(code);
+      }
       //_log.print("ProgramStepBleKeyboardCode "); _log.print(hexCode, HEX);
       if (repetitions == 0) {
         _log.println(F("Create BleKeycode_t"));
@@ -345,6 +344,7 @@ namespace parclib {
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {
       KeyCode keyCode;
       uint8_t repetitions = 0;
+      char second = 0;
       for (int n = 1; n < numSubStr; n++) {
         keyCode.ctrl |= strcmp(subStrs[n], "<Ctrl>") == 0;
         keyCode.shift |= strcmp(subStrs[n], "<Shift>") == 0;
@@ -358,20 +358,28 @@ namespace parclib {
 
       auto code = subStrs[numSubStr - 1];
       //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(code);
-      if (strlen(code) == 3 && code[0] == '\'' && code[2] == '\'') {
-        keyCode.hexCode = code[1];
-      }
+
+      if (strlen(code) == 3) {
+        if (code[0] == '\'' && code[2] == '\'') {
+          keyCode.hexCode = code[1];
+        }
+        else if ( repetitions == 0) {
+          keyCode.hexCode = code[0];
+          second = code[2];
+        }
+      }      
       else {
-        keyCode.hexCode = strtol(code, 0, UsbKeycode_t::Radix);
+        keyCode.hexCode = strtol(code, 0, KNOWNKEYCODES::UsbRadix);
       }
       //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(keyCode.hexCode, HEX);
-
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Del>") == 0 ? UsbKeycode_t::KeyCodeDel : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Tab>") == 0 ? UsbKeycode_t::KeyCodeTab : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Enter>") == 0 ? UsbKeycode_t::KeyCodeEnter : keyCode.hexCode : keyCode.hexCode;
-      keyCode.hexCode = keyCode.hexCode == 0 ? strcmp(code, "<Space>") == 0 ? UsbKeycode_t::KeyCodeSpace : keyCode.hexCode : keyCode.hexCode;
-
+      if (keyCode.hexCode == 0) {
+        keyCode.hexCode = symbolToUsbKeyode(code);
+      }
       //Debug: _log.print("createProgramStepUsbKeyboardCode "); _log.println(keyCode.hexCode, HEX);
+      if (second != 0) {
+        _log.println(F("Create UsbKeycodes_t"));
+        return new UsbKeycodes_t(_log, _usb, keyCode, second);
+      }
       if (repetitions == 0) {
         _log.println(F("Create UsbKeycode_t"));
         return new UsbKeycode_t(_log, _usb, keyCode);
@@ -385,9 +393,25 @@ namespace parclib {
       _log.println(F("Create UsbText_t"));
       return new UsbText_t(_log, _usb, text);
     }
+
+    uint8_t symbolToUsbKeyode(const char* code) {
+      if (strcmp(code, "<Del>") == 0) { return KNOWNKEYCODES::UsbKeyCodeDel; }
+      if (strcmp(code, "<Tab>") == 0) { return KNOWNKEYCODES::UsbKeyCodeTab; }
+      if (strcmp(code, "<Enter>") == 0) { return KNOWNKEYCODES::UsbKeyCodeEnter; }
+      if (strcmp(code, "<Space>") == 0) { return KNOWNKEYCODES::UsbKeyCodeSpace; }
+      return 0;
+    }
+
+    uint8_t symbolToBleKeyode(const char* code) {
+      if (strcmp(code, "<Del>") == 0) { return KNOWNKEYCODES::BleKeyCodeDel; }
+      if (strcmp(code, "<Tab>") == 0) { return KNOWNKEYCODES::BleKeyCodeTab; }
+      if (strcmp(code, "<Enter>") == 0) { return KNOWNKEYCODES::BleKeyCodeEnter; }
+      if (strcmp(code, "<Space>") == 0) { return KNOWNKEYCODES::BleKeyCodeSpace; }
+      return 0;
+    }
     
   private:
-    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, BUFLEN>> Ao_t;
+    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>> Ao_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result BleKeycodeRepeated_t;
@@ -395,6 +419,7 @@ namespace parclib {
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result UsbKeycodeRepeated_t;
+    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodes>::Result UsbKeycodes_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
 
     enum class State {

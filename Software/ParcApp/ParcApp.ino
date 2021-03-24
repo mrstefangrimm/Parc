@@ -51,7 +51,7 @@ typedef HidBle<Logger_t> HidBle_t;
 HidBle_t hidBle(logger);
 
 HidAo<Logger_t> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t, 180> memoryMonitor(logger, registers);
+MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -66,14 +66,29 @@ template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { retu
 typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepUsbKeyboardCode<Logger_t, Keyboard_>,
   Typelist<ProgramStepUsbKeyboardCodeRepeated<Logger_t, Keyboard_>,
+  Typelist<ProgramStepUsbKeyboardCodes<Logger_t, Keyboard_>,
   Typelist<ProgramStepUsbKeyboardText<Logger_t, Keyboard_>,
   Typelist<ProgramStepBleKeyboardCode<Logger_t, HidBle_t>,
   Typelist<ProgramStepBleKeyboardCodeRepeated<Logger_t, HidBle_t>,
   Typelist<ProgramStepBleKeyboardText<Logger_t, HidBle_t>,
   Typelist<ProgramStepBleControlKey<Logger_t, HidBle_t>,
-  NullType>>>>>>>> ProgramStepList;
+  NullType>>>>>>>>> ProgramStepList;
 
-TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
+struct KnownKeycodes {    
+  static const uint8_t UsbRadix = 16;
+  static const uint8_t UsbKeyCodeDel = 0xD4;
+  static const uint8_t UsbKeyCodeTab = 0xB3;
+  static const uint8_t UsbKeyCodeEnter = 0xB0;
+  static const uint8_t UsbKeyCodeSpace = ' ';
+
+  static const uint8_t BleRadix = 16;
+  static const uint8_t BleKeyCodeDel = 0x4C;
+  static const uint8_t BleKeyCodeTab = 0x2B;
+  static const uint8_t BleKeyCodeEnter = 0x28;
+  static const uint8_t BleKeyCodeSpace = 0x2C;
+};
+
+TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, KnownKeycodes, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }

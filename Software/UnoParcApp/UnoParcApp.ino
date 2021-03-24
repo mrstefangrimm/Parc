@@ -54,20 +54,15 @@ Keypad_t keypadHw(logger);
 
 KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
 HidAo<Logger_t> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t, 180> memoryMonitor(logger, registers);
+MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
 
 struct ProgramStepFake : public ProgramStep<Logger_t> {
-  static const uint8_t Radix = 0;
-  static const uint8_t KeyCodeDel = 0;
-  static const uint8_t KeyCodeTab = 0;
-  static const uint8_t KeyCodeEnter = 0;
-  static const uint8_t KeyCodeSpace = 0;
-
   ProgramStepFake(Logger_t& logger, HidUsb_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidUsb_t& usb, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, KeyCode keyCode, char secondKey) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
@@ -76,7 +71,7 @@ struct ProgramStepFake : public ProgramStep<Logger_t> {
 };
 
 // Has to filled in the order of the enum PsType, that is:
-//  Wait, USB Keycode, USB Text, BLE Keycode, BLE Text, BLE Control Key
+//  Wait, USB Keycode, USB Keycode repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode repeated, BLE Text, BLE Control Key
 typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
   Typelist<ProgramStepFake,
@@ -85,9 +80,24 @@ typedef Typelist<ProgramStepWait<Logger_t>,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
-  NullType>>>>>>>> ProgramStepList;
+  Typelist<ProgramStepFake,
+  NullType>>>>>>>>> ProgramStepList;
 
-TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
+struct KnownKeycodes {    
+  static const uint8_t UsbRadix = 10;
+  static const uint8_t UsbKeyCodeDel = 76;   // 0x4C
+  static const uint8_t UsbKeyCodeTab = 43;   // 0x2B
+  static const uint8_t UsbKeyCodeEnter = 40; // 0x28
+  static const uint8_t UsbKeyCodeSpace = 44; // 0x2C
+
+  static const uint8_t BleRadix = 0;
+  static const uint8_t BleKeyCodeDel = 0;
+  static const uint8_t BleKeyCodeTab = 0;
+  static const uint8_t BleKeyCodeEnter = 0;
+  static const uint8_t BleKeyCodeSpace = 0;
+};
+
+TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }

@@ -50,13 +50,7 @@ namespace unoparc {
 
   template<typename TLOGGER, typename THIDUSB>
   class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
-  public:
-    static const uint8_t Radix = 10;
-    static const uint8_t KeyCodeDel = 76;   // 0x4C
-    static const uint8_t KeyCodeTab = 43;   // 0x2B
-    static const uint8_t KeyCodeEnter = 40; // 0x28
-    static const uint8_t KeyCodeSpace = 44; // 0x2C
-  
+  public:  
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
        

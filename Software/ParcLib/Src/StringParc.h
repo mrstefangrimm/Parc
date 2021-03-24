@@ -46,7 +46,9 @@ namespace parclib {
     for (uint8_t n = 0; n < bufLen; n++) {
       if (buf[n] == 0) { return cnt; }
       else if (buf[n] == '"') { enclosedText = !enclosedText; }
-      else if (!enclosedText && buf[n] == seperator) { cnt++; while (buf[n] == seperator) { n++; }
+      else if (!enclosedText && buf[n] == seperator) {
+        cnt++; 
+        while (buf[n+1] == seperator) { n++; }
       }
     }
     return cnt;

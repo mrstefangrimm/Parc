@@ -86,12 +86,6 @@ namespace parc {
   template<class TLOGGER, class THIDBLE>
   class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false> {
   public:
-    static const uint8_t Radix = 16;
-    static const uint8_t KeyCodeDel = 0x4C;
-    static const uint8_t KeyCodeTab = 0x2B;
-    static const uint8_t KeyCodeEnter = 0x28;
-    static const uint8_t KeyCodeSpace = 0x2C;
-
     ProgramStepBleKeyboardCodeRepeated(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false>(logger, 5 * numRepetitions), _ble(ble), _keyCode(keyCode) {}
 
@@ -112,12 +106,6 @@ namespace parc {
   template<class TLOGGER, class THIDBLE>
   class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false> {
   public:
-    static const uint8_t Radix = 16;
-    static const uint8_t KeyCodeDel = 0x4C;
-    static const uint8_t KeyCodeTab = 0x2B;
-    static const uint8_t KeyCodeEnter = 0x28;
-    static const uint8_t KeyCodeSpace = 0x2C;
-              
     ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false>(logger, 5), _ble(ble), _keyCode(keyCode) {}
   
@@ -198,12 +186,6 @@ namespace parc {
   template<class TLOGGER, class THIDUSB>
   class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
   public:
-    static const uint8_t Radix = 16;
-    static const uint8_t KeyCodeDel = 0xD4;
-    static const uint8_t KeyCodeTab = 0xB3;
-    static const uint8_t KeyCodeEnter = 0xB0;
-    static const uint8_t KeyCodeSpace = ' ';
-
     ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
        
@@ -232,12 +214,6 @@ namespace parc {
   template<class TLOGGER, class THIDUSB>
   class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false> {
   public:
-    static const uint8_t Radix = 16;
-    static const uint8_t KeyCodeDel = 0xD4;
-    static const uint8_t KeyCodeTab = 0xB3;
-    static const uint8_t KeyCodeEnter = 0xB0;
-    static const uint8_t KeyCodeSpace = ' ';
-
     ProgramStepUsbKeyboardCodeRepeated(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false>(logger, numRepetitions), _usb(usb), _keyCode(keyCode) {}
 
@@ -264,4 +240,34 @@ namespace parc {
     KeyCode _keyCode;
   };
 
+  template<class TLOGGER, class THIDUSB>
+  class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodes<TLOGGER, THIDUSB>, false> {
+  public:
+    ProgramStepUsbKeyboardCodes(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode, char secondKey)
+      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodes<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode), _secondKey(secondKey) {}
+
+    void doTick(uint8_t tick) {
+      // _duration is equal to number of repetitions
+      if (tick < ProgramStep<TLOGGER>::_duration) {
+        ProgramStep<TLOGGER>::_log.print(F("UK "));
+        //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
+        //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);
+        //ProgramStep<TLOGGER>::_log.println(_keyCode.alt);
+        //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
+        //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
+        if (_keyCode.ctrl) { _usb.press(0x80); }
+        if (_keyCode.shift) { _usb.press(0x81); }
+        if (_keyCode.alt) { _usb.press(0x82); }
+        if (_keyCode.win) { _usb.press(0x83); }
+        _usb.press(_keyCode.hexCode);
+        _usb.press(_secondKey);
+        _usb.releaseAll();
+      }
+    }
+
+  private:
+    THIDUSB& _usb;
+    KeyCode _keyCode;
+    char _secondKey;
+  };
 }
