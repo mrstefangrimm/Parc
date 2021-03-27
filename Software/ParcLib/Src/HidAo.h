@@ -9,16 +9,14 @@
 
 namespace parclib {
   
-  template<class TLOGGER>
-  class HidAo : public Ao<HidAo<TLOGGER>> {
+  template<class TLOGGER, class TPROGRAM>
+  class HidAo : public Ao<HidAo<TLOGGER, TPROGRAM>> {
 
   public:
-    HidAo(TLOGGER& logger, RegisterData_t* registers, Program<TLOGGER>* programs)
-      : Ao_t(registers), _log(logger), _programs(programs) {
-      //  _log.println(freeMemory());
-    }
+    HidAo(TLOGGER& logger, RegisterData_t* registers, TPROGRAM* programs)
+      : Ao_t(registers), _log(logger), _programs(programs) {}
     
-    Program<TLOGGER>* programs() { return _programs; }
+    TPROGRAM* programs() { return _programs; }
 
     void checkRegisters() {
       switch (_state) {
@@ -47,7 +45,6 @@ namespace parclib {
     }
    
     void stateExecute() {
-
       if (_state == State::Execute && Ao_t::_registers[HID_HID_TIMEOUT] != 0) {
 
         _ticksRemaining--;
@@ -64,9 +61,9 @@ namespace parclib {
     }
 
   private:
-    typedef Ao<HidAo<TLOGGER>> Ao_t;
+    typedef Ao<HidAo<TLOGGER, TPROGRAM>> Ao_t;
   
-    Program<TLOGGER>* _programs;
+    TPROGRAM* _programs;
     TLOGGER& _log;
 
     enum class State {
@@ -74,7 +71,7 @@ namespace parclib {
       Execute
     };
     State _state = State::Idle;
-    Program<TLOGGER>* _program = 0;
+    TPROGRAM* _program = 0;
     size_t _ticksRemaining = 0;
   };
 

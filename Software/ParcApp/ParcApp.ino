@@ -50,7 +50,7 @@ KeypadAo<Logger_t, KeypadHw<Logger_t>> keypad(registers, logger, keypadHw);
 typedef HidBle<Logger_t> HidBle_t;
 HidBle_t hidBle(logger);
 
-HidAo<Logger_t> hid(logger, registers, programs);
+HidAo<Logger_t, Program<Logger_t>> hid(logger, registers, programs);
 MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
@@ -88,7 +88,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0x2C;
 };
 
-TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, KnownKeycodes, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
+TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, Program<Logger_t>, KnownKeycodes, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }

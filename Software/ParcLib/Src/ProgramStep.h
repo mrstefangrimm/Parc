@@ -60,8 +60,8 @@ namespace parclib {
     else if (_next != 0) {
       tick = 0;
       _next->play(tick);
-      return _next;
     }
+    return _next;
   }
   
   template<class TLOGGER>

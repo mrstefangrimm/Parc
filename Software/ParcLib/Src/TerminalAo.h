@@ -42,10 +42,10 @@ namespace parclib {
   };
 
 
-  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class KNOWNKEYCODES, uint8_t BUFLEN>
-  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>> {
+  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class TPROGRAM, class KNOWNKEYCODES, uint8_t BUFLEN>
+  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>> {
   public:
-    TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, Program<TLOGGER>* programs)
+    TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, TPROGRAM* programs)
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
 
     void checkRegisters() {
@@ -147,7 +147,7 @@ namespace parclib {
             // Debug: _log.print(_keyPadState.mode); _log.print(F(" ")); _log.print(_keyPadState.button); _log.print(F(" > ")); _log.println(idx);
             if (0 <= idx && idx < NumberOfPrograms) {
               _state = State::ReadingProgramSteps;
-              Program<TLOGGER>& prog = _programs[idx];
+              TPROGRAM& prog = _programs[idx];
               if (prog.hasSteps()) {
                 _log.println(F("got program index. Current program is being disposed."));
               }
@@ -196,7 +196,7 @@ namespace parclib {
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -259,7 +259,7 @@ namespace parclib {
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
+            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
           }
           else {
             _serial.println(F(" Unknown command. This ain't dull, bye."));
@@ -411,7 +411,7 @@ namespace parclib {
     }
     
   private:
-    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, KNOWNKEYCODES, BUFLEN>> Ao_t;
+    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>> Ao_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result BleKeycodeRepeated_t;
@@ -434,7 +434,7 @@ namespace parclib {
     TLOGGER& _log;
     THIDBLE& _ble;
     THIDUSB& _usb;
-    Program<TLOGGER>* _programs;
+    TPROGRAM* _programs;
 
     char _buf[BUFLEN] = { 0 };
     uint8_t _itBuf = 0;

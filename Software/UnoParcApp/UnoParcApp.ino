@@ -53,14 +53,14 @@ HidBle_t hidBle;
 Keypad_t keypadHw(logger);
 
 KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
-HidAo<Logger_t> hid(logger, registers, programs);
+HidAo<Logger_t, Program<Logger_t>> hid(logger, registers, programs);
 MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
 
 struct ProgramStepFake : public ProgramStep<Logger_t> {
-  ProgramStepFake(Logger_t& logger, HidUsb_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
+  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidUsb_t& usb, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidUsb_t& usb, KeyCode keyCode, char secondKey) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
@@ -97,7 +97,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0;
 };
 
-TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
+TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, Program<Logger_t>, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }
