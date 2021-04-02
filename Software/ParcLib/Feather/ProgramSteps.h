@@ -2,12 +2,11 @@
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
+#pragma warning(disable:4996)
 
-#include "Src/ProgramStep.h"
+#include "Domain/ProgramStep.h"
 
-namespace pcbparc {
-
-  using namespace parclib;
+namespace parclib {
 
   template<class TLOGGER, class TDERIVED, bool DISPOSABLE>
   class ProgramStepBase : public ProgramStep<TLOGGER> {
@@ -126,8 +125,8 @@ namespace pcbparc {
   template<class TLOGGER, class THIDBLE>
   class ProgramStepBleControlKey : public ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true> {
   public:
-    ProgramStepBleControlKey(TLOGGER& logger, THIDBLE& ble, const char* ctrlKey, uint8_t duration)
-      : ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true>(logger, max(1, duration / TimerPeriod)), _ble(ble) {
+    ProgramStepBleControlKey(TLOGGER& logger, THIDBLE& ble, const char* ctrlKey)
+      : ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true>(logger, 1), _ble(ble) {
       auto len = strlen(ctrlKey) + 1;
       _ctrlKey = new char[len];
       strncpy(_ctrlKey, ctrlKey, len);
@@ -160,7 +159,7 @@ namespace pcbparc {
   class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true> {
   public:
     ProgramStepUsbKeyboardText(TLOGGER& logger, THIDUSB& usb, const char* text)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true>(logger, strlen(text) * 100 / TimerPeriod), _usb(usb) {
+      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true>(logger, max(1, strlen(text) * 100 / TimerPeriod)), _usb(usb) {
       auto len = strlen(text) + 1;
       _text = new char[len];
       strncpy(_text, text, len);

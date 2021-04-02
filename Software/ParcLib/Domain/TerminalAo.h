@@ -41,7 +41,6 @@ namespace parclib {
 
   };
 
-
   template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class TPROGRAM, class KNOWNKEYCODES, uint8_t BUFLEN>
   class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>> {
   public:
@@ -196,7 +195,7 @@ namespace parclib {
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
+            Ao_t::_registers[TERMINAL_KEYPAD_PIN] = pin.raw;
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -332,13 +331,12 @@ namespace parclib {
     }
 
     ProgramStep<TLOGGER>* createProgramStepBleControlKey(char* subStrs[], uint8_t numSubStr) {
-      auto duration = numSubStr > 2 ? atoi(subStrs[2]) : 1;
-      // _log.print("Control Key: "); _log.print(subStrs[1]); _log.print(" for: "); _log.println(duration);   
+      // _log.print("Control Key: "); _log.print(subStrs[1]); 
 
-      if (strcmp(subStrs[1], "Volume+") == 0) { return new BleControlkey_t(_log, _ble, "0xE9", duration); }
-      if (strcmp(subStrs[1], "Volume-") == 0) { return new BleControlkey_t(_log, _ble, "0xEA", duration); }
+      if (strcmp(subStrs[1], "Volume+") == 0) { return new BleControlkey_t(_log, _ble, "0xE9"); }
+      if (strcmp(subStrs[1], "Volume-") == 0) { return new BleControlkey_t(_log, _ble, "0xEA"); }
       _log.println(F("Create BleControlkey_t"));
-      return new BleControlkey_t(_log, _ble, subStrs[1], duration);
+      return new BleControlkey_t(_log, _ble, subStrs[1]);
     }
 
     ProgramStep<TLOGGER>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {

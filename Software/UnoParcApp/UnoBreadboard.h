@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "Src/Shared.h"
+#include "Domain/Shared.h"
 
 namespace unoparc {
 

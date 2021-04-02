@@ -5,11 +5,11 @@
 #include <SoftwareSerial.h>
 
 #include "ParcLib.h"
-#include "Src/Registers.h"
-#include "Src/KeypadAo.h"
-#include "Src/HidAo.h"
-#include "Src/TerminalAo.h"
-#include "Src/MemoryMonitorAo.h"
+#include "Domain/Registers.h"
+#include "Domain/KeypadAo.h"
+#include "Domain/HidAo.h"
+#include "Domain/TerminalAo.h"
+#include "Domain/MemoryMonitorAo.h"
 
 #include "UnoBreadboard.h"
 #include "Constants.h"
@@ -66,7 +66,6 @@ struct ProgramStepFake : public ProgramStep<Logger_t> {
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
   ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* ctrlKey, uint16_t duration) : ProgramStep(logger, duration) {}
   void action(VirtualAction type, uint8_t& tick) override {};
 };
 

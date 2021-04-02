@@ -47,8 +47,8 @@ namespace parclib {
       if (buf[n] == 0) { return cnt; }
       else if (buf[n] == '"') { enclosedText = !enclosedText; }
       else if (!enclosedText && buf[n] == seperator) {
-        cnt++; 
-        while (buf[n+1] == seperator) { n++; }
+        cnt++;
+        while (buf[n + 1] == seperator) { n++; }
       }
     }
     return cnt;
@@ -82,7 +82,7 @@ namespace parclib {
   }
 
   //strcmp2 saves program and dyn. memory, strcmp5,6,7 consume more prog. mem. than strcmp
-  inline bool strcmp2(const char* a, char b0, char b1) { return a[0] == b0 && a[1] == b1; };
+  bool strcmp2(const char* a, char b0, char b1) { return a[0] == b0 && a[1] == b1; };
   //inline bool strcmp5(const char* a, char b0, char b1, char b2, char b3, char b4) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4; };
   //inline bool strcmp6(const char* a, char b0, char b1, char b2, char b3, char b4, char b5) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5; };
   //inline bool strcmp7(const char* a, char b0, char b1, char b2, char b3, char b4, char b5, char b6) { return a[0] == b0 && a[1] == b1 && a[1] == b1 && a[2] == b2 && a[3] == b3 && a[4] == b4 && a[5] == b5 && a[6] == b6; };

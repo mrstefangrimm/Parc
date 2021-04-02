@@ -4,9 +4,9 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 
-namespace UnitTestsCpp {
+namespace StringParcTest {
 
-#include "Src/StringParc.h"
+#include "Domain/StringParc.h"
 
   using namespace Microsoft::VisualStudio::CppUnitTestFramework;
   using namespace parclib;

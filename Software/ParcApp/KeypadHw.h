@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Adafruit_MCP23008.h"
-#include "Src/Shared.h"
+#include "Domain/Shared.h"
 #include "Constants.h"
 
 namespace parc {

@@ -13,14 +13,11 @@ enum SerialFakeMode { BIN, HEX };
 const int INPUT_PULLUP = 1;
 const int OUTPUT = 2;
 
-#include "Src/HidAo.h"
-#include "Src/Program.h"
-#include "Src/Shared.h"
-#include "Src/Program.h"
-#include "Src/KeypadAo.h"
-#include "Src/TerminalAo.h"
-
-#include "FakeLogger.h"
+#include "Domain/HidAo.h"
+#include "Domain/Shared.h"
+#include "Domain/Program.h"
+#include "Domain/KeypadAo.h"
+#include "Domain/TerminalAo.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace parclib;
@@ -34,11 +31,42 @@ template<> bool CmdComparator<PsType::BleText>::equals(const char* another) cons
 template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) const { return 'B' == another[0] && 'C' == another[1]; }
 template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
 
-namespace UnitTestsCpp 
+namespace TerminalAoTest
 {
-#include "Src/StringParc.h"
+  struct FakeLogger {
+    template<class T>
+    void print(T ch) { }
+    template<class T>
+    void print(T ch, uint8_t mode) {}
+    template<class T>
+    void println(T ch) {}
+  } logger;
 
-  FakeLogger logger;
+  struct FakeKeypadHw {
+
+    template<KeyPadSwitch SWITCH>
+    void pinMode() {
+    }
+
+    template<KeyPadSwitch SWITCH>
+    bool pressed() {
+      return false;
+    }
+
+  } keypadHwFake;
+
+  class FakeHidBle {
+  public:
+    bool sendKeyCode(KeyCode keyCode) {
+      return false;
+    }
+    bool waitForOK() {
+      return true;
+    }
+
+    void print(const char*) {}
+    void println(const char*) {}
+  } ble;
 
   class FakeSerial {
   public:
@@ -71,55 +99,6 @@ namespace UnitTestsCpp
   private:
     list<char> _buf;
   } Serial;
-
-  struct FakeKeypadHw {
-
-    template<KeyPadSwitch SWITCH>
-    void pinMode() {
-    }
-
-    template<KeyPadSwitch SWITCH>
-    bool pressed() {
-      return false;
-    }
-
-  private:
-    bool pressed(Int2Type<true>, uint8_t pin) {
-      return readExpander(pin);
-    }
-
-    bool pressed(Int2Type<false>, uint8_t pin) {
-      return readExpander(pin);
-    }
-
-    void pinMode(Int2Type<true>, uint8_t port, uint8_t mode) {
-    }
-    void pinMode(Int2Type<false>, uint8_t port, uint8_t mode) {
-    }
-
-    bool readExpander(uint8_t pin) {
-      cout << "MCP: " << pin << endl;
-      return false;
-    }
-    bool readDirect(uint8_t pin) {
-      cout << "Arduino: " << pin << endl;
-      return false;
-    }
-
-  } keypadHwFake;
-
-  class FakeHidBle {
-  public:
-    bool sendKeyCode(KeyCode keyCode) {
-      return false;
-    }
-    bool waitForOK() {
-      return true;
-    }
-
-    void print(const char*) {}
-    void println(const char*) {}
-  } ble;
 
   class FakeKeyboard {
   public:
@@ -177,10 +156,9 @@ namespace UnitTestsCpp
     FakeProgramStep(FakeLogger& logger, FakeKeyboard& usb, KeyCode keyCode) : ProgramStep(logger, 0) { type = PsType::UsbKeycode; hexCode = keyCode.hexCode; }
     FakeProgramStep(FakeLogger& logger, FakeKeyboard& usb, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) { type = PsType::UsbKeycodeRepeated; hexCode = keyCode.hexCode; }
     FakeProgramStep(FakeLogger& logger, FakeKeyboard& usb, KeyCode keyCode, char secondKey) : ProgramStep<FakeLogger>(logger, 0) { type = PsType::UsbKeycodes; hexCode = keyCode.hexCode; }
-    FakeProgramStep(FakeLogger& logger, FakeHidBle& ble, const char* text) : ProgramStep<FakeLogger>(logger, 0) { type = PsType::BleText; }
+    FakeProgramStep(FakeLogger& logger, FakeHidBle& ble, const char* text) : ProgramStep<FakeLogger>(logger, 0) { type = strcmp("Mute", text) == 0 ?  type = PsType::BleControlkey : PsType::BleText; }
     FakeProgramStep(FakeLogger& logger, FakeHidBle& ble, KeyCode keyCode) : ProgramStep(logger, 0) { type = PsType::BleKeycode; hexCode = keyCode.hexCode; }
     FakeProgramStep(FakeLogger& logger, FakeHidBle& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) { type = PsType::BleKeycodeRepeated; hexCode = keyCode.hexCode; }
-    FakeProgramStep(FakeLogger& logger, FakeHidBle& ble, const char* ctrlKey, uint16_t duration) : ProgramStep(logger, duration) { type = PsType::BleControlkey; }
 
     void action(VirtualAction type, uint8_t& tick) override {};
 
@@ -213,6 +191,18 @@ namespace UnitTestsCpp
   {
   public:
 
+    TEST_METHOD(given_valid_w_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: W 1000; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::Wait, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
     TEST_METHOD(given_valid_uk_ctrl_k_d_when_read_then_added_step) {
 
       registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
@@ -240,7 +230,7 @@ namespace UnitTestsCpp
     TEST_METHOD(given_valid_uk_win_l_when_read_then_added_step) {
 
       registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-      Serial.setInputBuffer("{ 0 A: UK 'l'; }");
+      Serial.setInputBuffer("{ 0 A: UK <Win> 'l'; }");
 
       for (int n = 0; n < 100; n++) {
         terminal.checkRegisters();
@@ -325,6 +315,186 @@ namespace UnitTestsCpp
       Assert::IsNotNull(programs[0].root);
       Assert::AreEqual<uint8_t>(PsType::UsbKeycodeRepeated, static_cast<FakeProgramStep*>(programs[0].root)->type);
       Assert::AreEqual<uint8_t>(16, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_l_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK 'l'; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_bk_win_l_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK <Win> 'l'; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_bk_ctrl_alt_del_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK <Ctrl> <Alt> <Del>; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(KnownKeycodes::BleKeyCodeDel, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_enter_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK <Enter>; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(KnownKeycodes::BleKeyCodeEnter, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_win_space_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK <Win> <Space>; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(KnownKeycodes::BleKeyCodeSpace, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_tab_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK <Tab>; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(KnownKeycodes::BleKeyCodeTab, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_0xFF_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK 0xFF; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycode, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(0xFF, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+    TEST_METHOD(given_valid_bk_r4_10_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BK -r4 10; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleKeycodeRepeated, static_cast<FakeProgramStep*>(programs[0].root)->type);
+      Assert::AreEqual<uint8_t>(16, static_cast<FakeProgramStep*>(programs[0].root)->hexCode);
+    }
+
+
+    TEST_METHOD(given_valid_ut_one_word_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: UT hello; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::UsbText, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_ut_two_words_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: UT \"hello parc\"; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::UsbText, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_bt_one_word_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BT hello; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleText, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_bt_two_words_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BT \"hello parc\"; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleText, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_bc_mute_when_read_then_added_step) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ 0 A: BC Mute; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+      Assert::IsNotNull(programs[0].root);
+      Assert::AreEqual<uint8_t>(PsType::BleControlkey, static_cast<FakeProgramStep*>(programs[0].root)->type);
+    }
+
+    TEST_METHOD(given_valid_pin_when_read_then_set) {
+
+      registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+      Serial.setInputBuffer("{ P N: 1 0 1 1 3; }");
+
+      for (int n = 0; n < 100; n++) {
+        terminal.checkRegisters();
+      }
+
+      PinRegData regData = registers[TERMINAL_KEYPAD_PIN];
+      Assert::AreEqual<uint8_t>(regData.code3, 1);
+      Assert::AreEqual<uint8_t>(regData.code2, 0);
+      Assert::AreEqual<uint8_t>(regData.code1, 1);
+      Assert::AreEqual<uint8_t>(regData.code0, 1);
+      Assert::AreEqual<uint8_t>(regData.retries, 3);
     }
 
   };

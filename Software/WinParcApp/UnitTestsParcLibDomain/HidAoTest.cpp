@@ -5,22 +5,24 @@
 #include "CppUnitTest.h"
 
 #define F(x) (x)
-#define max(a,b) ((a)>(b)?(a):(b))
-enum SerialFakeMode { BIN, HEX };
-const int INPUT_PULLUP = 1;
-const int OUTPUT = 2;
 
-#include "Src/HidAo.h"
-#include "Src/Program.h"
-#include "Src/Shared.h"
-#include "FakeLogger.h"
+#include "Domain/HidAo.h"
+#include "Domain/Program.h"
+#include "Domain/Shared.h"
 
-namespace UnitTestsCpp 
+namespace HidAoTest
 {
-
   using namespace Microsoft::VisualStudio::CppUnitTestFramework;
   using namespace parclib;
 
+  struct FakeLogger {
+    template<class T>
+    void print(T ch) { }
+    template<class T>
+    void print(T ch, uint8_t mode) {}
+    template<class T>
+    void println(T ch) {}
+  } logger;
 
   // Test naming scheme: Given-When-Then
 

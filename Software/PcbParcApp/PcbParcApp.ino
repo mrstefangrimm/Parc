@@ -3,26 +3,23 @@
 //
 
 #include <SoftwareSerial.h>
+#include <Keyboard.h>
 
 #include "ParcLib.h"
-#include "Src/Registers.h"
+#include "Domain/Registers.h"
+#include "Domain/KeypadAo.h"
+#include "Domain/HidAo.h"
+#include "Domain/TerminalAo.h"
+#include "Domain/MemoryMonitorAo.h"
+
+#include "Feather/HidBle.h"
+#include "Feather/ProgramSteps.h"
 
 #include "KeypadHw.h"
-#include "Src/KeypadAo.h"
-
-#include <Keyboard.h>
-#include "HidBle.h"
-#include "Src/HidAo.h"
-
-#include "Src/TerminalAo.h"
-
-#include "Src/MemoryMonitorAo.h"
-
 #include "Constants.h"
-#include "ProgramSteps.h"
 
-using namespace pcbparc;
 using namespace parclib;
+using namespace pcbparc;
 
 class FakeLogger {
 public:

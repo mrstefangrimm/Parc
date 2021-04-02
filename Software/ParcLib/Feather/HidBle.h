@@ -6,9 +6,10 @@
 #include "Adafruit_BLE.h"
 #include "Adafruit_BluefruitLE_SPI.h"
 #include "BluefruitConfig.h"
+#include "Domain/Shared.h"
 
-namespace parc { 
-  
+namespace parclib {
+
   template<class TLOGGER>
   class HidBle {
   public:

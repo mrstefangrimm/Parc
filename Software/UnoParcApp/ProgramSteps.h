@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "Src/ProgramStep.h"
+#include "Domain/ProgramStep.h"
 
 namespace unoparc {
 
