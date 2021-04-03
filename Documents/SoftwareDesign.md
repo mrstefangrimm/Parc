@@ -4,6 +4,13 @@
 
 
 
+Domain Centric architecture.
+
+| application | infrastructure |
+|             core                |
+
+Because the small size, the infrastructure and the core are in the same library called ParcLib. As Core and Infrastructure are name for containers, the name for the core-logic in ParcLib is "domain" and "feather" for the infrastructure. Some of the infrastructure code is application specific and not shared in between. So "feather" is more precise (What about A0 processor, maybe feather will be 32u4)
+
 
 
 ## Best practices
