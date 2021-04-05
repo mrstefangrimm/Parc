@@ -2,16 +2,51 @@
 
 ## Concepts
 
+The software architecture is a typical domain centric architecture. The the same domain model is used on different hardware platforms,  the ports-and-adapters architecture is ideal for this.
+
+The hardware components are a keypad and a CPU board. The functionally for a Parc device is given by the domain model, the hardware can change and may supports only a subset of the functionality.
+
+| USB and BLE | USB Only |
+| ----------------------- | -------- |
+| ![keypad](./Keypad.JPG) ![PCB keypad](./KeypadPcb.JPG) ![breadboard](./Breadboard.JPG)  | ![breadboard UNO](./BreadboardUno.JPG) |
+| ![32u4BLE](./Adafruit32u4BLE.JPG) | ![Arduino](./ArduinoUno.JPG)  |
 
 
-Domain Centric architecture.
 
-| application | infrastructure |
-|             core                |
+### Domain Model
 
-Because the small size, the infrastructure and the core are in the same library called ParcLib. As Core and Infrastructure are name for containers, the name for the core-logic in ParcLib is "domain" and "feather" for the infrastructure. Some of the infrastructure code is application specific and not shared in between. So "feather" is more precise (What about A0 processor, maybe feather will be 32u4)
+![domain model](./DomainModel.JPG)
 
+### Components
 
+![component diagram](./ComponentDiagram.JPG)
+
+Because the small size of the project, some infrastructure code is in the ParbLib library. Core and infrastructure are the typical names. Here, the names are "Domain" and "Feather". 
+
+Infrastructure code that is not shared between the ParcApp and the PcbParcApp as the keypad hardware implementation is in the ParcApp resp. PcbParcApp component. 
+
+The term "Feather" may not be sufficient in future as a Adafruit Feather M0 Bluefruit LE could be used. 
+
+#### Active Components
+
+- KeypadAo: Polls the input (key presses) on the keypad
+- HidAo: Acts as the HID (human interface device) and executes a program of commands (the program steps). Only one program can run at a time.
+- TerminalAo: Process the serial input and interprets it as a Dull program.
+- SystemMonitorAo: Holds the current system state and shows it to the user.
+
+#### Passive Compentents
+
+- Program: A concrete series of program steps.
+- ProgramStep: A abstract definition of a HID command such as a keypress or a BLE command (e.g. Mute).
+- Registers: A array of value objects which are modified and read by the active components.
+
+### ParcApp Detail Design
+
+The infrastructure implementations for the ParcApp. The PcbParcApp has a different implementation for the keypad but shared the implementations for the program steps.
+
+![Parc Design](./DomainModel-ParcApp.JPG)
+
+The yellow/orange colored classes are all infrastructure. Also the ProgramStep implementations which are not shown on the diagram.
 
 ## Best practices
 
