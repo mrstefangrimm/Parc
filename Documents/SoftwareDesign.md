@@ -46,7 +46,7 @@ The infrastructure implementations for the ParcApp. The PcbParcApp has a differe
 
 ![Parc Design](./DomainModel-ParcApp.JPG)
 
-The yellow/orange colored classes are all infrastructure. Also the ProgramStep implementations which are not shown on the diagram.
+All yellow/orange colored classes are infrastructure. Also the ProgramStep implementations, which are not shown on the diagram, are infrastructure.
 
 ## Best practices
 
@@ -360,3 +360,7 @@ Why? Every virtual method has a pointer (two bytes) in the virtual table, i.e. p
 - virtual void action(VirtualAction type, uint8_t& tick) = 0;
 
    => 2 bytes for the vtable + 1 byte for `type` + 2 bytes for `&tick` => 5 bytes per class => 10 * 5 = 50 bytes
+
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
