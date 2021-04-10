@@ -10,10 +10,11 @@
 #include "Domain/KeypadAo.h"
 #include "Domain/HidAo.h"
 #include "Domain/TerminalAo.h"
-#include "Domain/MemoryMonitorAo.h"
+#include "Domain/SystemMonitorAo.h"
 
 #include "Feather/HidBle.h"
 #include "Feather/ProgramSteps.h"
+#include "Feather/SystemHw.h"
 
 #include "KeypadHw.h"
 #include "Constants.h"
@@ -48,7 +49,8 @@ typedef HidBle<Logger_t> HidBle_t;
 HidBle_t hidBle(logger);
 
 HidAo<Logger_t, Program<Logger_t>> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
+
+SystemMonitorAo<Logger_t, SystemHw, 216> systemMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -85,7 +87,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0x2C;
 };
 
-TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, Program<Logger_t>, KnownKeycodes, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
+TerminalAo<ProgramStepList, Serial_, Logger_t, HidBle_t, Keyboard_, Program<Logger_t>, SystemHw, KnownKeycodes, 30> terminal(Serial, logger, hidBle, Keyboard, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }
@@ -112,7 +114,7 @@ void setup() {
 
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(10);
+  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
 
 }
 
@@ -121,7 +123,7 @@ void loop() {
   keypad.checkRegisters();
   hid.checkRegisters();
   terminal.checkRegisters();
-  memoryMonitor.checkRegisters();
+  systemMonitor.checkRegisters();
   
   delay(TimerPeriod);  
 }

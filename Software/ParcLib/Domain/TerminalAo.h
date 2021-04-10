@@ -41,8 +41,8 @@ namespace parclib {
 
   };
 
-  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class TPROGRAM, class KNOWNKEYCODES, uint8_t BUFLEN>
-  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>> {
+  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGER, class THIDBLE, class THIDUSB, class TPROGRAM, class TSYSTEMHW, class KNOWNKEYCODES, uint8_t BUFLEN>
+  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, TSYSTEMHW, KNOWNKEYCODES, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, TLOGGER& logger, THIDBLE& ble, THIDUSB& usb, RegisterData_t* registers, TPROGRAM* programs)
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _log(logger), _ble(ble), _usb(usb), _programs(programs) {}
@@ -88,6 +88,7 @@ namespace parclib {
               _programs[input.programIndex()].hasSteps() ? _serial.println(F("Yes")) : _serial.println(F("No"));
             }
           }
+          _serial.print(F("Remaining bytes: ")); _serial.println(TSYSTEMHW::freeMemory());
          
         }
         else if (isprint(ch)) {
@@ -258,7 +259,7 @@ namespace parclib {
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>>::_registers[TERMINAL_MEMORY_CHANGE] = MemoryChangedRegData(1);
+            Ao_t::_registers[TERMINAL_MONITOR_PROGCHANGE] = ProgramChangedRegData(1);
           }
           else {
             _serial.println(F(" Unknown command. This ain't dull, bye."));
@@ -409,7 +410,7 @@ namespace parclib {
     }
     
   private:
-    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, KNOWNKEYCODES, BUFLEN>> Ao_t;
+    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGER, THIDBLE, THIDUSB, TPROGRAM, TSYSTEMHW, KNOWNKEYCODES, BUFLEN>> Ao_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result BleKeycodeRepeated_t;

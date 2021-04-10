@@ -82,18 +82,18 @@ namespace parclib {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
               Ao_t::_registers[KEYPAD_HID_INPUT] = args.raw;
-              Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+              Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
             }
             else if (_pin.raw != 0 && pin != 0) {
               _log.print(F("Wrong PIN, remaining retries: ")); _log.println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
                 _log.println(F("Game Over."));
-                Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+                Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
               }
               else {
                 _pin.failed++;
                 longTimeout = true;
-                Ao_t::_registers[KEYPAD_MEMORY_WRONG] = _pin.raw;
+                Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
               }
             }
             else {

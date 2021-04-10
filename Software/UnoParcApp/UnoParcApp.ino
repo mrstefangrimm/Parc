@@ -9,7 +9,9 @@
 #include "Domain/KeypadAo.h"
 #include "Domain/HidAo.h"
 #include "Domain/TerminalAo.h"
-#include "Domain/MemoryMonitorAo.h"
+#include "Domain/SystemMonitorAo.h"
+
+#include "Feather/SystemHw.h"
 
 #include "UnoBreadboard.h"
 #include "Constants.h"
@@ -48,13 +50,13 @@ typedef UnoBreadboard<Logger_t> Keypad_t;
 Program<Logger_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
 
-
 HidBle_t hidBle;
 Keypad_t keypadHw(logger);
 
 KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
 HidAo<Logger_t, Program<Logger_t>> hid(logger, registers, programs);
-MemoryMonitorAo<Logger_t, 216> memoryMonitor(logger, registers);
+
+SystemMonitorAo<Logger_t, SystemHw, 216> systemMonitor(logger, registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -96,7 +98,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0;
 };
 
-TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, Program<Logger_t>, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
+TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, Program<Logger_t>, SystemHw, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }
@@ -114,7 +116,7 @@ void setup() {
 
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MEMORY_MEMORY_TIMEOUT] = TimerRegData(10);
+  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
 
 }
 
@@ -123,7 +125,7 @@ void loop() {
   keypad.checkRegisters();
   hid.checkRegisters();
   terminal.checkRegisters();
-  memoryMonitor.checkRegisters();
+  systemMonitor.checkRegisters();
   
   delay(TimerPeriod);  
 }

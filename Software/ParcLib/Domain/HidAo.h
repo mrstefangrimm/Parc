@@ -38,9 +38,12 @@ namespace parclib {
         _log.print(F("HidAo:stateIdle() Received Mode: ")); _log.print(args.mode); _log.print(F(" Button: ")); _log.print(args.button);
         _log.print(F(" Prog. ")); _log.print(progIdx); _log.print(F(" Duration: ")); _log.println(_ticksRemaining);
 
-        _log.print(F("Execute { "));
-        _state = State::Execute;
-        Ao_t::_registers[HID_HID_TIMEOUT] = 1;
+        // State Execute if a program is defined. `_ticksRemaining > 0` is equivalent to `_program.hasSteps()`
+        if (_ticksRemaining > 0) {
+          _log.print(F("Execute { "));
+          _state = State::Execute;
+          Ao_t::_registers[HID_HID_TIMEOUT] = TimerRegData(1);
+        }
       }
     }
    

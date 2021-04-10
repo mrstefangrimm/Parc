@@ -166,6 +166,12 @@ namespace TerminalAoTest
     uint8_t hexCode = 0;
   };
 
+  struct FakeSystemHw {
+    static int freeMemory() { return 100; }
+    static void warnLedOn() {  }
+    static void warnLedOff() { }
+  };
+
   KeypadAo<FakeLogger, FakeKeypadHw> keypadAo(registers, logger, keypadHwFake);
   HidAo<FakeLogger, FakeProgram<FakeLogger>> hid(logger, registers, programs);
 
@@ -182,7 +188,7 @@ namespace TerminalAoTest
     Typelist<FakeProgramStep,
     NullType>>>>>>>>> ProgramStepList;
 
-  TerminalAo<ProgramStepList, FakeSerial, FakeLogger, FakeHidBle, FakeKeyboard, FakeProgram<FakeLogger>, KnownKeycodes, 40> terminal(Serial, logger, ble, usb, registers, programs);
+  TerminalAo<ProgramStepList, FakeSerial, FakeLogger, FakeHidBle, FakeKeyboard, FakeProgram<FakeLogger>, FakeSystemHw, KnownKeycodes, 40> terminal(Serial, logger, ble, usb, registers, programs);
 
 
   // Test naming scheme: Given-When-Then
@@ -489,7 +495,7 @@ namespace TerminalAoTest
         terminal.checkRegisters();
       }
 
-      PinRegData regData = registers[TERMINAL_KEYPAD_PIN];
+      PinRegData regData(registers[TERMINAL_KEYPAD_PIN]);
       Assert::AreEqual<uint8_t>(regData.code3, 1);
       Assert::AreEqual<uint8_t>(regData.code2, 0);
       Assert::AreEqual<uint8_t>(regData.code1, 1);

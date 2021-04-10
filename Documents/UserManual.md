@@ -123,7 +123,7 @@ The PIN is optional. Once you have set a PIN it is no longer optional. If your p
 
 If you've set a PIN and the code switches are all set to zero, keypresses are ignored.
 
-Here is how you set a PIN: `{ P N: 1 0 1 0 2; }`. The last number is the number of retries before the device locks.
+Here is how you set a PIN: `{ P N: 1 0 0 1 2; }`. The last number is the number of retries before the device locks.
 
 
 

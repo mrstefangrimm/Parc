@@ -119,7 +119,7 @@ Example with two retries): `{ P N: 1 0 1 0 2}`
 
 ## Help (?)
 
-The help list all the 20 available program slots and if they are in use or not.
+The help lists all the 20 available program slots and if they are in use or not.
 
 Example: `?`
 

@@ -24,17 +24,28 @@ namespace HidAoTest
     void println(T ch) {}
   } logger;
 
+  struct FakeProgramStep : public ProgramStep<FakeLogger> {
+    FakeProgramStep(FakeLogger& logger) : ProgramStep<FakeLogger>(logger, 10), isPlaying(false), currentTick(0) { }
+
+    void action(VirtualAction type, uint8_t& tick) override {
+      isPlaying = type == VirtualAction::Tick;
+      currentTick = tick;
+    };
+
+    bool isPlaying;
+    uint8_t currentTick;
+  };
+
   // Test naming scheme: Given-When-Then
 
   TEST_CLASS(HidAoTest)
   {
   public:
 
-    TEST_METHOD(given_state_idle_when_hid_input_then_timeout_set) {
+    TEST_METHOD(given_state_idle_and_no_program_when_checkRegisters_then_timeout_not_set_as_state_idle) {
 
-      FakeLogger logger;
-      Program<FakeLogger> programs[NumberOfPrograms]; memset(programs, 0, sizeof(Program<FakeLogger>));
-      RegisterData_t registers[TOTAL_REGISTERS]; memset(registers, 0, sizeof(RegisterData_t));
+      Program<FakeLogger> programs[NumberOfPrograms]; memset(programs, 0, NumberOfPrograms * sizeof(Program<FakeLogger>));
+      RegisterData_t registers[TOTAL_REGISTERS]; memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
 
       HidAo<FakeLogger, Program<FakeLogger>> hid(logger, registers, programs);
 
@@ -44,7 +55,35 @@ namespace HidAoTest
       hid.checkRegisters();
 
       Assert::AreEqual<uint8_t>(0, registers[KEYPAD_HID_INPUT]);
+      Assert::AreEqual<uint8_t>(0, registers[HID_HID_TIMEOUT]);
+    }
+
+    TEST_METHOD(given_state_idle_and_program_when_checkRegisters_then_state_execute) {
+
+      Program<FakeLogger> programs[NumberOfPrograms]; memset(programs, 0, NumberOfPrograms * sizeof(Program<FakeLogger>));
+      RegisterData_t registers[TOTAL_REGISTERS]; memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
+
+      HidAo<FakeLogger, Program<FakeLogger>> hid(logger, registers, programs);
+
+      KeypadRegData hidInput(0, 1);
+      FakeProgramStep someProgramStep(logger);
+      programs[0].appendStep(&someProgramStep);
+
+      registers[KEYPAD_HID_INPUT] = hidInput.raw;
+
+      hid.checkRegisters();
+      // Changed from state Idle to State Execute
+      Assert::AreEqual<uint8_t>(0, registers[KEYPAD_HID_INPUT]);
       Assert::AreEqual<uint8_t>(1, registers[HID_HID_TIMEOUT]);
+      Assert::AreEqual<bool>(false, someProgramStep.isPlaying);
+      Assert::AreEqual<uint8_t>(0, someProgramStep.currentTick);
+
+      hid.checkRegisters();
+      // State Execute
+      Assert::AreEqual<uint8_t>(0, registers[KEYPAD_HID_INPUT]);
+      Assert::AreEqual<uint8_t>(1, registers[HID_HID_TIMEOUT]);
+      Assert::AreEqual<bool>(true, someProgramStep.isPlaying);
+      Assert::AreEqual<uint8_t>(0, someProgramStep.currentTick);
     }
 
   };

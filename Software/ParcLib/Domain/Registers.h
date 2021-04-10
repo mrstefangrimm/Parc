@@ -7,22 +7,23 @@ namespace parclib {
   
   enum Register {
     KEYPAD_KEYPAD_TIMEOUT = 1,
-    KEYPAD_HID_INPUT,
-    KEYPAD_MEMORY_WRONG,
-    KEYPAD_TERMINAL_PINALREADYDEFINED,
-    HID_HID_TIMEOUT,
-    TERMINAL_TERMINAL_TIMEOUT,
-    TERMINAL_MEMORY_CHANGE,
     TERMINAL_KEYPAD_PIN,
-    MEMORY_MEMORY_TIMEOUT,
+    HID_HID_TIMEOUT,
+    KEYPAD_HID_INPUT,
+    KEYPAD_TERMINAL_PINALREADYDEFINED,
+    TERMINAL_TERMINAL_TIMEOUT,
+    MONITOR_MONITOR_TIMEOUT,
+    TERMINAL_MONITOR_PROGCHANGE,
+    KEYPAD_MONITOR_WRONGPIN,
+    X_MONITOR_X,
     TOTAL_REGISTERS
   };
 
   // TODO: this typedef could be application specific
   typedef uint8_t RegisterData_t;
   typedef RegisterData_t TimerRegData;
-  typedef RegisterData_t MemoryChangedRegData;
   typedef RegisterData_t PinAlreadyDefinedRegData;
+  typedef RegisterData_t ProgramChangedRegData;
 
   struct KeypadRegData {
     KeypadRegData() : raw(0) {}
