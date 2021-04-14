@@ -82,7 +82,6 @@ namespace parc {
     }
     
     bool pressed(Int2Type<false>, uint8_t pin) {
-      if (pin == 9) { return false; }
       return ::digitalRead(pin) == HIGH;
     }
 
