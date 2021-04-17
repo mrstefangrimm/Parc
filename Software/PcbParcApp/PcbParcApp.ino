@@ -36,8 +36,8 @@ public:
   void println(T ch, uint8_t mode) {}
 };
 
-typedef SoftwareSerial Logger_t; // Serial_, HardwareSerial, SoftwareSerial, FakeLogger
-Logger_t logger(Usb_ORA, Usb_YEL); // typedef Serial_ Logger_t; #define logger Serial
+typedef FakeLogger Logger_t; // SoftwareSerial, FakeLogger
+Logger_t logger(Usb_ORA, Usb_YEL);
 
 Program<Logger_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
