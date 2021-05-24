@@ -4,15 +4,15 @@
 #pragma once
 #pragma warning(disable:4996)
 
-#include "Domain/ProgramStep.h"
+#include "Core/ProgramStep.h"
 
 namespace parclib {
 
-  template<class TLOGGER, class TDERIVED, bool DISPOSABLE>
-  class ProgramStepBase : public ProgramStep<TLOGGER> {
+  template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
+  class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
   public:
-    ProgramStepBase(TLOGGER& logger, uint8_t duration)
-      : ProgramStep<TLOGGER>(logger, duration) {}
+    ProgramStepBase(uint8_t duration)
+      : ProgramStep<TLOGGERFAC>(duration) {}
 
   protected:
     void action(VirtualAction type, uint8_t& tick) final {
@@ -37,23 +37,24 @@ namespace parclib {
 
   };
       
-  template<class TLOGGER>
-  class ProgramStepWait : public ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false> {
+  template<class TLOGGERFAC>
+  class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
   public:
-    ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false>(logger, waitMs / TimerPeriod) {}
+    ProgramStepWait(uint16_t waitMs) : ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false>(waitMs / TimerPeriod) {}
    
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("W "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("W "));
       }
     }
   };
 
-  template<class TLOGGER, class THIDBLE>
-  class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardText<TLOGGER, THIDBLE>, true> {
+  template<class TLOGGERFAC, class THIDBLEFAC>
+  class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardText<TLOGGERFAC, THIDBLEFAC>, true> {
   public:
-    ProgramStepBleKeyboardText(TLOGGER& logger, THIDBLE& ble, const char* text)
-      : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardText<TLOGGER, THIDBLE>, true>(logger, max(10, strlen(text) * 100 / TimerPeriod)), _ble(ble) {
+    ProgramStepBleKeyboardText(const char* text)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardText<TLOGGERFAC, THIDBLEFAC>, true>(max(10, strlen(text) * 100 / TimerPeriod)) {
       auto len = strlen(text) + 1;
       _text = new char[len];
       strncpy(_text, text, len);
@@ -66,67 +67,67 @@ namespace parclib {
 
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("BT "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("BT "));
         //ProgramStep<TLOGGER>::_log.println(_text);
+        auto ble = THIDBLEFAC::create();
+        ble->print(F("AT+BleKeyboard="));
+        ble->println(_text);
 
-        _ble.print(F("AT+BleKeyboard="));
-        _ble.println(_text);
-
-        if (_ble.waitForOK()) { return; }
-        ProgramStep<TLOGGER>::_log.println(F("Send keyboard text failed. Enable verbose mode for more information."));
+        if (ble->waitForOK()) { return; }
+        log->println(F("Send keyboard text failed. Enable verbose mode for more information."));
       }
     }
 
   private:
-    THIDBLE& _ble;
     char* _text;
   };
 
-  template<class TLOGGER, class THIDBLE>
-  class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false> {
+  template<class TLOGGERFAC, class THIDBLEFAC>
+  class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCode<TLOGGERFAC, THIDBLEFAC>, false> {
   public:              
-    ProgramStepBleKeyboardCode(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode)
-      : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCode<TLOGGER, THIDBLE>, false>(logger, 5), _ble(ble), _keyCode(keyCode) {}
+    ProgramStepBleKeyboardCode(KeyCode keyCode)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCode<TLOGGERFAC, THIDBLEFAC>, false>(5), _keyCode(keyCode) {}
   
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("BK "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("BK "));
         //ProgramStep<TLOGGER>::_log.println(_hexCode);
-
-        _ble.sendKeyCode(_keyCode);
+        auto ble = THIDBLEFAC::create();
+        ble->sendKeyCode(_keyCode);
       }
     }
 
   private:
-    THIDBLE& _ble;
     KeyCode _keyCode;
   };
 
-  template<class TLOGGER, class THIDBLE>
-  class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false> {
+  template<class TLOGGERFAC, class THIDBLEFAC>
+  class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCodeRepeated<TLOGGERFAC, THIDBLEFAC>, false> {
   public:
-    ProgramStepBleKeyboardCodeRepeated(TLOGGER& logger, THIDBLE& ble, KeyCode keyCode, uint8_t numRepetitions)
-      : ProgramStepBase<TLOGGER, ProgramStepBleKeyboardCodeRepeated<TLOGGER, THIDBLE>, false>(logger, 5 * numRepetitions), _ble(ble), _keyCode(keyCode) {}
+    ProgramStepBleKeyboardCodeRepeated(KeyCode keyCode, uint8_t numRepetitions)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCodeRepeated<TLOGGERFAC, THIDBLEFAC>, false>(5 * numRepetitions), _keyCode(keyCode) {}
 
     void doTick(uint8_t tick) {
       if (tick % 5 == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("BK "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("BK "));
         //ProgramStep<TLOGGER>::_log.println(_hexCode);
-
-        _ble.sendKeyCode(_keyCode);
+        auto ble = THIDBLEFAC::create();
+        ble->sendKeyCode(_keyCode);
       }
     }
 
   private:
-    THIDBLE& _ble;
     KeyCode _keyCode;
   };
 
-  template<class TLOGGER, class THIDBLE>
-  class ProgramStepBleControlKey : public ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true> {
+  template<class TLOGGERFAC, class THIDBLEFAC>
+  class ProgramStepBleControlKey : public ProgramStepBase<TLOGGERFAC, ProgramStepBleControlKey<TLOGGERFAC, THIDBLEFAC>, true> {
   public:
-    ProgramStepBleControlKey(TLOGGER& logger, THIDBLE& ble, const char* ctrlKey)
-      : ProgramStepBase<TLOGGER, ProgramStepBleControlKey<TLOGGER, THIDBLE>, true>(logger, 1), _ble(ble) {
+    ProgramStepBleControlKey(const char* ctrlKey)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepBleControlKey<TLOGGERFAC, THIDBLEFAC>, true>(1) {
       auto len = strlen(ctrlKey) + 1;
       _ctrlKey = new char[len];
       strncpy(_ctrlKey, ctrlKey, len);
@@ -139,27 +140,27 @@ namespace parclib {
 
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("BC "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("BC "));
         //ProgramStep<TLOGGER>::_log.println(_ctrlKey);
+        auto ble = THIDBLEFAC::create();
+        ble->print(F("AT+BleHidControlKey="));
+        ble->println(_ctrlKey);
 
-        _ble.print(F("AT+BleHidControlKey="));
-        _ble.println(_ctrlKey);
-
-        if (_ble.waitForOK()) { return; }
-        ProgramStep<TLOGGER>::_log.println(F("Send keyboard text failed. Enable verbose mode for more information."));
+        if (ble->waitForOK()) { return; }
+        log->println(F("Send keyboard text failed. Enable verbose mode for more information."));
       }
     }
 
   private:
-    THIDBLE& _ble;
     char* _ctrlKey;
   };
 
-  template<class TLOGGER, class THIDUSB>
-  class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true> {
+  template<class TLOGGERFAC, class THIDUSBFAC>
+  class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardText<TLOGGERFAC, THIDUSBFAC>, true> {
   public:
-    ProgramStepUsbKeyboardText(TLOGGER& logger, THIDUSB& usb, const char* text)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardText<TLOGGER, THIDUSB>, true>(logger, max(1, strlen(text) * 100 / TimerPeriod)), _usb(usb) {
+    ProgramStepUsbKeyboardText(const char* text)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardText<TLOGGERFAC, THIDUSBFAC>, true>(max(1, strlen(text) * 100 / TimerPeriod)) {
       auto len = strlen(text) + 1;
       _text = new char[len];
       strncpy(_text, text, len);
@@ -172,100 +173,104 @@ namespace parclib {
 
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("UT "));
-        _usb.println(_text);
+        auto log = TLOGGERFAC::create();
+        log->print(F("UT "));
+        auto usb = THIDUSBFAC::create();
+        usb->println(_text);
       }
     }
 
   private:
-    THIDUSB& _usb;
     char* _text;
   };
 
-  template<class TLOGGER, class THIDUSB>
-  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
+  template<class TLOGGERFAC, class THIDUSBFAC>
+  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
-    ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
+    ProgramStepUsbKeyboardCode(KeyCode keyCode)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode) {}
        
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("UK "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.alt);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
-        if (_keyCode.ctrl) { _usb.press(0x80); }
-        if (_keyCode.shift) { _usb.press(0x81); }
-        if (_keyCode.alt) { _usb.press(0x82); }
-        if (_keyCode.win) { _usb.press(0x83); }
-        _usb.press(_keyCode.hexCode);
-        _usb.releaseAll();
+        auto usb = THIDUSBFAC::create();
+        if (_keyCode.ctrl) { usb->press(0x80); }
+        if (_keyCode.shift) { usb->press(0x81); }
+        if (_keyCode.alt) { usb->press(0x82); }
+        if (_keyCode.win) { usb->press(0x83); }
+        usb->press(_keyCode.hexCode);
+        usb->releaseAll();
       }
     }
 
   private:
-    THIDUSB& _usb;
     KeyCode _keyCode;
   };
 
-  template<class TLOGGER, class THIDUSB>
-  class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false> {
+  template<class TLOGGERFAC, class THIDUSBFAC>
+  class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
-    ProgramStepUsbKeyboardCodeRepeated(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode, uint8_t numRepetitions)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodeRepeated<TLOGGER, THIDUSB>, false>(logger, numRepetitions), _usb(usb), _keyCode(keyCode) {}
+    ProgramStepUsbKeyboardCodeRepeated(KeyCode keyCode, uint8_t numRepetitions)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false>(numRepetitions), _keyCode(keyCode) {}
 
     void doTick(uint8_t tick) {
       // _duration is equal to number of repetitions
-      if (tick < ProgramStep<TLOGGER>::_duration) {
-        ProgramStep<TLOGGER>::_log.print(F("UK "));
+      if (tick < ProgramStep<TLOGGERFAC>::_duration) {
+        auto log = TLOGGERFAC::create();
+        log->print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.alt);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
-        if (_keyCode.ctrl) { _usb.press(0x80); }
-        if (_keyCode.shift) { _usb.press(0x81); }
-        if (_keyCode.alt) { _usb.press(0x82); }
-        if (_keyCode.win) { _usb.press(0x83); }
-        _usb.press(_keyCode.hexCode);
-        _usb.releaseAll();
+        auto usb = THIDUSBFAC::create();
+        if (_keyCode.ctrl) { usb->press(0x80); }
+        if (_keyCode.shift) { usb->press(0x81); }
+        if (_keyCode.alt) { usb->press(0x82); }
+        if (_keyCode.win) { usb->press(0x83); }
+        usb->press(_keyCode.hexCode);
+        usb->releaseAll();
       }
     }
 
   private:
-    THIDUSB& _usb;
     KeyCode _keyCode;
   };
 
-  template<class TLOGGER, class THIDUSB>
-  class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodes<TLOGGER, THIDUSB>, false> {
+  template<class TLOGGERFAC, class THIDUSBFAC>
+  class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
-    ProgramStepUsbKeyboardCodes(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode, char secondKey)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCodes<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode), _secondKey(secondKey) {}
+    ProgramStepUsbKeyboardCodes(KeyCode keyCode, char secondKey)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode), _secondKey(secondKey) {}
 
     void doTick(uint8_t tick) {
       // _duration is equal to number of repetitions
-      if (tick < ProgramStep<TLOGGER>::_duration) {
-        ProgramStep<TLOGGER>::_log.print(F("UK "));
+      if (tick < ProgramStep<TLOGGERFAC>::_duration) {
+        auto log = TLOGGERFAC::create();
+        log->print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.shift);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.alt);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
-        if (_keyCode.ctrl) { _usb.press(0x80); }
-        if (_keyCode.shift) { _usb.press(0x81); }
-        if (_keyCode.alt) { _usb.press(0x82); }
-        if (_keyCode.win) { _usb.press(0x83); }
-        _usb.press(_keyCode.hexCode);
-        _usb.press(_secondKey);
-        _usb.releaseAll();
+        auto usb = THIDUSBFAC::create();
+        if (_keyCode.ctrl) { usb->press(0x80); }
+        if (_keyCode.shift) { usb->press(0x81); }
+        if (_keyCode.alt) { usb->press(0x82); }
+        if (_keyCode.win) { usb->press(0x83); }
+        usb->press(_keyCode.hexCode);
+        usb->press(_secondKey);
+        usb->releaseAll();
       }
     }
 
   private:
-    THIDUSB& _usb;
     KeyCode _keyCode;
     char _secondKey;
   };

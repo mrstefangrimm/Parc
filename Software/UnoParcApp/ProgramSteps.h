@@ -3,15 +3,15 @@
 //
 #pragma once
 
-#include "Domain/ProgramStep.h"
+#include "Core/ProgramStep.h"
 
 namespace unoparc {
 
-  template<class TLOGGER, class TDERIVED, bool DISPOSABLE>
-  class ProgramStepBase : public ProgramStep<TLOGGER> {
+  template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
+  class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
   public:
-    ProgramStepBase(TLOGGER& logger, uint8_t duration)
-      : ProgramStep<TLOGGER>(logger, duration) {}
+    ProgramStepBase(uint8_t duration)
+      : ProgramStep<TLOGGERFAC>(duration) {}
 
   protected:
     void action(VirtualAction type, uint8_t& tick) final {
@@ -36,35 +36,38 @@ namespace unoparc {
 
   };
       
-  template<typename TLOGGER>
-  class ProgramStepWait : public ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false> {
+  template<class TLOGGERFAC>
+  class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
   public:
-    ProgramStepWait(TLOGGER& logger, uint16_t waitMs) : ProgramStepBase<TLOGGER, ProgramStepWait<TLOGGER>, false>(logger, waitMs / TimerPeriod) {}
+    ProgramStepWait(uint16_t waitMs) : ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false>(waitMs / TimerPeriod) {}
    
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        ProgramStep<TLOGGER>::_log.print(F("W "));
+        auto log = TLOGGERFAC::create();
+        log->print(F("W "));
       }
     }
   };
 
-  template<typename TLOGGER, typename THIDUSB>
-  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false> {
+  template<class TLOGGERFAC, class THIDUSBFAC>
+  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
   public:  
-    ProgramStepUsbKeyboardCode(TLOGGER& logger, THIDUSB& usb, KeyCode keyCode)
-      : ProgramStepBase<TLOGGER, ProgramStepUsbKeyboardCode<TLOGGER, THIDUSB>, false>(logger, 1), _usb(usb), _keyCode(keyCode) {}
+    ProgramStepUsbKeyboardCode(KeyCode keyCode)
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode) {}
        
     void doTick(uint8_t tick) {
       if (tick == 0) {
-        Ps_t::_log.print(F("UK "));
+        auto log = TLOGGERFAC::create();
+        auto usb = THIDUSBFAC::create();
+        log->print(F("UK "));
 
         // Debug
-        Ps_t::_log.println();
-        Ps_t::_log.println(_keyCode.ctrl);
-        Ps_t::_log.println(_keyCode.shift);
-        Ps_t::_log.println(_keyCode.alt);
-        Ps_t::_log.println(_keyCode.win);
-        Ps_t::_log.println(_keyCode.hexCode);
+        log->println();
+        log->println(_keyCode.ctrl);
+        log->println(_keyCode.shift);
+        log->println(_keyCode.alt);
+        log->println(_keyCode.win);
+        log->println(_keyCode.hexCode);
         
         uint8_t pos = 2;
         if (_keyCode.ctrl) { _buf[pos] = 224; pos++; }
@@ -73,22 +76,19 @@ namespace unoparc {
         if (_keyCode.win) { _buf[pos] = 227; pos++; }
         
         _buf[pos] = _keyCode.hexCode;
-        _usb.write(_buf, sizeof(_buf));
+        usb->write(_buf, sizeof(_buf));
         releaseKey();
       }
     }
 
   private:
-    typedef ProgramStep<TLOGGER> Ps_t;
-
     void releaseKey() {
       memset(_buf, 0, sizeof(_buf));
-      _usb.write(_buf, 8);
+      auto usb = THIDUSBFAC::create();
+      usb->write(_buf, 8);
     }
 
     uint8_t _buf[8] = { 0 };
-    THIDUSB& _usb;
     KeyCode _keyCode;
   };
-
 }

@@ -6,23 +6,24 @@
 #include "Adafruit_BLE.h"
 #include "Adafruit_BluefruitLE_SPI.h"
 #include "BluefruitConfig.h"
-#include "Domain/Shared.h"
+#include "Core/Shared.h"
 
 namespace parclib {
 
-  template<class TLOGGER>
+  template<class TLOGGERFAC>
   class HidBle {
   public:
-    HidBle(TLOGGER& logger)
-      : _log(logger), _ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {}
+    HidBle()
+      : _ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {}
 
     void begin(bool verbose = false, bool factoryReset = false) {
+      auto log = TLOGGERFAC::create();
 
       if (!_ble.begin(verbose)) {
         error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
       }
       if (factoryReset) {
-        _log.println(F("Performing a factory reset (output on Serial): "));
+        log->println(F("Performing a factory reset (output on Serial): "));
         if (!_ble.factoryReset()) {
           error(F("Factory reset failed!"));
         }
@@ -35,19 +36,21 @@ namespace parclib {
       }
       */
 
-      _log.println(F("Enable HID Services (including Control Key): "));
+      log->println(F("Enable HID Services (including Control Key): "));
       if (!_ble.sendCommandCheckOK(F("AT+BLEHIDEN=On"))) {
         error(F("Failed to enable HID."));
       }
 
-      _log.println(F("Performing a SW reset (service changes require a reset): "));
+      log->println(F("Performing a SW reset (service changes require a reset): "));
       if (!_ble.reset()) {
         error(F("Couldn't reset??"));
       }
     }   
 
     bool sendKeyCode(KeyCode keyCode) {
-      // Debug: _log.print(F("Sending keycode mem before: ")); _log.println(freeMemory());
+      auto log = TLOGGERFAC::create();
+
+      // Debug: log.print(F("Sending keycode mem before: ")); _log.println(freeMemory());
       uint8_t modifier = keyCode.ctrl == true;
       if (keyCode.shift) { modifier |= 0x2; }
       if (keyCode.alt) { modifier |= 0x4; }
@@ -64,7 +67,7 @@ namespace parclib {
         // Debug: _log.print(F("Sending keycode mem after: ")); _log.println(freeMemory());
         return true;
       }
-      _log.println(F("Send command failed. Enable verbose mode for more information."));
+      log->println(F("Send command failed. Enable verbose mode for more information."));
       // Debug: _log.print(F("Sending keycode mem after: ")); _log.println(freeMemory());
       return false;
     }    
@@ -127,13 +130,13 @@ namespace parclib {
 
   private:
     void error(const __FlashStringHelper* err) {
-      _log.println(err);
+      auto log = TLOGGERFAC::create();
+      log->println(err);
       while(true);
     }
 
     //const char* MINIMUM_FIRMWARE_VERSION = "0.6.6";
     Adafruit_BluefruitLE_SPI _ble;
-    TLOGGER& _log;
   };
 
 }

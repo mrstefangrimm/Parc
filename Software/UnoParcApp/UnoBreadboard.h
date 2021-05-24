@@ -3,18 +3,16 @@
 //
 #pragma once
 
-#include "Domain/Shared.h"
+#include "Core/Shared.h"
+#include "Constants.h"
 
 namespace unoparc {
 
   using namespace parclib;
 
-  template<class TLOGGER>
+  template<class TLOGGERFAC>
   class UnoBreadboard {
-
-  public:
-    UnoBreadboard(TLOGGER& logger) : _log(logger) {}
-
+  public: 
     template<KeyPadSwitch SWITCH>
     void pinMode() { pinMode(Int2Type<SWITCH>()); }
 
@@ -22,37 +20,34 @@ namespace unoparc {
     bool pressed() { return pressed(Int2Type<SWITCH>()); }
     
   private:
-    void pinMode(Int2Type<KeyPadSwitch::Btn_A>) { ::pinMode(Btn_A, INPUT_PULLUP); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_B>) { ::pinMode(Btn_B, INPUT_PULLUP); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_C>) { ::pinMode(Btn_C, INPUT_PULLUP); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_D>) { ::pinMode(Btn_D, INPUT_PULLUP); }
-    void pinMode(Int2Type<KeyPadSwitch::Btn_E>) { ::pinMode(Btn_E, INPUT_PULLUP); }
-    void pinMode(Int2Type<KeyPadSwitch::Sw_M0>) { ::pinMode(Sw_M0, INPUT_PULLUP); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_A>) { pinMode(Int2Type<true>(), Pin_A); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_B>) { pinMode(Int2Type<true>(), Pin_B); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_C>) { pinMode(Int2Type<true>(), Pin_C); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_D>) { pinMode(Int2Type<true>(), Pin_D); }
+    void pinMode(Int2Type<KeyPadSwitch::Btn_E>) { pinMode(Int2Type<true>(), Pin_E); }
+    void pinMode(Int2Type<KeyPadSwitch::Sw_M0>) { pinMode(Int2Type<true>(), Pin_M0); }
   
-    void pinMode(Int2Type<true>, uint8_t pin, uint8_t mode) {
-      _log.print(F("Set Arduino port: ")); _log.print(pin); _log.println(F(" to INPUT_PULLUP."));
+    void pinMode(Int2Type<true>, uint8_t pin) {
+      auto log = TLOGGERFAC::create();
+      log->print(F("Set Arduino port: ")); log->print(pin); log->println(F(" to INPUT_PULLUP."));
       ::pinMode(pin, INPUT_PULLUP);
     }
     
-    void pinMode(Int2Type<false>, uint8_t pin, uint8_t mode) {
-      _log.print(F("Ignore : ")); _log.println(pin);
+    void pinMode(Int2Type<false>, uint8_t pin) {
+      auto log = TLOGGERFAC::create();
+      log->print(F("Ignore : ")); log->println(pin);
     }
 
-    bool pressed(Int2Type<KeyPadSwitch::Btn_A>) { return ::digitalRead(Btn_A) == LOW; }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_B>) { return ::digitalRead(Btn_B) == LOW; }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_C>) { return ::digitalRead(Btn_C) == LOW; }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_D>) { return ::digitalRead(Btn_D) == LOW; }
-    bool pressed(Int2Type<KeyPadSwitch::Btn_E>) { return ::digitalRead(Btn_E) == LOW; }
-    bool pressed(Int2Type<KeyPadSwitch::Sw_M0>) { return ::digitalRead(Sw_M0) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_A>) { return ::digitalRead(Pin_A) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_B>) { return ::digitalRead(Pin_B) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_C>) { return ::digitalRead(Pin_C) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_D>) { return ::digitalRead(Pin_D) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Btn_E>) { return ::digitalRead(Pin_E) == LOW; }
+    bool pressed(Int2Type<KeyPadSwitch::Sw_M0>) { return ::digitalRead(Pin_M0) == LOW; }
     bool pressed(Int2Type<KeyPadSwitch::Sw_M1>) { return false; }
     bool pressed(Int2Type<KeyPadSwitch::Code_1>) { return false; }
     bool pressed(Int2Type<KeyPadSwitch::Code_2>) { return false; }
     bool pressed(Int2Type<KeyPadSwitch::Code_3>) { return false; }
     bool pressed(Int2Type<KeyPadSwitch::Code_4>) { return false; }
- 
-  private:
-    TLOGGER& _log;
-
-  };
-
+   };
 }

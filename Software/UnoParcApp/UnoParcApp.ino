@@ -5,11 +5,11 @@
 #include <SoftwareSerial.h>
 
 #include "ParcLib.h"
-#include "Domain/Registers.h"
-#include "Domain/KeypadAo.h"
-#include "Domain/HidAo.h"
-#include "Domain/TerminalAo.h"
-#include "Domain/SystemMonitorAo.h"
+#include "Core/Registers.h"
+#include "Core/KeypadAo.h"
+#include "Core/HidAo.h"
+#include "Core/TerminalAo.h"
+#include "Core/SystemMonitorAo.h"
 
 #include "Feather/SystemHw.h"
 
@@ -19,7 +19,11 @@
 
 using namespace unoparc;
 
-struct LoggerFake {
+typedef SoftwareSerial TerminalConsole_t;
+TerminalConsole_t terminalConsole(Usb_ORA, Usb_YEL);
+
+struct FakeLogger {
+  FakeLogger(uint8_t a, uint8_t b) {}
   void begin(uint16_t a) {}
   template<typename T>
   void print(T ch) { }
@@ -31,50 +35,47 @@ struct LoggerFake {
   void println(T ch, uint8_t mode) {}
   void println() {}
 };
+FakeLogger logger(Usb_ORA, Usb_YEL);
+template<> FakeLogger& Factory<FakeLogger>::instance = logger;
+typedef Factory<FakeLogger> LoggerFac_t; // TerminalConsole_t, FakeLogger
 
-struct HidBleFake {
-};
+template<> HardwareSerial& Factory<HardwareSerial>::instance = Serial;
+typedef Factory<HardwareSerial> HidUsbFac_t;
 
+NullType ble;
+template<> NullType& Factory<NullType>::instance = ble;
+typedef Factory<NullType> HidBleFac_t;
 
-typedef SoftwareSerial TerminalConsole_t;
-TerminalConsole_t terminalConsole(Usb_ORA, Usb_YEL);
+SystemHw sysHw;
+template<> SystemHw& Factory<SystemHw>::instance = sysHw;
+typedef Factory<SystemHw> SystemHwFac_t;
 
-typedef LoggerFake Logger_t;
-Logger_t logger;
-//#define logger terminalConsole
+typedef UnoBreadboard<LoggerFac_t> Keypad_t;
+Keypad_t keypadHw;
 
-typedef HardwareSerial HidUsb_t;
-typedef HidBleFake HidBle_t;
-typedef UnoBreadboard<Logger_t> Keypad_t;
-
-Program<Logger_t> programs[NumberOfPrograms];
+Program<LoggerFac_t> programs[NumberOfPrograms];
 RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
 
-HidBle_t hidBle;
-Keypad_t keypadHw(logger);
+KeypadAo<LoggerFac_t, Keypad_t> keypad(registers, keypadHw);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
 
-KeypadAo<Logger_t, Keypad_t> keypad(registers, logger, keypadHw);
-HidAo<Logger_t, Program<Logger_t>> hid(logger, registers, programs);
-
-SystemMonitorAo<Logger_t, SystemHw, 216> systemMonitor(logger, registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
 
-struct ProgramStepFake : public ProgramStep<Logger_t> {
-  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidUsb_t& usb, KeyCode keyCode, char secondKey) : ProgramStep<Logger_t>(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidBle_t& ble, const char* text) : ProgramStep<Logger_t>(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode) : ProgramStep(logger, 0) {}
-  ProgramStepFake(Logger_t& logger, HidBle_t& ble, KeyCode keyCode, uint8_t repetitions) : ProgramStep(logger, 0) {}
-  void action(VirtualAction type, uint8_t& tick) override {};
+struct ProgramStepFake : public ProgramStep<LoggerFac_t> {
+  ProgramStepFake(KeyCode keyCode) : ProgramStep(0) { }
+  ProgramStepFake(KeyCode keyCode, uint8_t repetitions) : ProgramStep(0) { }
+  ProgramStepFake(const char* text) : ProgramStep<LoggerFac_t>(0) { }
+  ProgramStepFake(KeyCode keyCode, char secondKey) : ProgramStep<LoggerFac_t>(0) { }
+  void action(VirtualAction type, uint8_t& tick) override { };
 };
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode repeated, BLE Text, BLE Control Key
-typedef Typelist<ProgramStepWait<Logger_t>,
-  Typelist<ProgramStepUsbKeyboardCode<Logger_t, HidUsb_t>,
+typedef Typelist<ProgramStepWait<LoggerFac_t>,
+  Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
   Typelist<ProgramStepFake,
@@ -98,7 +99,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0;
 };
 
-TerminalAo<ProgramStepList, TerminalConsole_t, Logger_t, HidBle_t, HidUsb_t, Program<Logger_t>, SystemHw, KnownKeycodes, 30> terminal(terminalConsole, logger, hidBle, Serial, registers, programs);
+TerminalAo<ProgramStepList, TerminalConsole_t, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(terminalConsole, registers, programs);
 
 void setup() {
   for (int n=0; n<50 && !Serial; n++) { delay(100); }
@@ -117,11 +118,10 @@ void setup() {
   registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
   registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
   registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
-
 }
 
 void loop() {
-
+      
   keypad.checkRegisters();
   hid.checkRegisters();
   terminal.checkRegisters();

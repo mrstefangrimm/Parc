@@ -4,18 +4,18 @@
 #pragma once
 
 #include "Adafruit_MCP23008.h"
-#include "Domain/Shared.h"
+#include "Core/Shared.h"
 #include "Constants.h"
 
 namespace parc {
 
   using namespace parclib;
 
-  template<class TLOGGER>
+  template<class TLOGGERFAC>
   class KeypadHw {
 
   public:
-    KeypadHw(TLOGGER& logger) : _log(logger), _mcpGPIO(0xFF) {}
+    KeypadHw() : _mcpGPIO(0xFF) {}
 
     void begin() {
       _mcp.begin();
@@ -29,7 +29,8 @@ namespace parc {
    
   private:
     void error(const __FlashStringHelper* err) {
-      _log.println(err);
+      auto log = TLOGGERFAC::create();
+      log->println(err);
       while (true);
     }
 
@@ -46,13 +47,15 @@ namespace parc {
     void pinMode(Int2Type<KeyPadSwitch::Code_4>) { pinMode(Int2Type<false>(), Pin_C4); }
     
     void pinMode(Int2Type<true>, uint8_t pin) {
-      _log.print(F("Set MCP28003 port: ")); _log.print(pin); _log.println(F(" to INPUT HIGH."));
+      auto log = TLOGGERFAC::create();
+      log->print(F("Set MCP28003 port: ")); log->print(pin); log->println(F(" to INPUT HIGH."));
       _mcp.pinMode(pin, INPUT);
       _mcp.pullUp(pin, HIGH);
     }
     
     void pinMode(Int2Type<false>, uint8_t pin) {
-      _log.print(F("Set Arduino port: ")); _log.print(pin); _log.println(F(" to INPUT_PULLUP."));
+      auto log = TLOGGERFAC::create();
+      log->print(F("Set Arduino port: ")); log->print(pin); log->println(F(" to INPUT_PULLUP."));
       ::pinMode(pin, INPUT_PULLUP);
     }
 
@@ -85,7 +88,6 @@ namespace parc {
       return ::digitalRead(pin) == HIGH;
     }
 
-    TLOGGER& _log;
     Adafruit_MCP23008 _mcp;
     uint8_t _mcpGPIO;
   };

@@ -1,7 +1,7 @@
-rmdir /Q Domain
-rmdir /Q "Feather\Domain"
+rmdir /Q Core
+rmdir /Q "Feather\Core"
 rmdir /Q Feather
 
-mklink /D Domain "..\..\..\Domain"
+mklink /D Core "..\..\..\Core"
 mklink /D Feather "..\..\..\Feather"
-mklink /D "Feather\Domain" "..\..\..\Software\ParcLib\Domain"
+mklink /D "Feather\Core" "..\..\..\Software\ParcLib\Core"

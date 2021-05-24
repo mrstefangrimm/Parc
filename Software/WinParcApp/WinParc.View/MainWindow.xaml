@@ -1,0 +1,44 @@
+﻿<!-- Copyright (c) 2021 Stefan Grimm. All rights reserved.
+     Licensed under the LGPL. See LICENSE file in the project root for full license information.
+-->
+<Window x:Class="WinParc.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinParc.View"
+        mc:Ignorable="d"
+        Title="Parc Simulator" Height="450" Width="800">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" MinWidth="300"></ColumnDefinition>
+      <ColumnDefinition Width="2*"/>
+    </Grid.ColumnDefinitions>
+
+    <Grid Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"></RowDefinition>
+        <RowDefinition Height="40"></RowDefinition>
+      </Grid.RowDefinitions>
+      <local:KeypadView Grid.Row="0" ></local:KeypadView>
+      <StackPanel Grid.Row="1">
+        <TextBlock Text="Warn LED: "></TextBlock>
+        <TextBlock Text="{Binding WarnLedStatus}"></TextBlock>
+      </StackPanel>
+
+    </Grid>
+
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"></RowDefinition>
+        <RowDefinition Height="*"></RowDefinition>
+      </Grid.RowDefinitions>
+
+      <local:TerminalView Grid.Row="0"></local:TerminalView>
+      <local:DebugView Grid.Row="1"></local:DebugView>
+
+    </Grid>
+
+  </Grid>
+
+</Window>

@@ -6,6 +6,7 @@ TerminalAo	KEYWORD1
 SystemHw	KEYWORD1
 Typelist	KEYWORD1
 NullType	KEYWORD1
+Factory	KEYWORD1
 
 checkRegisters	KEYWORD2
 
