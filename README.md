@@ -1,6 +1,10 @@
 # Parc
 Parc stand for Programmable Arduino Remote Control. This repository contains the software, the hardware and the mechanical design files.
 
+| Parc (original)        | Parc (PCB)                    |
+| ---------------------- | ----------------------------- |
+| ![Parc](./parc-bw.jpg) | ![PCB Parc](./pcbparc-bw.jpg) |
+
 
 
 ## Motivation
@@ -13,7 +17,7 @@ Parc is a microcontroller based device that acts as a HID, these problems are so
 
 ## Getting Started
 
-To use the software, you will have to build a Parc device. How to build on is described in an [instructable](https://www.instructables.com/Programmable-Arduino-Remote-Control/).
+To use the software, you will have to build a Parc device. How to build one is described in an [instructable](https://www.instructables.com/Programmable-Arduino-Remote-Control/).
 
 The software is very flexible and it is also possible to use it together with a breadboard or an Arduino UNO.
 
@@ -36,6 +40,33 @@ A user manual and a programming guide can be found in the [Parc Wiki](https://gi
 ## Tests
 
 Unit tests cover the functionality of the domain model classes. Some are part of the ParcLib software package. The WinParcApp Visual Studio solution contains all the unit tests. These for programming convenience and because the software architecture allows it.
+
+
+
+## Software Toolchain
+
+| Application | License |
+| ----------- | ------- |
+| ParcApp     | LGPL    |
+| PcbParcApp  | LGPL    |
+| UnoParcApp  | LGPL    |
+| WinParcApp  | LGPL    |
+
+| Tool             | License           |
+| ---------------- | ----------------- |
+| Arduino IDE      | GPL               |
+| avrdude          | GPL               |
+| gcc              | GPL               |
+| VS2019 community | Microsoft license |
+
+Libraries
+
+| Library                  | Licence           |
+| ------------------------ | ----------------- |
+| ParcLib                  | LGPL              |
+| Adafruit_MCP23008.h/.cpp | BSD               |
+| Arduino.h                | LGPL              |
+| .NET 4.7.2               | Microsoft license |
 
 
 
