@@ -3,7 +3,7 @@ Parc stand for Programmable Arduino Remote Control. This repository contains the
 
 | Parc (original)        | Parc (PCB)                    |
 | ---------------------- | ----------------------------- |
-| ![Parc](./parc-bw.jpg) | ![PCB Parc](./pcbparc-bw.jpg) |
+| ![Parc](./parc-bw.JPG) | ![PCB Parc](./pcbparc-bw.jpg) |
 
 
 
