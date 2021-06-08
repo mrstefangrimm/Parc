@@ -16,7 +16,7 @@ How is that possible? The used micro controller board has a chip that can act as
 
 
 
-The programming is intuitive and there are more examples in the User Manual in the Wiki [1]. The syntax is described in the Programming Guide [1]. The video demonstrates a wireless login to a Windows PC with 1 click and a login to instructables.com with another click.
+The programming is intuitive and there are more examples in the User Manual in the Wiki [1]. The syntax is described in the Programming Guide [1]. The video demonstrates a wireless login to a Windows PC with one click and a login to instructables.com with another click.
 
 [Login Demo](https://youtu.be/DcMdJxYA3Bc)
 

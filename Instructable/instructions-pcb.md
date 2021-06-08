@@ -6,25 +6,39 @@
 
 ![parts](./pcbparc-parts.jpg)
 
-This is a improved version of the [Programmable Arduino Remote Control](https://www.instructables.com/Programmable-Arduino-Remote-Control/). It uses a printed circuit board (PCB) which you have to have manufactured. This costs a little extra. In return, the shape is more that of a remote control and it requires less soldering.
+With this small, palm-sized device, it is possible to remote control your PC or your Smartphone. Or to control your PC and your Smartphone at the same time.
+
+And it is freely programmable. You can write programs like: Login to  your PC, open and login to instructables.com, play/pause a movie or  adjust the volume on your Smartphone.
 
 
 
-The video shows the PCB-PARC acting as a Bluetooth HID device.
+How is that possible? The used micro controller board has a chip that can act as a so called HID device, which stands for Human Interaction Device and simply means keyboard or mouse. And it has another chip, a Bluetooth chip which can act as a Bluetooth keyboard.
+
+
+
+The programming is intuitive and there are more examples in the User Manual in the Wiki [1]. The syntax is described in the Programming Guide [1]. The video demonstrates a wireless login to a Windows PC with one click and a login to instructables.com with another click.
 
 https://youtu.be/EJmvuccJp7M
 
 
 
-For a more detailed description, take a look at the instructable for the original [Programmable Arduino Remote Control](https://www.instructables.com/Programmable-Arduino-Remote-Control/). This version with the PCB has the identical functionality.
+What makes this remote control unique is that everything is stored in the volatile memory of the micro controller. It is safe to write programs which contain passwords.
+
+And it is unique as Bluetooth remote control which you can program from a long list of possible commands. For more details see also the User Manual [1].
 
 
 
-In this project, my goal  was to make a device that looks more like a remote control. Further, and because I use it every day, I wanted something more robust than the original remote control.
+This is a improved version of the [Programmable Arduino Remote Control](https://www.instructables.com/Programmable-Arduino-Remote-Control/). It uses a printed circuit board (PCB) which you have to have manufactured. This costs a little extra. In return, the shape is more that of a remote control and it requires less soldering.
+
+In this project, my goal  was to make a device that looks more like a remote control. Further, and because I use it every day, I wanted something more robust than its predecessor.
 
 
 
 The direct material costs are approximately USD 78.
+
+
+
+[1] [Parc Wiki on github](https://github.com/mrstefangrimm/Parc/wiki)
 
 
 
