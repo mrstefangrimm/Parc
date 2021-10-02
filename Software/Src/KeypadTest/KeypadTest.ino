@@ -43,7 +43,7 @@ void setup() {
   mcp.pinMode(Pin_M1, INPUT); mcp.pullUp(Pin_M1, HIGH);
   
   ::pinMode(Pin_C1, INPUT_PULLUP);
-  ::pinMode(Pin_C2, INPUT_PULLUP);
+  // ::pinMode(Pin_C2, INPUT_PULLUP);
   ::pinMode(Pin_C3, INPUT_PULLUP);
   ::pinMode(Pin_C4, INPUT_PULLUP);
 }
@@ -81,10 +81,10 @@ void loop() {
     Serial.println("Code_1");
     logger.println("Code_1");
   }
-  if (::digitalRead(Pin_C2) == HIGH) {
+  /* if (::digitalRead(Pin_C2) == HIGH) {
     Serial.println("Code_2");
     logger.println("Code_2");
-  }
+  }*/
   if (::digitalRead(Pin_C3) == HIGH) {
     Serial.println("Code_3");
     logger.println("Code_3");
