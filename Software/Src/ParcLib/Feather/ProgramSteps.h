@@ -176,7 +176,7 @@ namespace parclib {
         auto log = TLOGGERFAC::create();
         log->print(F("UT "));
         auto usb = THIDUSBFAC::create();
-        usb->println(_text);
+        usb->print(_text);
       }
     }
 

@@ -19,6 +19,7 @@ using namespace parclib;
 using namespace std;
 
 namespace ProgramTest {
+
   struct FakeLogger {
     template<class T>
     void print(T ch) { }
@@ -27,12 +28,21 @@ namespace ProgramTest {
     template<class T>
     void println(T ch) { }
   };
+  
   struct FakeUsbKeyboard {
-    void println(const char* ch) { }
+    FakeUsbKeyboard() : printInvokeCounter(0) {}
+   
+    int printInvokeCounter;
+    void print(const char* ch) { printInvokeCounter++; }
     void press(uint8_t val) { }
     void releaseAll() { }
+
+  private:
+    void println(const char* ch) { }
   };
+
   struct FakeHidBle {
+    FakeHidBle() : printlnInvokeCounter(0) {}
     bool sendKeyCode(KeyCode keyCode) {
       return false;
     }
@@ -41,8 +51,11 @@ namespace ProgramTest {
     }
 
     void print(const char*) { }
+  
+    int printlnInvokeCounter;
     void println(const char* text) {
       strcpy(lastPrintln, text);
+      printlnInvokeCounter++;
     }
 
     char lastPrintln[30];
@@ -91,6 +104,17 @@ namespace ProgramTest {
       auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello World");
 
       Assert::AreEqual<uint8_t>(11, p->duration());
+
+      p->dispose();
+      delete p;
+    }
+
+    TEST_METHOD(given_bt_when_hello_world_played_then_print_is_invoked) {
+      auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello World");
+
+      uint8_t tick = 0;
+      p->play(tick);
+      Assert::AreEqual<int>(1, ble.printlnInvokeCounter);
 
       p->dispose();
       delete p;
@@ -145,6 +169,17 @@ namespace ProgramTest {
       auto p = new ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>("Hello World");
 
       Assert::AreEqual<uint8_t>(11, p->duration());
+
+      p->dispose();
+      delete p;
+    }
+
+    TEST_METHOD(given_ut_when_hello_world_played_then_print_is_invoked) {
+      auto p = new ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>("Hello World");
+
+      uint8_t tick = 0;
+      p->play(tick);
+      Assert::AreEqual<int>(1, usb.printInvokeCounter);
 
       p->dispose();
       delete p;
