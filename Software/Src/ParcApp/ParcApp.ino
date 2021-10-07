@@ -32,9 +32,10 @@ struct FakeLogger {
   template<class T>
   void println(T ch) { }
 };
-FakeLogger logger(Usb_ORA, Usb_YEL);
-template<> FakeLogger& Factory<FakeLogger>::instance = logger;
-typedef Factory<FakeLogger> LoggerFac_t; // SoftwareSerial, FakeLogger
+typedef FakeLogger Logger_t; // SoftwareSerial, FakeLogger
+Logger_t logger(Usb_ORA, Usb_YEL);
+template<> Logger_t& Factory<Logger_t>::instance = logger;
+typedef Factory<Logger_t> LoggerFac_t;
 
 template<> Keyboard_& Factory<Keyboard_>::instance = Keyboard;
 typedef Factory<Keyboard_> HidUsbFac_t;

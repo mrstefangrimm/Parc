@@ -23,7 +23,7 @@ Required PARC devices and Hardware:
 ## 1. Test PARC
 
 1. Connect the PC to the PARC device, USB and Debug cable
-2. In the Arduino IDE, open the project \Software\ParcApp\ParcApp.ino 
+2. In the Arduino IDE, open the project \Software\Src\ParcApp\ParcApp.ino 
 3. Enable the logging by changing the logging from `FakeLogger`to `SoftwareSerial`
 4. Upload the firmware
 5. In the Arduino IDE, open the Serial Monitor and send a `?`
@@ -54,14 +54,14 @@ Required PARC devices and Hardware:
 ## 2.  Test PCB PARC
 
 16. Connect the PC to the PCB PARC device, USB and Debug cable
-17. In the Arduino IDE, open the project \Software\PcbParcApp\PcbParcApp.ino 
+17. In the Arduino IDE, open the project \Software\Src\PcbParcApp\PcbParcApp.ino 
 18. Execute the test steps from "Test Parc"
 19. End of the test
 
 ## 3. Test UNO PARC
 
 20. Connect the PC to the UNOPARC breadboard, USB and Debug cable
-21. In the Arduino IDE, open the project \Software\UnoParcApp\UnoParcApp.ino 
+21. In the Arduino IDE, open the project \Software\Src\UnoParcApp\UnoParcApp.ino 
 22. Enable the logging by changing the logging from `FakeLogger`to `SoftwareSerial`
 23. Upload the firmware
 24. In the debug monitor, which is log output and terminal, send a `?`

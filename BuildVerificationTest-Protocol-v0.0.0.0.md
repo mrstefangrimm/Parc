@@ -6,9 +6,9 @@ Build:
 
 Tester: 
 
-| test item | passed status (passed/failed) | comment | accepted (yes/no) |
-| --------- | ----------------------------- | ------- | ----------------- |
-| PARC      |                               |         |                   |
-| PCB PARC  |                               |         |                   |
-| UNO PARC  |                               |         |                   |
-| Simulator |                               |         |                   |
+| test item | passed status (passed/failed/skipped) | comment | accepted (yes/no) |
+| --------- | ------------------------------------- | ------- | ----------------- |
+| PARC      |                                       |         |                   |
+| PCB PARC  |                                       |         |                   |
+| UNO PARC  |                                       |         |                   |
+| Simulator |                                       |         |                   |
