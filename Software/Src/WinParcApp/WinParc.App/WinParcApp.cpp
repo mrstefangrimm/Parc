@@ -175,7 +175,7 @@ template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another
 template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
 
 struct FakeUsbKeyboard {
-  void println(const char* ch) { }
+  void print(const char* ch) { }
   void press(uint8_t val) { }
   void releaseAll() { }
 };
