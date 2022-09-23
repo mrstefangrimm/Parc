@@ -1,9 +1,9 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2022 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
 
-#include "Adafruit_MCP23008.h"
+#include "Adafruit_MCP23X08.h"
 #include "Core/Shared.h"
 #include "Constants.h"
 
@@ -18,7 +18,7 @@ namespace pcbparc {
     KeypadHw() : _mcpGPIO(0xFF) {}
 
     void begin() {
-      _mcp.begin();
+      _mcp.begin_I2C();
     }
     
     template<KeyPadSwitch SWITCH>
@@ -49,8 +49,7 @@ namespace pcbparc {
     void pinMode(Int2Type<true>, uint8_t pin) {
       auto log = TLOGGERFAC::create();
       log->print(F("Set MCP28003 port: ")); log->print(pin); log->println(F(" to INPUT HIGH."));
-      _mcp.pinMode(pin, INPUT);
-      _mcp.pullUp(pin, HIGH);
+      _mcp.pinMode(pin, INPUT_PULLUP);
     }
     
     void pinMode(Int2Type<false>, uint8_t pin) {
@@ -90,7 +89,7 @@ namespace pcbparc {
       return ::digitalRead(pin) == LOW;
     }
 
-    Adafruit_MCP23008 _mcp;
+    Adafruit_MCP23X08 _mcp;
     uint8_t _mcpGPIO;
   };
 

@@ -52,21 +52,23 @@ Unit tests cover the functionality of the domain model classes. Some are part of
 | UnoParcApp  | LGPL    |
 | WinParcApp  | LGPL    |
 
-| Tool             | License           |
-| ---------------- | ----------------- |
-| Arduino IDE      | GPL               |
-| avrdude          | GPL               |
-| gcc              | GPL               |
-| VS2019 community | Microsoft license |
+| Tool                         | License                                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| Arduino IDE                  | GPL                                                          |
+| Adafruit AVR Boards          | [Learn more]([Arduino IDE Setup \| Adafruit Feather 32u4 Bluefruit LE \| Adafruit Learning System](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup)) |
+| avrdude                      | GPL                                                          |
+| gcc                          | GPL                                                          |
+| Visual Studio Community 2022 | Microsoft license                                            |
 
 Libraries
 
-| Library                  | Licence           |
-| ------------------------ | ----------------- |
-| ParcLib                  | LGPL              |
-| Adafruit_MCP23008.h/.cpp | BSD               |
-| Arduino.h                | LGPL              |
-| .NET 4.7.2               | Microsoft license |
+| Library                           | Licence           |
+| :-------------------------------- | ----------------- |
+| ParcLib                           | LGPL              |
+| Adafruit MCP23017 Arduino Library | BSD               |
+| Adafruit BluefruitLE nRF51        | BSD               |
+| Arduino.h                         | LGPL              |
+| .NET 4.7.2                        | Microsoft license |
 
 
 
