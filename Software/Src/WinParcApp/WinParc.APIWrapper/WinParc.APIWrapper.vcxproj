@@ -57,13 +57,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>..\WinParc.API\bin\debug;</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\WinParc.API\bin\debug\net4.8-windows</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug\net4.8-windows</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

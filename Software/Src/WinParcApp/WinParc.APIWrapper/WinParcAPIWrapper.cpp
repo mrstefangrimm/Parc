@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2022 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #using "WinParcAPI.dll"
@@ -68,36 +68,3 @@ void WinParcAPIWrapper::SetWarnLed(bool on)
 {
   _private->winParcAPI->SetWarnLed(on);
 }
-
-
-//double YahooAPIWrapper::GetBid(const char* symbol)
-//{
-//    return _private->yahooAPI->GetBid(gcnew System::String(symbol));
-//}
-//
-//double YahooAPIWrapper::GetAsk(const char* symbol)
-//{
-//    return _private->yahooAPI->GetAsk(gcnew System::String(symbol));
-//}
-//
-//const char* YahooAPIWrapper::GetCapitalization(const char* symbol)
-//{
-//    System::String^ managedCapi = _private->yahooAPI->GetCapitalization(gcnew System::String(symbol));
-//
-//    return (const char*)Marshal::StringToHGlobalAnsi(managedCapi).ToPointer();
-//}
-//
-//const char** YahooAPIWrapper::GetValues(const char* symbol, const char* fields)
-//{
-//    cli::array<System::String^>^ managedValues = _private->yahooAPI->GetValues(gcnew System::String(symbol), gcnew System::String(fields));
-//
-//    const char** unmanagedValues = new const char*[managedValues->Length];
-//
-//    for (int i = 0; i < managedValues->Length; ++i)
-//    {
-//        unmanagedValues[i] = (const char*)Marshal::StringToHGlobalAnsi(managedValues[i]).ToPointer();
-//    }
-//
-//    return unmanagedValues;
-//}
-
