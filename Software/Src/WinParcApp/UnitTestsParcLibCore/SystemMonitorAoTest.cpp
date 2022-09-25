@@ -39,7 +39,7 @@ typedef Factory<SystemMonitorAoTest::FakeSystemHw> SystemHwFac_t;
 namespace SystemMonitorAoTest {
 
   using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-  
+
   // Test naming scheme: Given-When-Then
 
   TEST_CLASS(SystemMonitorAoTest)

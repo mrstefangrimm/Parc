@@ -39,7 +39,7 @@ namespace WinParc.View {
 
       _status.DebugOutputChanged += (sender, args) => { DebugOutput += args.Message; };
       _status.TerminalOutputChanged += (sender, args) => { TerminalOutput += args.Message; };
-      _status.WarnStatusChanged += (sender, args) => { 
+      _status.WarnStatusChanged += (sender, args) => {
         if (args.Warn) {
           WarnLedStatus = "On";
         }
@@ -72,7 +72,7 @@ namespace WinParc.View {
         }
       }
     }
-    
+
     public bool IsCheckedC1 {
       get { return _isCheckedC1; }
       set {
@@ -118,8 +118,8 @@ namespace WinParc.View {
     }
 
     public string WarnLedStatus {
-      get { 
-        return _warnStatus; 
+      get {
+        return _warnStatus;
       }
       set {
         if (value != _warnStatus) {
@@ -128,7 +128,7 @@ namespace WinParc.View {
         }
       }
     }
-  
+
     public string SendText {
       get { return _sendText; }
       set {

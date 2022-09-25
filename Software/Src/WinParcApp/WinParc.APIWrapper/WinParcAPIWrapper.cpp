@@ -8,63 +8,57 @@
 
 using namespace System::Runtime::InteropServices;
 
-class WinParcAPIWrapperPrivate
-{
-    public: msclr::auto_gcroot<WinParcAPI^> winParcAPI;
+class WinParcAPIWrapperImpl {
+public:
+  WinParcAPIWrapperImpl() {
+    _winParcAPI = gcnew WinParcAPI();
+  }
+  WinParcAPI^ Get() { return _winParcAPI.get(); }
+
+private:
+  msclr::auto_gcroot<WinParcAPI^> _winParcAPI;
 };
 
-WinParcAPIWrapper::WinParcAPIWrapper()
-{
-    _private = new WinParcAPIWrapperPrivate();
-    _private->winParcAPI = gcnew WinParcAPI();
+WinParcAPIWrapper::WinParcAPIWrapper() {
+  _impl = new WinParcAPIWrapperImpl();
 }
 
-WinParcAPIWrapper::~WinParcAPIWrapper()
-{
-  delete _private;
+WinParcAPIWrapper::~WinParcAPIWrapper() {
+  delete _impl;
 }
 
-void WinParcAPIWrapper::Initialize()
-{
-  _private->winParcAPI->Initialize();
+void WinParcAPIWrapper::Initialize() {
+  _impl->Get()->Initialize();
 }
 
-bool WinParcAPIWrapper::KeypadPressed(const char* button)
-{
-  return _private->winParcAPI->KeypadPressed(gcnew System::String(button));
+bool WinParcAPIWrapper::KeypadPressed(const char* button) {
+  return _impl->Get()->KeypadPressed(gcnew System::String(button));
 }
 
-bool WinParcAPIWrapper::TerminalIsAvailable()
-{
-  return _private->winParcAPI->TerminalIsAvailable();
+bool WinParcAPIWrapper::TerminalIsAvailable() {
+  return _impl->Get()->TerminalIsAvailable();
 }
 
-int WinParcAPIWrapper::TerminalRead()
-{
-  return _private->winParcAPI->TerminalRead();
+int WinParcAPIWrapper::TerminalRead() {
+  return _impl->Get()->TerminalRead();
 }
 
-void WinParcAPIWrapper::TerminalPrint(const char* text)
-{
-   _private->winParcAPI->TerminalPrint(gcnew System::String(text));
+void WinParcAPIWrapper::TerminalPrint(const char* text) {
+  _impl->Get()->TerminalPrint(gcnew System::String(text));
 }
 
-void WinParcAPIWrapper::TerminalPrintLn(const char* text)
-{
-  _private->winParcAPI->TerminalPrintLn(gcnew System::String(text));
+void WinParcAPIWrapper::TerminalPrintLn(const char* text) {
+  _impl->Get()->TerminalPrintLn(gcnew System::String(text));
 }
 
-void WinParcAPIWrapper::DebugPrint(const char* text)
-{
-  _private->winParcAPI->DebugPrint(gcnew System::String(text));
+void WinParcAPIWrapper::DebugPrint(const char* text) {
+  _impl->Get()->DebugPrint(gcnew System::String(text));
 }
 
-void WinParcAPIWrapper::DebugPrintLn(const char* text)
-{
-  _private->winParcAPI->DebugPrintLn(gcnew System::String(text));
+void WinParcAPIWrapper::DebugPrintLn(const char* text) {
+  _impl->Get()->DebugPrintLn(gcnew System::String(text));
 }
 
-void WinParcAPIWrapper::SetWarnLed(bool on)
-{
-  _private->winParcAPI->SetWarnLed(on);
+void WinParcAPIWrapper::SetWarnLed(bool on) {
+  _impl->Get()->SetWarnLed(on);
 }

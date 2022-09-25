@@ -28,10 +28,10 @@ namespace ProgramTest {
     template<class T>
     void println(T ch) { }
   };
-  
+
   struct FakeUsbKeyboard {
-    FakeUsbKeyboard() : printInvokeCounter(0) {}
-   
+    FakeUsbKeyboard() : printInvokeCounter(0) { }
+
     int printInvokeCounter;
     void print(const char* ch) { printInvokeCounter++; }
     void press(uint8_t val) { }
@@ -42,7 +42,7 @@ namespace ProgramTest {
   };
 
   struct FakeHidBle {
-    FakeHidBle() : printlnInvokeCounter(0) {}
+    FakeHidBle() : printlnInvokeCounter(0) { }
     bool sendKeyCode(KeyCode keyCode) {
       return false;
     }
@@ -51,7 +51,7 @@ namespace ProgramTest {
     }
 
     void print(const char*) { }
-  
+
     int printlnInvokeCounter;
     void println(const char* text) {
       strcpy(lastPrintln, text);
@@ -75,7 +75,7 @@ template<> ProgramTest::FakeHidBle& Factory<ProgramTest::FakeHidBle>::instance =
 typedef Factory<ProgramTest::FakeHidBle> HidBleFac_t;
 
 namespace ProgramTest {
-  
+
   // Test naming scheme: Given-When-Then
 
   TEST_CLASS(ProgramTest)
@@ -93,7 +93,7 @@ namespace ProgramTest {
 
     TEST_METHOD(given_bt_when_hello_then_duration_at_least_10ticks) {
       auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello");
-      
+
       Assert::AreEqual<uint8_t>(10, p->duration());
 
       p->dispose();
@@ -145,7 +145,7 @@ namespace ProgramTest {
 
       p->dispose();
       delete p;
-    }   
+    }
 
     TEST_METHOD(given_bc_when_volume_then_duration_1tick) {
       auto p = new ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>("Volume+");

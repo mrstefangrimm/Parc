@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) 2021-2022 Stefan Grimm. All rights reserved.
+// Licensed under the LGPL. See LICENSE file in the project root for full license information.
+//
 using System.Windows;
 
 namespace WinParc.View {
