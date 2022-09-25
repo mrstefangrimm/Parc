@@ -5,6 +5,7 @@
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
 
+#include "ParcLib.h"
 #include "Core/Shared.h"
 #include "Core/Program.h"
 #include "Feather/ProgramSteps.h"
@@ -24,7 +25,7 @@ template<> FakeLogger& Factory<FakeLogger>::instance = logger;
 typedef Factory<FakeLogger> LoggerFac_t;
 
 struct FakeUsbKeyboard {
-  void println(const char* ch) { }
+  void print(const char* ch) { }
   void press(uint8_t val) { }
   void releaseAll() { }
 };

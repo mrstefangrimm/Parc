@@ -5,6 +5,7 @@
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
 
+#include "ParcLib.h"
 #include "Core/HidAo.h"
 #include "Core/Program.h"
 #include "Core/Shared.h"
