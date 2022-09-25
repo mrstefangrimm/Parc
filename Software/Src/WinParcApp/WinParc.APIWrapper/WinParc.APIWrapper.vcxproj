@@ -57,13 +57,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>..\WinParc.API\bin\debug\net4.8-windows</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\WinParc.API\bin\Debug\net481</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug\net4.8-windows</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug\net481</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,13 +71,13 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalUsingDirectories>..\WinParc.API\bin\release\net4.8-windows</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\WinParc.API\bin\Release\net481</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Release\net4.8-windows</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Release\net481</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

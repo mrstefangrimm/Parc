@@ -1,10 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFramework>net6.0-windows</TargetFramework>-->
-    <TargetFramework>net4.8-windows</TargetFramework>
-    <!--<ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>-->
+    <TargetFramework>net481</TargetFramework>
     <RootNamespace>WinParcAPI</RootNamespace>
     <AssemblyName>WinParcAPI</AssemblyName>
     <UseWPF>true</UseWPF>
@@ -13,7 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WinParc.Core\WinParc.Core.csproj" />
     <ProjectReference Include="..\WinParc.View\WinParc.View.csproj" />
-    <!--<ProjectReference Include="..\WinParc.View\WinParc.View.csproj" />-->
   </ItemGroup>
 
 </Project>
