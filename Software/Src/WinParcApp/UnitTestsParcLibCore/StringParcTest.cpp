@@ -33,7 +33,7 @@ namespace StringParcTest {
       Assert::AreEqual('t', text[strlen(text) - 1]);
     }
 
-    TEST_METHOD(given_text_with_backspace_characters_when_squeeze_then_backspaces_are_removed) 
+    TEST_METHOD(given_text_with_backspace_characters_when_squeeze_then_backspaces_are_removed)
     {
       char text[30];
       strcpy_s(text, "Tee\bxt");
@@ -49,7 +49,7 @@ namespace StringParcTest {
       Assert::AreEqual(2, numSemis);
     }
 
-    TEST_METHOD(given_text_with_four_spaces_one_in_textstring_when_count_then_two_is_found) 
+    TEST_METHOD(given_text_with_four_spaces_one_in_textstring_when_count_then_two_is_found)
     {
       char text[30];
       strcpy_s(text, "Text \"text text\" txt");
@@ -57,7 +57,7 @@ namespace StringParcTest {
       Assert::AreEqual(2, numSemis);
     }
 
-    TEST_METHOD(given_text_with_three_spaces_when_split_then_four_substrings_are_found) 
+    TEST_METHOD(given_text_with_three_spaces_when_split_then_four_substrings_are_found)
     {
       char text[30];
       char* subStr[4];
@@ -72,7 +72,7 @@ namespace StringParcTest {
       Assert::AreEqual(0, strcmp("txt", subStr[3]));
     }
 
-    TEST_METHOD(given_text_with_more_spaces_in_between_when_split_then_four_substrings_do_not_have_leading_or_trailing_spaces) 
+    TEST_METHOD(given_text_with_more_spaces_in_between_when_split_then_four_substrings_do_not_have_leading_or_trailing_spaces)
     {
       char text[30];
       char* subStr[4];
@@ -87,7 +87,7 @@ namespace StringParcTest {
       Assert::AreEqual(0, strcmp("txt", subStr[3]));
     }
 
-    TEST_METHOD(given_text_with_three_spaces_one_in_textstring_when_split_then_three_substrings_are_found) 
+    TEST_METHOD(given_text_with_three_spaces_one_in_textstring_when_split_then_three_substrings_are_found)
     {
       char text[30];
       char* subStr[3];

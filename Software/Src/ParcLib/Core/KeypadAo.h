@@ -8,8 +8,8 @@
 
 namespace parclib {
 
-  template<class TLOGGERFAC, class TKEYPADHW>
-  class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
+template<class TLOGGERFAC, class TKEYPADHW>
+class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   public:
     KeypadAo(RegisterData_t* registers, TKEYPADHW& keypadHw)
       : Ao_t(registers), _hw(keypadHw) {}
@@ -32,7 +32,7 @@ namespace parclib {
         Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
         if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
 
-          KeypadRegData args = 0;          
+          KeypadRegData args = 0;
 
           // Buttons A - E, Multiple button presses is not supported
           if (_hw.template pressed<KeyPadSwitch::Btn_A>()) {
@@ -49,8 +49,8 @@ namespace parclib {
           }
           else if (_hw.template pressed<KeyPadSwitch::Btn_E>()) {
             args.button = E;
-          }          
-         
+          }
+
           bool longTimeout = false;
           if (args.button != 0) {
 
@@ -76,7 +76,7 @@ namespace parclib {
             if (_hw.template pressed<KeyPadSwitch::Code_4>()) {
               pin |= (1 << 3);
             }
-            
+
             auto log = TLOGGERFAC::create();
             // Debug: _log.print(_pin.pin(), BIN); _log.print(F(" ")); _log.println(pin, BIN);
 
@@ -115,7 +115,7 @@ namespace parclib {
           }
         }
       }
-    }   
+    }
 
   private:
     typedef Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> Ao_t;
@@ -126,6 +126,6 @@ namespace parclib {
     Hw_t& _hw;
 
     PinRegData _pin;
-  };
+};
 
 }

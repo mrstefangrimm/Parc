@@ -7,10 +7,16 @@
 
 namespace parclib {
 
-  struct SystemHw {
-    static int freeMemory() { return ::freeMemory(); }
-    static void warnLedOn() { ::digitalWrite(LED_BUILTIN, HIGH); }
-    static void warnLedOff() { ::digitalWrite(LED_BUILTIN, LOW); }
-  }; 
+struct SystemHw {
+  static int freeMemory() {
+    return ::freeMemory();
+  }
+  static void warnLedOn() {
+    ::digitalWrite(LED_BUILTIN, HIGH);
+  }
+  static void warnLedOff() {
+    ::digitalWrite(LED_BUILTIN, LOW);
+  }
+};
 
 }

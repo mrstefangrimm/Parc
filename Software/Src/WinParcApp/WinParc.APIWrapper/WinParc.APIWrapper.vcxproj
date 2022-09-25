@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{72D950F2-C407-4F0F-871D-DC4A233FD1EB}</ProjectGuid>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>YahooAPIWrapper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -57,13 +57,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>..\WinParc.API\bin\debug;</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\WinParc.API\bin\Debug\net481</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Debug\net481</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,13 +71,13 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalUsingDirectories>..\WinParc.API\bin\release</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\WinParc.API\bin\Release\net481</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\WinParc.API\bin\Release\net481</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

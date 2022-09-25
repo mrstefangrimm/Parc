@@ -8,8 +8,8 @@
 
 namespace parclib {
 
-  template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
-  class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
+template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
+class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
   public:
     ProgramStepBase(uint8_t duration)
       : ProgramStep<TLOGGERFAC>(duration) {}
@@ -32,26 +32,26 @@ namespace parclib {
     void action(VirtualAction type, uint8_t tick, Int2Type<false>) {
       if (type == VirtualAction::Tick) {
         static_cast<TDERIVED*>(this)->doTick(tick);
-      }     
+      }
     }
 
-  };
-      
-  template<class TLOGGERFAC>
-  class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
+};
+
+template<class TLOGGERFAC>
+class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
   public:
     ProgramStepWait(uint16_t waitMs) : ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false>(waitMs / TimerPeriod) {}
-   
+
     void doTick(uint8_t tick) {
       if (tick == 0) {
         auto log = TLOGGERFAC::create();
         log->print(F("W "));
       }
     }
-  };
+};
 
-  template<class TLOGGERFAC, class THIDBLEFAC>
-  class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardText<TLOGGERFAC, THIDBLEFAC>, true> {
+template<class TLOGGERFAC, class THIDBLEFAC>
+class ProgramStepBleKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardText<TLOGGERFAC, THIDBLEFAC>, true> {
   public:
     ProgramStepBleKeyboardText(const char* text)
       : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardText<TLOGGERFAC, THIDBLEFAC>, true>(max(10, strlen(text) * 100 / TimerPeriod)) {
@@ -59,7 +59,7 @@ namespace parclib {
       _text = new char[len];
       strncpy(_text, text, len);
     }
-     
+
     void doDispose() {
       delete[] _text;
       _text = 0;
@@ -74,21 +74,23 @@ namespace parclib {
         ble->print(F("AT+BleKeyboard="));
         ble->println(_text);
 
-        if (ble->waitForOK()) { return; }
+        if (ble->waitForOK()) {
+          return;
+        }
         log->println(F("Send keyboard text failed. Enable verbose mode for more information."));
       }
     }
 
   private:
     char* _text;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDBLEFAC>
-  class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCode<TLOGGERFAC, THIDBLEFAC>, false> {
-  public:              
+template<class TLOGGERFAC, class THIDBLEFAC>
+class ProgramStepBleKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCode<TLOGGERFAC, THIDBLEFAC>, false> {
+  public:
     ProgramStepBleKeyboardCode(KeyCode keyCode)
       : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCode<TLOGGERFAC, THIDBLEFAC>, false>(5), _keyCode(keyCode) {}
-  
+
     void doTick(uint8_t tick) {
       if (tick == 0) {
         auto log = TLOGGERFAC::create();
@@ -101,10 +103,10 @@ namespace parclib {
 
   private:
     KeyCode _keyCode;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDBLEFAC>
-  class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCodeRepeated<TLOGGERFAC, THIDBLEFAC>, false> {
+template<class TLOGGERFAC, class THIDBLEFAC>
+class ProgramStepBleKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCodeRepeated<TLOGGERFAC, THIDBLEFAC>, false> {
   public:
     ProgramStepBleKeyboardCodeRepeated(KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGERFAC, ProgramStepBleKeyboardCodeRepeated<TLOGGERFAC, THIDBLEFAC>, false>(5 * numRepetitions), _keyCode(keyCode) {}
@@ -121,10 +123,10 @@ namespace parclib {
 
   private:
     KeyCode _keyCode;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDBLEFAC>
-  class ProgramStepBleControlKey : public ProgramStepBase<TLOGGERFAC, ProgramStepBleControlKey<TLOGGERFAC, THIDBLEFAC>, true> {
+template<class TLOGGERFAC, class THIDBLEFAC>
+class ProgramStepBleControlKey : public ProgramStepBase<TLOGGERFAC, ProgramStepBleControlKey<TLOGGERFAC, THIDBLEFAC>, true> {
   public:
     ProgramStepBleControlKey(const char* ctrlKey)
       : ProgramStepBase<TLOGGERFAC, ProgramStepBleControlKey<TLOGGERFAC, THIDBLEFAC>, true>(1) {
@@ -147,17 +149,19 @@ namespace parclib {
         ble->print(F("AT+BleHidControlKey="));
         ble->println(_ctrlKey);
 
-        if (ble->waitForOK()) { return; }
+        if (ble->waitForOK()) {
+          return;
+        }
         log->println(F("Send keyboard text failed. Enable verbose mode for more information."));
       }
     }
 
   private:
     char* _ctrlKey;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDUSBFAC>
-  class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardText<TLOGGERFAC, THIDUSBFAC>, true> {
+template<class TLOGGERFAC, class THIDUSBFAC>
+class ProgramStepUsbKeyboardText : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardText<TLOGGERFAC, THIDUSBFAC>, true> {
   public:
     ProgramStepUsbKeyboardText(const char* text)
       : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardText<TLOGGERFAC, THIDUSBFAC>, true>(max(1, strlen(text) * 100 / TimerPeriod)) {
@@ -182,14 +186,14 @@ namespace parclib {
 
   private:
     char* _text;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDUSBFAC>
-  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
+template<class TLOGGERFAC, class THIDUSBFAC>
+class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCode(KeyCode keyCode)
       : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode) {}
-       
+
     void doTick(uint8_t tick) {
       if (tick == 0) {
         auto log = TLOGGERFAC::create();
@@ -200,10 +204,18 @@ namespace parclib {
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
         auto usb = THIDUSBFAC::create();
-        if (_keyCode.ctrl) { usb->press(0x80); }
-        if (_keyCode.shift) { usb->press(0x81); }
-        if (_keyCode.alt) { usb->press(0x82); }
-        if (_keyCode.win) { usb->press(0x83); }
+        if (_keyCode.ctrl) {
+          usb->press(0x80);
+        }
+        if (_keyCode.shift) {
+          usb->press(0x81);
+        }
+        if (_keyCode.alt) {
+          usb->press(0x82);
+        }
+        if (_keyCode.win) {
+          usb->press(0x83);
+        }
         usb->press(_keyCode.hexCode);
         usb->releaseAll();
       }
@@ -211,10 +223,10 @@ namespace parclib {
 
   private:
     KeyCode _keyCode;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDUSBFAC>
-  class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false> {
+template<class TLOGGERFAC, class THIDUSBFAC>
+class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCodeRepeated(KeyCode keyCode, uint8_t numRepetitions)
       : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false>(numRepetitions), _keyCode(keyCode) {}
@@ -230,10 +242,18 @@ namespace parclib {
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
         auto usb = THIDUSBFAC::create();
-        if (_keyCode.ctrl) { usb->press(0x80); }
-        if (_keyCode.shift) { usb->press(0x81); }
-        if (_keyCode.alt) { usb->press(0x82); }
-        if (_keyCode.win) { usb->press(0x83); }
+        if (_keyCode.ctrl) {
+          usb->press(0x80);
+        }
+        if (_keyCode.shift) {
+          usb->press(0x81);
+        }
+        if (_keyCode.alt) {
+          usb->press(0x82);
+        }
+        if (_keyCode.win) {
+          usb->press(0x83);
+        }
         usb->press(_keyCode.hexCode);
         usb->releaseAll();
       }
@@ -241,10 +261,10 @@ namespace parclib {
 
   private:
     KeyCode _keyCode;
-  };
+};
 
-  template<class TLOGGERFAC, class THIDUSBFAC>
-  class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false> {
+template<class TLOGGERFAC, class THIDUSBFAC>
+class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCodes(KeyCode keyCode, char secondKey)
       : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode), _secondKey(secondKey) {}
@@ -260,10 +280,18 @@ namespace parclib {
         //ProgramStep<TLOGGER>::_log.println(_keyCode.win);
         //ProgramStep<TLOGGER>::_log.println(_keyCode.hexCode);
         auto usb = THIDUSBFAC::create();
-        if (_keyCode.ctrl) { usb->press(0x80); }
-        if (_keyCode.shift) { usb->press(0x81); }
-        if (_keyCode.alt) { usb->press(0x82); }
-        if (_keyCode.win) { usb->press(0x83); }
+        if (_keyCode.ctrl) {
+          usb->press(0x80);
+        }
+        if (_keyCode.shift) {
+          usb->press(0x81);
+        }
+        if (_keyCode.alt) {
+          usb->press(0x82);
+        }
+        if (_keyCode.win) {
+          usb->press(0x83);
+        }
         usb->press(_keyCode.hexCode);
         usb->press(_secondKey);
         usb->releaseAll();
@@ -273,5 +301,5 @@ namespace parclib {
   private:
     KeyCode _keyCode;
     char _secondKey;
-  };
+};
 }

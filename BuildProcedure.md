@@ -6,19 +6,23 @@ The build steps to build the Parc simulator and the PCB production files.
 
 Required software:
 
-- Microsoft Visual Studio 2019
+- Microsoft Visual Studio 2022
 - Fitzing
 
 Create a package folder.
 
 ## 1. Build Simulator
 
-1. In Visual Studio, open 'WinParcApp.sln' from '\Software\Src\WinParcApp'
+1. In Visual Studio, open 'WinParcApp.sln' from '\Software\Src\WinParcApp' with administrator rights.
 2. Set 'WinParc.App' as startup project
-3. Set the build configuration to 'Release' and 'x64'
+3. Set the build configuration to 'Release' and 'x86'
 4. Build the solution
-5. Copy the 'Release' folder from '\Software\Src\WinParcApp' to the package folder and rename it to Simulator
-6. Delete all files except `*.exe` and `*.dll`
+5. Copy these file from the folder '\Software\Src\WinParcApp\Release' to a folder ' package\Simulator':
+   - WinParc.App.exe
+   - WinParc.APIWrapper.dll
+   - WinParcAPI.dll
+   - WinParc.Core.dll
+   - WinParc.View.exe
 
 ## 2. Create PCB Gerber files 
 
@@ -26,6 +30,7 @@ Create a package folder.
 2. Create folder 'Keypad-v2-Gerber'
 3. File, Export, for Production, Extended Gerber (RS-274x)
 4. Compress the folder to 'Keypad-v2-Gerber.zip'
+5. Copy the files 'Keypad-v2.fzz' and 'Keypad-v2-Gerber.zip' to the folder 'package\Hardware'
 
 ## 3. Copy projects
 

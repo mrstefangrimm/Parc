@@ -5,6 +5,7 @@
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
 
+#include "ParcLib.h"
 #include "Core/HidAo.h"
 #include "Core/Program.h"
 #include "Core/Shared.h"
@@ -82,7 +83,7 @@ test(given_state_idle_and_program_when_checkRegisters_then_state_execute) {
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial) {}
+  while (!Serial) {}
 }
 
 void loop() {

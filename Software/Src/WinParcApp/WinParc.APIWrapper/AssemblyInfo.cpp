@@ -1,3 +1,6 @@
+// Copyright (c) 2021-2022 Stefan Grimm. All rights reserved.
+// Licensed under the LGPL. See LICENSE file in the project root for full license information.
+//
 #include "stdafx.h"
 
 using namespace System;
@@ -16,7 +19,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("WinParcAPIWrapper")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c)  2021")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c)  2021-2022 Stefan Grimm")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

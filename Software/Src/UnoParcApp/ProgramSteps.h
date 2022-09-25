@@ -7,8 +7,8 @@
 
 namespace unoparc {
 
-  template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
-  class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
+template<class TLOGGERFAC, class TDERIVED, bool DISPOSABLE>
+class ProgramStepBase : public ProgramStep<TLOGGERFAC> {
   public:
     ProgramStepBase(uint8_t duration)
       : ProgramStep<TLOGGERFAC>(duration) {}
@@ -34,27 +34,27 @@ namespace unoparc {
       }
     }
 
-  };
-      
-  template<class TLOGGERFAC>
-  class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
+};
+
+template<class TLOGGERFAC>
+class ProgramStepWait : public ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false> {
   public:
     ProgramStepWait(uint16_t waitMs) : ProgramStepBase<TLOGGERFAC, ProgramStepWait<TLOGGERFAC>, false>(waitMs / TimerPeriod) {}
-   
+
     void doTick(uint8_t tick) {
       if (tick == 0) {
         auto log = TLOGGERFAC::create();
         log->print(F("W "));
       }
     }
-  };
+};
 
-  template<class TLOGGERFAC, class THIDUSBFAC>
-  class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
-  public:  
+template<class TLOGGERFAC, class THIDUSBFAC>
+class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
+  public:
     ProgramStepUsbKeyboardCode(KeyCode keyCode)
       : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode) {}
-       
+
     void doTick(uint8_t tick) {
       if (tick == 0) {
         auto log = TLOGGERFAC::create();
@@ -68,13 +68,25 @@ namespace unoparc {
         log->println(_keyCode.alt);
         log->println(_keyCode.win);
         log->println(_keyCode.hexCode);
-        
+
         uint8_t pos = 2;
-        if (_keyCode.ctrl) { _buf[pos] = 224; pos++; }
-        if (_keyCode.shift) { _buf[pos] = 225; pos++; }
-        if (_keyCode.alt) { _buf[pos] = 226; pos++; }
-        if (_keyCode.win) { _buf[pos] = 227; pos++; }
-        
+        if (_keyCode.ctrl) {
+          _buf[pos] = 224;
+          pos++;
+        }
+        if (_keyCode.shift) {
+          _buf[pos] = 225;
+          pos++;
+        }
+        if (_keyCode.alt) {
+          _buf[pos] = 226;
+          pos++;
+        }
+        if (_keyCode.win) {
+          _buf[pos] = 227;
+          pos++;
+        }
+
         _buf[pos] = _keyCode.hexCode;
         usb->write(_buf, sizeof(_buf));
         releaseKey();
@@ -90,5 +102,5 @@ namespace unoparc {
 
     uint8_t _buf[8] = { 0 };
     KeyCode _keyCode;
-  };
+};
 }

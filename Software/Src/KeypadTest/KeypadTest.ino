@@ -1,8 +1,8 @@
-// Written by Stefan Grimm, 2021.
+// Written by Stefan Grimm, 2021-2022.
 // Released into the public domain.
 //
 #include <SoftwareSerial.h>
-#include "Adafruit_MCP23008.h"
+#include "Adafruit_MCP23X08.h"
 
 // MCP expander pins
 const uint8_t Pin_A = 7;
@@ -24,26 +24,26 @@ const uint8_t Usb_ORA = 12;
 
 typedef SoftwareSerial Logger_t;
 Logger_t logger(Usb_ORA, Usb_YEL);
-Adafruit_MCP23008 mcp;
-  
+Adafruit_MCP23X08 mcp;
+
 void setup() {
-  for (int n=0; n<50 && !Serial; n++) {
+  for (int n = 0; n < 50 && !Serial; n++) {
     delay(100);
   }
   Serial.begin(9600);
   logger.begin(9600);
-  
-  mcp.begin();
-  mcp.pinMode(Pin_A, INPUT); mcp.pullUp(Pin_A, HIGH);
-  mcp.pinMode(Pin_B, INPUT); mcp.pullUp(Pin_B, HIGH);
-  mcp.pinMode(Pin_C, INPUT); mcp.pullUp(Pin_C, HIGH);
-  mcp.pinMode(Pin_D, INPUT); mcp.pullUp(Pin_D, HIGH);
-  mcp.pinMode(Pin_E, INPUT); mcp.pullUp(Pin_E, HIGH);
-  mcp.pinMode(Pin_M0, INPUT); mcp.pullUp(Pin_M0, HIGH);
-  mcp.pinMode(Pin_M1, INPUT); mcp.pullUp(Pin_M1, HIGH);
-  
+
+  mcp.begin_I2C();
+  mcp.pinMode(Pin_A, INPUT_PULLUP);
+  mcp.pinMode(Pin_B, INPUT_PULLUP);
+  mcp.pinMode(Pin_C, INPUT_PULLUP);
+  mcp.pinMode(Pin_D, INPUT_PULLUP);
+  mcp.pinMode(Pin_E, INPUT_PULLUP);
+  mcp.pinMode(Pin_M0, INPUT_PULLUP);
+  mcp.pinMode(Pin_M1, INPUT_PULLUP);
+
   ::pinMode(Pin_C1, INPUT_PULLUP);
-  // ::pinMode(Pin_C2, INPUT_PULLUP);
+  //::pinMode(Pin_C2, INPUT_PULLUP);
   ::pinMode(Pin_C3, INPUT_PULLUP);
   ::pinMode(Pin_C4, INPUT_PULLUP);
 }
@@ -84,7 +84,7 @@ void loop() {
   /* if (::digitalRead(Pin_C2) == HIGH) {
     Serial.println("Code_2");
     logger.println("Code_2");
-  }*/
+    }*/
   if (::digitalRead(Pin_C3) == HIGH) {
     Serial.println("Code_3");
     logger.println("Code_3");
@@ -93,5 +93,5 @@ void loop() {
     Serial.println("Code_4");
     logger.println("Code_4");
   }
-  delay(500);  
+  delay(500);
 }

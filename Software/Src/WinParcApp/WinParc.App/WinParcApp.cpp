@@ -79,9 +79,9 @@ public:
     char str[2] = { ch, '\0' };
     _parcApi.TerminalPrint(str);
   }
-  void print(char ch, SerialFakeMode mode) { 
-    char str[2] = { ch, '\0' }; 
-    _parcApi.TerminalPrint(str); 
+  void print(char ch, SerialFakeMode mode) {
+    char str[2] = { ch, '\0' };
+    _parcApi.TerminalPrint(str);
   }
   void println(const char* ch) { _parcApi.TerminalPrintLn(ch); }
   void println(const char* ch, SerialFakeMode mode) { _parcApi.TerminalPrintLn(ch); }
@@ -101,7 +101,7 @@ public:
       if (ch != 0) {
         return ch;
       }
-    }  
+    }
     return -1;
   }
 
@@ -135,7 +135,7 @@ private:
 
   bool pressed(const char* pin) {
     return _parcApi.KeypadPressed(pin);
-  }  
+  }
 
   WinParcAPIWrapper& _parcApi;
 };

@@ -6,18 +6,28 @@
 #include "ProgramStep.h"
 
 namespace parclib {
-  
-  template<class TLOGGERFAC>
-  class Program {
+
+template<class TLOGGERFAC>
+class Program {
   public:
     size_t duration() const {
-      if (_root != 0) { return _root->duration(); }
-      else { return 0; }
+      if (_root != 0) {
+        return _root->duration();
+      }
+      else {
+        return 0;
+      }
     }
 
     ProgramStep<TLOGGERFAC>* appendStep(ProgramStep<TLOGGERFAC>* step) {
-      if (_root == 0) { _root = step; _currentStep = step; return _root; }
-      else { return _root->appendStep(step); }
+      if (_root == 0) {
+        _root = step;
+        _currentStep = step;
+        return _root;
+      }
+      else {
+        return _root->appendStep(step);
+      }
     }
 
     void dispose() {
@@ -47,6 +57,6 @@ namespace parclib {
     ProgramStep<TLOGGERFAC>* _root = 0;
     ProgramStep<TLOGGERFAC>* _currentStep = 0;
     uint8_t _tick = 0;
-  };
+};
 
 }

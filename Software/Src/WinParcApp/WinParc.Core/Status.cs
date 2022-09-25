@@ -72,7 +72,7 @@ namespace WinParc.Core {
 
     public void SetDebugOutput(string output) {
       DebugOutputChanged?.Invoke(this, new OutputEventArgs { Message = output });
-    }  
+    }
 
     public void SetKeyPressed(Button key, bool pressed) {
       lock (_lockObject) {

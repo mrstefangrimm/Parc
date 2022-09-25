@@ -126,7 +126,7 @@ namespace TerminalAoTest {
         root = 0;
       }
     }
-    
+
     bool hasSteps() const {
       return root != 0;
     }
@@ -158,7 +158,7 @@ namespace TerminalAoTest {
     FakeProgramStep(KeyCode keyCode) : ProgramStep(0) { type = PsType::UsbKeycode; hexCode = keyCode.hexCode; }
     FakeProgramStep(KeyCode keyCode, uint8_t repetitions) : ProgramStep(0) { type = PsType::UsbKeycodeRepeated; hexCode = keyCode.hexCode; }
     FakeProgramStep(KeyCode keyCode, char secondKey) : ProgramStep<LoggerFac_t>(0) { type = PsType::UsbKeycodes; hexCode = keyCode.hexCode; }
-   
+
     void action(VirtualAction type, uint8_t& tick) override {};
 
     PsType type;
@@ -175,7 +175,7 @@ namespace TerminalAoTest {
     PsType type;
     uint8_t hexCode = 0;
   };
-  
+
   KeypadAo<LoggerFac_t, FakeKeypadHw> keypadAo(registers, keypadHwFake);
   HidAo<LoggerFac_t, FakeProgram<LoggerFac_t>> hid(registers, programs);
 

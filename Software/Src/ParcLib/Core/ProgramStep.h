@@ -5,14 +5,14 @@
 
 namespace parclib {
 
-  // Every virtual method has a pointer (two bytes) in the virtual table.
-  enum class VirtualAction {
-    Dispose,
-    Tick
-  };
-    
-  template<class TLOGGERFAC>
-  class ProgramStep {
+// Every virtual method has a pointer (two bytes) in the virtual table.
+enum class VirtualAction {
+  Dispose,
+  Tick
+};
+
+template<class TLOGGERFAC>
+class ProgramStep {
   public:
     ProgramStep(uint8_t duration);
 
@@ -30,53 +30,57 @@ namespace parclib {
 
     uint8_t _duration;
 
-  };
+};
 
 
-  template<class TLOGGERFAC>
-  inline ProgramStep<TLOGGERFAC>::ProgramStep(uint8_t duration)
-    : _duration(duration), _next(0) {
-    // Debug: static int numSteps = 0; numSteps++;_log.println(numSteps);
-  }
+template<class TLOGGERFAC>
+inline ProgramStep<TLOGGERFAC>::ProgramStep(uint8_t duration)
+  : _duration(duration), _next(0) {
+  // Debug: static int numSteps = 0; numSteps++;_log.println(numSteps);
+}
 
-  template<class TLOGGERFAC>
-  inline void ProgramStep<TLOGGERFAC>::dispose() {
-    if (_next != 0) {
-      _next->dispose();
-      delete _next;
-      _next = 0;
-    }
-    action(VirtualAction::Dispose, _duration);
+template<class TLOGGERFAC>
+inline void ProgramStep<TLOGGERFAC>::dispose() {
+  if (_next != 0) {
+    _next->dispose();
+    delete _next;
+    _next = 0;
   }
+  action(VirtualAction::Dispose, _duration);
+}
 
-  template<class TLOGGERFAC>
-  inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::play(uint8_t& tick) {
-    if (tick < _duration) {
-      action(VirtualAction::Tick, tick);
-      tick++;
-      return this;
-    }
-    else if (_next != 0) {
-      tick = 0;
-      _next->play(tick);
-    }
-    return _next;
+template<class TLOGGERFAC>
+inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::play(uint8_t& tick) {
+  if (tick < _duration) {
+    action(VirtualAction::Tick, tick);
+    tick++;
+    return this;
   }
-  
-  template<class TLOGGERFAC>
-  inline size_t ProgramStep<TLOGGERFAC>::duration() const {
-    if (_next != 0) { return _duration + _next->duration(); }
-    else { return _duration; }
+  else if (_next != 0) {
+    tick = 0;
+    _next->play(tick);
   }
-  
-  template<class TLOGGERFAC>
-  inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::appendStep(ProgramStep<TLOGGERFAC>* step) {
-    if (_next == 0) {
-      _next = step; return _next;
-    }
-    else {
-      return _next->appendStep(step);
-    }
+  return _next;
+}
+
+template<class TLOGGERFAC>
+inline size_t ProgramStep<TLOGGERFAC>::duration() const {
+  if (_next != 0) {
+    return _duration + _next->duration();
   }
+  else {
+    return _duration;
+  }
+}
+
+template<class TLOGGERFAC>
+inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::appendStep(ProgramStep<TLOGGERFAC>* step) {
+  if (_next == 0) {
+    _next = step; return _next;
+  }
+  else {
+    return _next->appendStep(step);
+  }
+}
 
 }

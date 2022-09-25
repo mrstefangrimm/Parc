@@ -9,40 +9,44 @@
 
 namespace parclib {
 
-  enum PsType {
-    Wait,
-    UsbKeycode,
-    UsbKeycodeRepeated,
-    UsbKeycodes,
-    UsbText,
-    BleKeycode,
-    BleKeycodeRepeated,
-    BleText,
-    BleControlkey
-  };
+enum PsType {
+  Wait,
+  UsbKeycode,
+  UsbKeycodeRepeated,
+  UsbKeycodes,
+  UsbText,
+  BleKeycode,
+  BleKeycodeRepeated,
+  BleText,
+  BleControlkey
+};
 
-  enum CmdType {
-    _LastStep = BleControlkey,
-    Pin
-  };
+enum CmdType {
+  _LastStep = BleControlkey,
+  Pin
+};
 
-  template<uint8_t CMDTYPE>
-  struct CmdComparator {
+template<uint8_t CMDTYPE>
+struct CmdComparator {
 
-    bool operator()(const char* another) const {
-      return equals(another);
-    }
-    bool equals(const char* another) const { return false; }
+  bool operator()(const char* another) const {
+    return equals(another);
+  }
+  bool equals(const char* another) const {
+    return false;
+  }
 
-    bool operator()(char** another) const {
-      return equals(another);
-    }
-    bool equals(char** another) const { return false; }
+  bool operator()(char** another) const {
+    return equals(another);
+  }
+  bool equals(char** another) const {
+    return false;
+  }
 
-  };
+};
 
-  template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGERFAC, class THIDBLEFAC, class THIDUSBFAC, class TPROGRAM, class TSYSTEMHWFAC, class KNOWNKEYCODES, uint8_t BUFLEN>
-  class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>> {
+template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGERFAC, class THIDBLEFAC, class THIDUSBFAC, class TPROGRAM, class TSYSTEMHWFAC, class KNOWNKEYCODES, uint8_t BUFLEN>
+class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>> {
   public:
     TerminalAo(TSERIAL& serialInput, RegisterData_t* registers, TPROGRAM* programs)
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _programs(programs) {}
@@ -93,7 +97,7 @@ namespace parclib {
         }
         else if (isprint(ch)) {
           _serial.print(ch);
-        }        
+        }
       }
       if (ch != 0 /*&& ch != 0b1101 && ch != 0b1010*/) {
         // YAT sends 0b1101 and 0b1010, PuTTY sends 0b1101 and powershell sends 0b1010
@@ -116,18 +120,18 @@ namespace parclib {
           // Debug: _serial.println(_buf);
           uint8_t numSubStr;
           char* subStrs[2] = { 0 };
-          parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);          
+          parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
 
           if (numSubStr == 2) {
             if (CmdComparator<CmdType::Pin>()(subStrs)) {
               _keyPadState.isPin = 1;
             }
-            else {              
+            else {
               // Debug: _serial.println(subStrs[0][0]); // Does not work when backspace is used in putty
               // Debug: _serial.println(subStrs[1][0]); // Does not work when backspace is used in putty
               // Debug: _serial.println(subStrs[0][strlen(subStrs[0])-1]);
               // Debug: _serial.println(subStrs[1][strlen(subStrs[1])-1]);
-          
+
               _keyPadState.isPin = 0;
               _keyPadState.mode = subStrs[0][0] - '0';
               _keyPadState.button = subStrs[1][0] - 'A' + 1;
@@ -159,7 +163,7 @@ namespace parclib {
               _serial.println(F(" This ain't dull, bye."));
               _state = State::Idle;
             }
-          }    
+          }
         }
         else if (_itBuf < BUFLEN) {
           // omit preceding spaces to save the buffer for the data.
@@ -232,13 +236,13 @@ namespace parclib {
           parclib::trimBack(_buf, BUFLEN);
           parclib::squeeze(_buf);
           // Debug: _serial.println(_buf);
-          
+
           uint8_t numSubStr;
           char* subStrs[6] = { 0 };
           parclib::split(_buf, BUFLEN, ' ', subStrs, &numSubStr);
 
           ProgramStep<TLOGGERFAC>* progStep = 0;
-         
+
           if (CmdComparator<PsType::Wait>()(subStrs[0])) {
             progStep = createProgramStepWait(subStrs[1]);
           }
@@ -294,7 +298,7 @@ namespace parclib {
     ProgramStep<TLOGGERFAC>* createProgramStepWait(const char* delay) {
       uint16_t waitMs = atoi(delay);
       // Debug: _log.print(F("Delay: ")); _log.println(waitMs);
-      
+
       auto log = TLOGGERFAC::create();
       log->println(F("Create Wait_t"));
       return new Wait_t(waitMs);
@@ -338,11 +342,15 @@ namespace parclib {
 
     ProgramStep<TLOGGERFAC>* createProgramStepBleControlKey(char* subStrs[], uint8_t numSubStr) {
       auto log = TLOGGERFAC::create();
-      // _log.print("Control Key: "); _log.print(subStrs[1]); 
+      // _log.print("Control Key: "); _log.print(subStrs[1]);
 
-      if (strcmp(subStrs[1], "Volume+") == 0) { return new BleControlkey_t("0xE9"); }
-      if (strcmp(subStrs[1], "Volume-") == 0) { return new BleControlkey_t("0xEA"); }
-   
+      if (strcmp(subStrs[1], "Volume+") == 0) {
+        return new BleControlkey_t("0xE9");
+      }
+      if (strcmp(subStrs[1], "Volume-") == 0) {
+        return new BleControlkey_t("0xEA");
+      }
+
       log->println(F("Create BleControlkey_t"));
       return new BleControlkey_t(subStrs[1]);
     }
@@ -374,7 +382,7 @@ namespace parclib {
           keyCode.hexCode = code[0];
           second = code[2];
         }
-      }      
+      }
       else {
         keyCode.hexCode = strtol(code, 0, KNOWNKEYCODES::UsbRadix);
       }
@@ -403,21 +411,37 @@ namespace parclib {
     }
 
     uint8_t symbolToUsbKeyode(const char* code) {
-      if (strcmp(code, "<Del>") == 0) { return KNOWNKEYCODES::UsbKeyCodeDel; }
-      if (strcmp(code, "<Tab>") == 0) { return KNOWNKEYCODES::UsbKeyCodeTab; }
-      if (strcmp(code, "<Enter>") == 0) { return KNOWNKEYCODES::UsbKeyCodeEnter; }
-      if (strcmp(code, "<Space>") == 0) { return KNOWNKEYCODES::UsbKeyCodeSpace; }
+      if (strcmp(code, "<Del>") == 0) {
+        return KNOWNKEYCODES::UsbKeyCodeDel;
+      }
+      if (strcmp(code, "<Tab>") == 0) {
+        return KNOWNKEYCODES::UsbKeyCodeTab;
+      }
+      if (strcmp(code, "<Enter>") == 0) {
+        return KNOWNKEYCODES::UsbKeyCodeEnter;
+      }
+      if (strcmp(code, "<Space>") == 0) {
+        return KNOWNKEYCODES::UsbKeyCodeSpace;
+      }
       return 0;
     }
 
     uint8_t symbolToBleKeyode(const char* code) {
-      if (strcmp(code, "<Del>") == 0) { return KNOWNKEYCODES::BleKeyCodeDel; }
-      if (strcmp(code, "<Tab>") == 0) { return KNOWNKEYCODES::BleKeyCodeTab; }
-      if (strcmp(code, "<Enter>") == 0) { return KNOWNKEYCODES::BleKeyCodeEnter; }
-      if (strcmp(code, "<Space>") == 0) { return KNOWNKEYCODES::BleKeyCodeSpace; }
+      if (strcmp(code, "<Del>") == 0) {
+        return KNOWNKEYCODES::BleKeyCodeDel;
+      }
+      if (strcmp(code, "<Tab>") == 0) {
+        return KNOWNKEYCODES::BleKeyCodeTab;
+      }
+      if (strcmp(code, "<Enter>") == 0) {
+        return KNOWNKEYCODES::BleKeyCodeEnter;
+      }
+      if (strcmp(code, "<Space>") == 0) {
+        return KNOWNKEYCODES::BleKeyCodeSpace;
+      }
       return 0;
     }
-    
+
   private:
     typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>> Ao_t;
     typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
@@ -446,6 +470,6 @@ namespace parclib {
 
     KeypadRegData _keyPadState;
 
-  };
+};
 
 }
