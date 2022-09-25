@@ -44,7 +44,7 @@ struct FakeHidBle {
   void println(const char* text) {
     strcpy(lastPrintln, text);
   }
-  
+
   char lastPrintln[30];
 };
 FakeHidBle ble;
@@ -64,7 +64,7 @@ test(given_w_when_5000ms_then_50ticks) {
 
 test(given_bt_when_hello_then_duration_at_least_10ticks) {
   auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello");
-      
+
   assertEqual(10, p->duration());
 
   p->dispose();
@@ -189,8 +189,8 @@ test(given_valid_three_program_steps_when_through_then_hello_is_sent_last) {
   p.play(); // 3
   p.play(); // 4
   p.play(); // 5 => 0 rewind is required
-  p.play(); // 5 => 0 
-  p.play(); // 5 => 0 
+  p.play(); // 5 => 0
+  p.play(); // 5 => 0
   p.rewind();
   p.play(); // 0 BT Hello
 
@@ -201,7 +201,7 @@ test(given_valid_three_program_steps_when_through_then_hello_is_sent_last) {
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial) {}
+  while (!Serial) {}
 }
 
 void loop() {

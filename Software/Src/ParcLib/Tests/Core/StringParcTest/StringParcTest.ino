@@ -87,7 +87,7 @@ test(given_text_with_three_spaces_one_in_textstring_when_split_then_three_substr
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial) {}
+  while (!Serial) {}
 }
 
 void loop() {

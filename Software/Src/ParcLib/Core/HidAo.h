@@ -8,15 +8,17 @@
 #include "Program.h"
 
 namespace parclib {
-  
-  template<class TLOGGERFAC, class TPROGRAM>
-  class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
+
+template<class TLOGGERFAC, class TPROGRAM>
+class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
 
   public:
     HidAo(RegisterData_t* registers, TPROGRAM* programs)
       : Ao_t(registers), _programs(programs) {}
-    
-    TPROGRAM* programs() { return _programs; }
+
+    TPROGRAM* programs() {
+      return _programs;
+    }
 
     void checkRegisters() {
       switch (_state) {
@@ -25,7 +27,7 @@ namespace parclib {
       };
       Ao_t::_registers[KEYPAD_HID_INPUT] = 0;
     }
-    
+
   private:
     void stateIdle() {
       if (_state == State::Idle &&  Ao_t::_registers[KEYPAD_HID_INPUT] != 0) {
@@ -47,7 +49,7 @@ namespace parclib {
         }
       }
     }
-   
+
     void stateExecute() {
       if (_state == State::Execute && Ao_t::_registers[HID_HID_TIMEOUT] != 0) {
 
@@ -67,7 +69,7 @@ namespace parclib {
 
   private:
     typedef Ao<HidAo<TLOGGERFAC, TPROGRAM>> Ao_t;
-  
+
     TPROGRAM* _programs;
 
     enum class State {
@@ -77,6 +79,6 @@ namespace parclib {
     State _state = State::Idle;
     TPROGRAM* _program = 0;
     size_t _ticksRemaining = 0;
-  };
+};
 
 }

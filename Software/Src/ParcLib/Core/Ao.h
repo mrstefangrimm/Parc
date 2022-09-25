@@ -7,8 +7,8 @@
 
 namespace parclib {
 
-  template<class TDERIVED>
-  class Ao {
+template<class TDERIVED>
+class Ao {
   public:
     Ao(RegisterData_t* registers)
       : _registers(registers) {}
@@ -19,6 +19,6 @@ namespace parclib {
 
   protected:
     RegisterData_t* _registers;
-  };
+};
 
 }

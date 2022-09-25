@@ -82,7 +82,7 @@ test(given_state_idle_and_program_when_checkRegisters_then_state_execute) {
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial) {}
+  while (!Serial) {}
 }
 
 void loop() {

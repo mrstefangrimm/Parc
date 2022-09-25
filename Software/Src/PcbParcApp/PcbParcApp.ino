@@ -61,28 +61,42 @@ HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
 
 SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
 
-template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
-template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
-template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) const { return 'U' == another[0] && 'T' == another[1]; }
-template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) const { return 'B' == another[0] && 'K' == another[1]; }
-template<> bool CmdComparator<PsType::BleText>::equals(const char* another) const { return 'B' == another[0] && 'T' == another[1]; }
-template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) const { return 'B' == another[0] && 'C' == another[1]; }
-template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const {
+  return 'W' == another[0];
+}
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const {
+  return 'U' == another[0] && 'K' == another[1];
+}
+template<> bool CmdComparator<PsType::UsbText>::equals(const char* another) const {
+  return 'U' == another[0] && 'T' == another[1];
+}
+template<> bool CmdComparator<PsType::BleKeycode>::equals(const char* another) const {
+  return 'B' == another[0] && 'K' == another[1];
+}
+template<> bool CmdComparator<PsType::BleText>::equals(const char* another) const {
+  return 'B' == another[0] && 'T' == another[1];
+}
+template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another) const {
+  return 'B' == another[0] && 'C' == another[1];
+}
+template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const {
+  return 'P' == another[0][0] && 'N' == another[1][0];
+}
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode repeated, BLE Text, BLE Control Key
 typedef Typelist<ProgramStepWait<LoggerFac_t>,
-  Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>,
-  NullType>>>>>>>>> ProgramStepList;
+        Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
+        Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>,
+        Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>,
+        Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>,
+        Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>,
+        Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>,
+        Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>,
+        Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>,
+        NullType>>>>>>>>> ProgramStepList;
 
-struct KnownKeycodes {    
+struct KnownKeycodes {
   static const uint8_t UsbRadix = 16;
   static const uint8_t UsbKeyCodeDel = 0xD4;
   static const uint8_t UsbKeyCodeTab = 0xB3;
@@ -99,13 +113,15 @@ struct KnownKeycodes {
 TerminalAo<ProgramStepList, Serial_, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(Serial, registers, programs);
 
 void setup() {
-  for (int n=0; n<50 && !Serial; n++) { delay(100); }
-  Serial.begin(9600);  
+  for (int n = 0; n < 50 && !Serial; n++) {
+    delay(100);
+  }
+  Serial.begin(9600);
   logger.begin(9600);
   Keyboard.begin();
-  
+
   pinMode(LED_BUILTIN, OUTPUT);
-  
+
   keypadHw.begin();
   keypadHw.pinMode<KeyPadSwitch::Btn_A>();
   keypadHw.pinMode<KeyPadSwitch::Btn_B>();
@@ -133,6 +149,6 @@ void loop() {
   hid.checkRegisters();
   terminal.checkRegisters();
   systemMonitor.checkRegisters();
-  
-  delay(TimerPeriod);  
+
+  delay(TimerPeriod);
 }

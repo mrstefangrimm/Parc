@@ -61,8 +61,12 @@ HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
 
 SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
 
-template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
-template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
+template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const {
+  return 'W' == another[0];
+}
+template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const {
+  return 'U' == another[0] && 'K' == another[1];
+}
 
 struct ProgramStepFake : public ProgramStep<LoggerFac_t> {
   ProgramStepFake(KeyCode keyCode) : ProgramStep(0) { }
@@ -75,17 +79,17 @@ struct ProgramStepFake : public ProgramStep<LoggerFac_t> {
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode repeated, BLE Text, BLE Control Key
 typedef Typelist<ProgramStepWait<LoggerFac_t>,
-  Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  Typelist<ProgramStepFake,
-  NullType>>>>>>>>> ProgramStepList;
+        Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        Typelist<ProgramStepFake,
+        NullType>>>>>>>>> ProgramStepList;
 
-struct KnownKeycodes {    
+struct KnownKeycodes {
   static const uint8_t UsbRadix = 10;
   static const uint8_t UsbKeyCodeDel = 76;   // 0x4C
   static const uint8_t UsbKeyCodeTab = 43;   // 0x2B
@@ -102,12 +106,14 @@ struct KnownKeycodes {
 TerminalAo<ProgramStepList, TerminalConsole_t, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(terminalConsole, registers, programs);
 
 void setup() {
-  for (int n=0; n<50 && !Serial; n++) { delay(100); }
+  for (int n = 0; n < 50 && !Serial; n++) {
+    delay(100);
+  }
   Serial.begin(9600);
-  terminalConsole.begin(9600);  
-  
+  terminalConsole.begin(9600);
+
   pinMode(LED_BUILTIN, OUTPUT);
-  
+
   keypadHw.pinMode<KeyPadSwitch::Btn_A>();
   keypadHw.pinMode<KeyPadSwitch::Btn_B>();
   keypadHw.pinMode<KeyPadSwitch::Btn_C>();
@@ -121,11 +127,11 @@ void setup() {
 }
 
 void loop() {
-      
+
   keypad.checkRegisters();
   hid.checkRegisters();
   terminal.checkRegisters();
   systemMonitor.checkRegisters();
-  
-  delay(TimerPeriod);  
+
+  delay(TimerPeriod);
 }

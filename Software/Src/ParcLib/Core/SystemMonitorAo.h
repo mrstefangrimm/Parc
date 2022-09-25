@@ -7,8 +7,8 @@
 
 namespace parclib {
 
-  template<class TLOGGERFAC, class TSYSTEMHWFAC, uint8_t LOWMEMORY>
-  class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> {
+template<class TLOGGERFAC, class TSYSTEMHWFAC, uint8_t LOWMEMORY>
+class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> {
   public:
     SystemMonitorAo(RegisterData_t* registers)
       : Ao_t(registers), _gameOver(false) {
@@ -52,7 +52,7 @@ namespace parclib {
 
   private:
     typedef Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> Ao_t;
-        
+
     void logMemory() {
       auto log = TLOGGERFAC::create();
       auto sysHw = TSYSTEMHWFAC::create();
@@ -67,6 +67,6 @@ namespace parclib {
     }
 
     bool _gameOver;
-  };
+};
 
 }

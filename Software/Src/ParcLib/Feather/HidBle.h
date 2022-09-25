@@ -10,8 +10,8 @@
 
 namespace parclib {
 
-  template<class TLOGGERFAC>
-  class HidBle {
+template<class TLOGGERFAC>
+class HidBle {
   public:
     HidBle()
       : _ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST) {}
@@ -31,9 +31,9 @@ namespace parclib {
       _ble.echo(false);
 
       /*
-      if (!_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION)) {
+        if (!_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION)) {
         error(F("This sketch requires a higher firmware version."));
-      }
+        }
       */
 
       log->println(F("Enable HID Services (including Control Key): "));
@@ -45,21 +45,31 @@ namespace parclib {
       if (!_ble.reset()) {
         error(F("Couldn't reset??"));
       }
-    }   
+    }
 
     bool sendKeyCode(KeyCode keyCode) {
       auto log = TLOGGERFAC::create();
 
       // Debug: log.print(F("Sending keycode mem before: ")); _log.println(freeMemory());
       uint8_t modifier = keyCode.ctrl == true;
-      if (keyCode.shift) { modifier |= 0x2; }
-      if (keyCode.alt) { modifier |= 0x4; }
-      if (keyCode.win) { modifier |= 0x8; }
+      if (keyCode.shift) {
+        modifier |= 0x2;
+      }
+      if (keyCode.alt) {
+        modifier |= 0x4;
+      }
+      if (keyCode.win) {
+        modifier |= 0x8;
+      }
       _ble.print(F("AT+BLEKEYBOARDCODE="));
-      if (modifier < 0x10) { _ble.print(F("0")); }
+      if (modifier < 0x10) {
+        _ble.print(F("0"));
+      }
       _ble.print(modifier, HEX);
       _ble.print(F("-00-"));
-      if (keyCode.hexCode < 0x10) { _ble.print(F("0")); }
+      if (keyCode.hexCode < 0x10) {
+        _ble.print(F("0"));
+      }
       _ble.print(keyCode.hexCode, HEX);
       _ble.println(F("-00-00-00-00"));
 
@@ -70,10 +80,10 @@ namespace parclib {
       log->println(F("Send command failed. Enable verbose mode for more information."));
       // Debug: _log.print(F("Sending keycode mem after: ")); _log.println(freeMemory());
       return false;
-    }    
+    }
 
     /*
-    void info() {
+      void info() {
       _log.println(F("BluefruitLE info (output on Serial): "));
 
       _log.println(F("List of pre-defined control keys:"));
@@ -106,8 +116,8 @@ namespace parclib {
         "- REFRESH" "\n"
         "- BOOKMARKS" "\n"
       ));
-      
-    }
+
+      }
     */
 
     bool waitForOK() {
@@ -116,7 +126,7 @@ namespace parclib {
 
     void print(const char* const data) {
       _ble.print(data);
-    }    
+    }
     void print(const __FlashStringHelper* data) {
       _ble.print(data);
     }
@@ -126,17 +136,17 @@ namespace parclib {
     }
     void println(const __FlashStringHelper* data) {
       _ble.println(data);
-    }    
+    }
 
   private:
     void error(const __FlashStringHelper* err) {
       auto log = TLOGGERFAC::create();
       log->println(err);
-      while(true);
+      while (true);
     }
 
     //const char* MINIMUM_FIRMWARE_VERSION = "0.6.6";
     Adafruit_BluefruitLE_SPI _ble;
-  };
+};
 
 }
