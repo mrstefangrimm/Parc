@@ -16,11 +16,5 @@ namespace WinParc.App.Specs.Steps {
       _simulator = simulator;
     }
 
-    [AfterTestRun]
-    public static void KillCppProcess() {
-      foreach (var process in Process.GetProcessesByName("WinParc.App")) {
-        process.Kill();
-      }
-    }
   }
 }
