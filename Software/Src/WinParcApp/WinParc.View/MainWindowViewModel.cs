@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+﻿// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 using System.ComponentModel;
@@ -10,9 +10,9 @@ namespace WinParc.View {
 
   public class MainWindowViewModel : INotifyPropertyChanged {
 
-    private Status _status;
-    private ICommand _btnPressCmd;
-    private ICommand _sendPressCmd;
+    private readonly Status _status;
+    private readonly ICommand _btnPressCmd;
+    private readonly ICommand _sendPressCmd;
     private bool _isCheckedM0;
     private bool _isCheckedM1;
     private bool _isCheckedC1;
@@ -30,7 +30,7 @@ namespace WinParc.View {
         _status.SetKeyPressed(param, true);
       });
       _sendPressCmd = new RelayCommand<object>(param => {
-        var text = _sendText;
+        var text = SendText;
         if (!string.IsNullOrEmpty(text)) {
           SendText = null;
           _status.SetTerminalCommand(text);
@@ -130,7 +130,7 @@ namespace WinParc.View {
     }
 
     public string SendText {
-      get { return _sendText; }
+      get { return _sendText == null ? null : _sendText.Replace('ö', ';'); }
       set {
         if (_sendText != value) {
           _sendText = value;

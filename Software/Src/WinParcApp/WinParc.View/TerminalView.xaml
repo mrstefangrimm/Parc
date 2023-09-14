@@ -1,4 +1,4 @@
-﻿<!-- Copyright (c) 2021 Stefan Grimm. All rights reserved.
+﻿<!-- Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
      Licensed under the LGPL. See LICENSE file in the project root for full license information.
 -->
 <UserControl x:Class="WinParc.View.TerminalView"
@@ -20,10 +20,10 @@
         <ColumnDefinition Width="*"></ColumnDefinition>
         <ColumnDefinition Width="150"></ColumnDefinition>
       </Grid.ColumnDefinitions>
-      <TextBox Grid.Column="0" Text="{Binding SendText}"></TextBox>
-      <Button Grid.Column="1" Content="Send" Command="{Binding SendPressCmd}"></Button>
+      <TextBox Grid.Column="0" Text="{Binding SendText}" AutomationProperties.AutomationId="textbox_SendText"></TextBox>
+      <Button Grid.Column="1" Content="Send" Command="{Binding SendPressCmd}"  AutomationProperties.AutomationId="button_SendPressCmd"></Button>
     </Grid>
-    <TextBox Grid.Row="2" IsReadOnly="True" Text="{Binding TerminalOutput}"></TextBox>
+    <TextBox Grid.Row="2" IsReadOnly="True" Text="{Binding TerminalOutput}" AutomationProperties.AutomationId="textbox_TerminalOutput"></TextBox>
 
   </Grid>
 </UserControl>

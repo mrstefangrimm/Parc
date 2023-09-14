@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+﻿// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 using System;
@@ -30,10 +30,10 @@ namespace WinParc.Core {
 
   public class Status {
 
-    private object _lockObject = new object();
+    private readonly object _lockObject = new object();
     private string _input = string.Empty;
     private bool _isWarnLedOn;
-    private Dictionary<string, bool> _pressedKeys = new Dictionary<string, bool>();
+    private readonly Dictionary<string, bool> _pressedKeys = new Dictionary<string, bool>();
 
     public event EventHandler<OutputEventArgs> DebugOutputChanged;
     public event EventHandler<OutputEventArgs> TerminalOutputChanged;
