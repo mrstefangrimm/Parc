@@ -68,13 +68,13 @@ Libraries
 | Adafruit MCP23017 Arduino Library | BSD               |
 | Adafruit BluefruitLE nRF51        | BSD               |
 | Arduino.h                         | LGPL              |
-| .NET 4.7.2                        | Microsoft license |
+| .NET 4.8.1                        | Microsoft license |
 
 
 
 ## License
 
-This Library is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 
 
@@ -86,9 +86,7 @@ The idea for the project came in mid January 2021 and was first published on ins
 
 ## Change History
 
-### 0.0.1.0 
-
-- Initial Version
+See [github releases](https://github.com/mrstefangrimm/Parc/releases).
 
 
 

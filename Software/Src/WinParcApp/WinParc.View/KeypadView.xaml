@@ -1,4 +1,4 @@
-﻿<!-- Copyright (c) 2021 Stefan Grimm. All rights reserved.
+﻿<!-- Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
      Licensed under the LGPL. See LICENSE file in the project root for full license information.
 -->
 <UserControl x:Class="WinParc.View.KeypadView"
@@ -26,26 +26,26 @@
         <RowDefinition Height="*"></RowDefinition>
         <RowDefinition Height="*"></RowDefinition>
       </Grid.RowDefinitions>
-      <Button Content="A" Grid.Column="0" Grid.Row="0" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.A}">
+      <Button Content="A" Grid.Column="0" Grid.Row="0" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.A}" AutomationProperties.AutomationId="button_A">
       </Button>
-      <Button Content="B" Grid.Column="0" Grid.Row="1" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.B}">
+      <Button Content="B" Grid.Column="0" Grid.Row="1" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.B}" AutomationProperties.AutomationId="button_B">
       </Button>
-      <Button Content="C" Grid.Column="1" Grid.Row="0" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.C}">
+      <Button Content="C" Grid.Column="1" Grid.Row="0" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.C}" AutomationProperties.AutomationId="button_C">
       </Button>
-      <Button Content="D" Grid.Column="1" Grid.Row="1" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.D}">
+      <Button Content="D" Grid.Column="1" Grid.Row="1" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.D}" AutomationProperties.AutomationId="button_D">
       </Button>
-      <Button Content="E" Grid.Column="1" Grid.Row="2" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.E}">
+      <Button Content="E" Grid.Column="1" Grid.Row="2" Margin="20,20,20,20" Command="{Binding ButtonPressCmd}" CommandParameter="{x:Static domain:Button.E}" AutomationProperties.AutomationId="button_E">
       </Button>
     </Grid>
     <StackPanel Grid.Row="1" Orientation="Horizontal">
-      <CheckBox Content="M1" IsChecked="{Binding IsCheckedM1}"></CheckBox>
-      <CheckBox Content="M0" IsChecked="{Binding IsCheckedM0}"></CheckBox>
+      <CheckBox Content="M1" IsChecked="{Binding IsCheckedM1}" AutomationProperties.AutomationId="checkbox_M1"></CheckBox>
+      <CheckBox Content="M0" IsChecked="{Binding IsCheckedM0}" AutomationProperties.AutomationId="checkbox_M0"></CheckBox>
     </StackPanel>
     <StackPanel Grid.Row="2" Orientation="Horizontal">
-      <CheckBox Content="C4" IsChecked="{Binding IsCheckedC4}"></CheckBox>
-      <CheckBox Content="C3" IsChecked="{Binding IsCheckedC3}"></CheckBox>
-      <CheckBox Content="C2" IsChecked="{Binding IsCheckedC2}"></CheckBox>
-      <CheckBox Content="C1" IsChecked="{Binding IsCheckedC1}"></CheckBox>
+      <CheckBox Content="C4" IsChecked="{Binding IsCheckedC4}" AutomationProperties.AutomationId="checkbox_C4"></CheckBox>
+      <CheckBox Content="C3" IsChecked="{Binding IsCheckedC3}" AutomationProperties.AutomationId="checkbox_C3"></CheckBox>
+      <CheckBox Content="C2" IsChecked="{Binding IsCheckedC2}" AutomationProperties.AutomationId="checkbox_C2"></CheckBox>
+      <CheckBox Content="C1" IsChecked="{Binding IsCheckedC1}" AutomationProperties.AutomationId="checkbox_C1"></CheckBox>
     </StackPanel>
 
   </Grid>

@@ -2,7 +2,8 @@
 // 
 // Copyright: by Rohit Vats
 // License statement: None
-
+// Change in CanExecute by Stefan Grimm
+//
 using System;
 using System.Windows.Input;
 
@@ -52,7 +53,7 @@ namespace WinParc.View {
     ///true if this command can be executed; otherwise, false.
     ///</returns>
     public bool CanExecute(object parameter) {
-      return _canExecute == null ? true : _canExecute((T)parameter);
+      return _canExecute == null || _canExecute((T)parameter);
     }
 
     ///<summary>
