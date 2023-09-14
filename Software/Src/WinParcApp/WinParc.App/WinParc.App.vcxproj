@@ -43,11 +43,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\ParcLib;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\ParcLib</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\ParcLib</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,7 +90,8 @@
       <AdditionalLibraryDirectories>.\Release</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>PreBuild.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
