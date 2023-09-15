@@ -6,9 +6,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Core\Program.h" />
-    <ClInclude Include="Core\ProgramStep.h" />
-    <ClInclude Include="Feather\ProgramSteps.h" />
-    <ClInclude Include="Core\Shared.h" />
+    <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Core\Program.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Core\Shared.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="parclib">
+      <UniqueIdentifier>{e6546c09-a359-46bc-b5b0-635a96fcb60d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

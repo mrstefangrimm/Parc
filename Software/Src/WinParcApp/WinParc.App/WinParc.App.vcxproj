@@ -43,11 +43,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\ParcLib;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\ParcLib</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\ParcLib</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,22 +90,22 @@
       <AdditionalLibraryDirectories>.\Release</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>PreBuild.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ParcLib\Feather\HidBle.h" />
-    <ClInclude Include="Core\Ao.h" />
-    <ClInclude Include="Core\HidAo.h" />
-    <ClInclude Include="Core\KeypadAo.h" />
-    <ClInclude Include="Core\Program.h" />
-    <ClInclude Include="Core\ProgramStep.h" />
-    <ClInclude Include="Core\Registers.h" />
-    <ClInclude Include="Core\Shared.h" />
-    <ClInclude Include="Core\StringParc.h" />
-    <ClInclude Include="Core\SystemMonitorAo.h" />
-    <ClInclude Include="Core\TerminalAo.h" />
-    <ClInclude Include="Feather\ProgramSteps.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Ao.h" />
+    <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Program.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Registers.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
+    <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
+    <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h" />
+    <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

@@ -5,52 +5,49 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Feather\ProgramSteps.h">
-      <Filter>ParcLib\Feather</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\Ao.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ParcLib\Feather\HidBle.h">
-      <Filter>ParcLib\Feather</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\HidAo.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Ao.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\HidAo.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\Program.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\KeypadAo.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Program.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h">
+      <Filter>parclib\Feather</Filter>
     </ClInclude>
-    <ClInclude Include="Core\ProgramStep.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\Registers.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Registers.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\Shared.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\SystemMonitorAo.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\StringParc.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\TerminalAo.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Shared.h">
-      <Filter>ParcLib\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\StringParc.h">
-      <Filter>ParcLib\Core</Filter>
+    <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h">
+      <Filter>parclib\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ParcLib">
-      <UniqueIdentifier>{e5f2ec34-8dbd-4093-8667-8a2607e674ca}</UniqueIdentifier>
+    <Filter Include="parclib">
+      <UniqueIdentifier>{5b090569-4af4-4f50-b458-d0742461021b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ParcLib\Core">
-      <UniqueIdentifier>{81a77783-fb99-4b4f-8e92-5c2fa7360b75}</UniqueIdentifier>
+    <Filter Include="parclib\Feather">
+      <UniqueIdentifier>{febf78d6-9809-41cc-947f-b1265c16f08a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ParcLib\Feather">
-      <UniqueIdentifier>{1dfbc613-581d-4091-a760-d06df819d6b4}</UniqueIdentifier>
+    <Filter Include="parclib\Core">
+      <UniqueIdentifier>{d5fee816-1251-4959-9232-ece27064c3bc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
