@@ -9,8 +9,12 @@ void trimFront(char* buf, uint8_t bufLen) {
   uint8_t pos = 0;
   while (buf[pos] == ' ' && buf[pos] != '\0') pos++;
   if (pos > 0) {
-    // Depends on the implemation of memcpy.
-    memcpy(buf, &buf[pos], bufLen - pos);
+    int n = 0;
+    while (buf[n + pos] != '\0') {
+      buf[n] = buf[n + pos];
+      n++;
+    }
+    buf[n] = '\0';
   }
 }
 

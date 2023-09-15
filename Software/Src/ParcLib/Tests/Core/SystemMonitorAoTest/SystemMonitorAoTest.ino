@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
+// Copyright (c) 2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 
@@ -6,14 +6,13 @@
 #include <ArduinoUnit.h>
 #include "ParcLib.h"
 
-#define strcpy_s(a, b) strcpy(a, b)
-
 #define BEGIN(a)
 #define END
+#define INIT(name, exp)
 #define TEST(given, when, then) test(GIVEN_##given##_WHEN_##when##_THEN_##then)
 #define EQ(a, b) assertEqual(a, b)
 
-#include "StringParcTest.h"
+#include "SystemMonitorAoTest.h"
 
 void setup() {
   Serial.begin(9600);
