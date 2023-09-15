@@ -88,7 +88,7 @@ namespace ProgramTest {
     TEST_METHOD(given_w_when_5000ms_then_50ticks) {
       auto p = new ProgramStepWait<LoggerFac_t>(5000);
 
-      Assert::AreEqual<uint8_t>(50, p->duration());
+      Assert::AreEqual<size_t>(50, p->duration());
 
       p->dispose();
       delete p;
@@ -97,7 +97,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bt_when_hello_then_duration_at_least_10ticks) {
       auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello");
 
-      Assert::AreEqual<uint8_t>(10, p->duration());
+      Assert::AreEqual<size_t>(10, p->duration());
 
       p->dispose();
       delete p;
@@ -106,7 +106,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bt_when_hello_world_then_duration_strlen_11ticks) {
       auto p = new ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>("Hello World");
 
-      Assert::AreEqual<uint8_t>(11, p->duration());
+      Assert::AreEqual<size_t>(11, p->duration());
 
       p->dispose();
       delete p;
@@ -126,7 +126,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bk_when_any_then_duration_5ticks) {
       auto p = new ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>(0x0F);
 
-      Assert::AreEqual<uint8_t>(5, p->duration());
+      Assert::AreEqual<size_t>(5, p->duration());
 
       p->dispose();
       delete p;
@@ -135,7 +135,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bk_repeated_when_any_4_times_then_duration_20ticks) {
       auto p = new ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>(0x0F, 4);
 
-      Assert::AreEqual<uint8_t>(20, p->duration());
+      Assert::AreEqual<size_t>(20, p->duration());
 
       p->dispose();
       delete p;
@@ -144,7 +144,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bc_when_mute_then_duration_1tick) {
       auto p = new ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>("Mute");
 
-      Assert::AreEqual<uint8_t>(1, p->duration());
+      Assert::AreEqual<size_t>(1, p->duration());
 
       p->dispose();
       delete p;
@@ -153,7 +153,7 @@ namespace ProgramTest {
     TEST_METHOD(given_bc_when_volume_then_duration_1tick) {
       auto p = new ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>("Volume+");
 
-      Assert::AreEqual<uint8_t>(1, p->duration());
+      Assert::AreEqual<size_t>(1, p->duration());
 
       p->dispose();
       delete p;
@@ -162,7 +162,7 @@ namespace ProgramTest {
     TEST_METHOD(given_ut_when_empty_then_duration_at_least_1ticks) {
       auto p = new ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>("");
 
-      Assert::AreEqual<uint8_t>(1, p->duration());
+      Assert::AreEqual<size_t>(1, p->duration());
 
       p->dispose();
       delete p;
@@ -171,7 +171,7 @@ namespace ProgramTest {
     TEST_METHOD(given_ut_when_hello_world_then_duration_strlen_11ticks) {
       auto p = new ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>("Hello World");
 
-      Assert::AreEqual<uint8_t>(11, p->duration());
+      Assert::AreEqual<size_t>(11, p->duration());
 
       p->dispose();
       delete p;
@@ -191,7 +191,7 @@ namespace ProgramTest {
     TEST_METHOD(given_uk_when_any_then_duration_1ticks) {
       auto p = new ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>(0x0F);
 
-      Assert::AreEqual<uint8_t>(1, p->duration());
+      Assert::AreEqual<size_t>(1, p->duration());
 
       p->dispose();
       delete p;
@@ -200,7 +200,7 @@ namespace ProgramTest {
     TEST_METHOD(given_uk_repeated_when_any_4_times_then_duration_4ticks) {
       auto p = new ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>(0x0F, 4);
 
-      Assert::AreEqual<uint8_t>(4, p->duration());
+      Assert::AreEqual<size_t>(4, p->duration());
 
       p->dispose();
       delete p;
@@ -209,7 +209,7 @@ namespace ProgramTest {
     TEST_METHOD(given_uk_codes_when_any_then_duration_1ticks) {
       auto p = new ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>('k', 'd');
 
-      Assert::AreEqual<uint8_t>(1, p->duration());
+      Assert::AreEqual<size_t>(1, p->duration());
 
       p->dispose();
       delete p;
