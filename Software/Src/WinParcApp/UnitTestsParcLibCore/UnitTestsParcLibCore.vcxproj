@@ -184,7 +184,13 @@
     <ClCompile Include="TerminalAoTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core\HidAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Program.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
+    <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
+    <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
