@@ -80,7 +80,10 @@ namespace ProgramTest {
 
   TEST_CLASS(ProgramTest)
   {
-  public:
+    TEST_METHOD_INITIALIZE(Initialize)
+    {
+      reset();
+    }
 
     TEST_METHOD(given_w_when_5000ms_then_50ticks) {
       auto p = new ProgramStepWait<LoggerFac_t>(5000);
@@ -248,6 +251,12 @@ namespace ProgramTest {
       Assert::AreEqual(0, strcmp("Hello", ble.lastPrintln));
 
       p.dispose();
+    }
+
+  private:
+    void reset() const {
+      HidUsbFac_t::instance.printInvokeCounter = 0;
+      HidBleFac_t::instance.printlnInvokeCounter = 0;
     }
   };
 }

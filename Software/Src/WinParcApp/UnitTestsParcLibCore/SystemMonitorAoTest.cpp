@@ -44,7 +44,10 @@ namespace SystemMonitorAoTest {
 
   TEST_CLASS(SystemMonitorAoTest)
   {
-  public:
+    TEST_METHOD_INITIALIZE(Initialize)
+    {
+      reset();
+    }
 
     TEST_METHOD(given_wrongpin_when_failed_then_LED_is_on_for_5_sec)
     {
@@ -111,6 +114,10 @@ namespace SystemMonitorAoTest {
       Assert::AreEqual<bool>(false, sysHw.isLedOn);
     }
 
+  private:
+    void reset() const {
+      SystemHwFac_t::instance.isLedOn = 0;
+    }
   };
 
 }
