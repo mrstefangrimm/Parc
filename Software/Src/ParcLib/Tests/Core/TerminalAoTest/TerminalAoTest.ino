@@ -5,12 +5,7 @@
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
 #include "ParcLib.h"
-
-#define BEGIN(a)
-#define END
-#define TEST(given, when, then) test(GIVEN_##given##_WHEN_##when##_THEN_##then)
-#define EQ(a, b) assertEqual(a, b)
-#define NN(a)
+#include "Tests/TestMacros.h"
 
 #include "TerminalAoTest.h"
 

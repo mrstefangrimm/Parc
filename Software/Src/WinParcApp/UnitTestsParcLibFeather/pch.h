@@ -14,7 +14,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #define BEGIN(a) TEST_CLASS(a) {
 #define END };
-#define INIT(name, exp) TEST_METHOD_INITIALIZE(name) exp
+#define INIT(name, definition) TEST_METHOD_INITIALIZE(name) definition
 #define TEST(given, when, then) TEST_METHOD(GIVEN_##given##_WHEN_##when##_THEN_##then)
 #define EQ(a, b) Assert::AreEqual(a, b)
 
