@@ -7,7 +7,7 @@
 #include "ParcLib.h"
 #include "Tests/TestMacros.h"
 
-#include "HidAoTest.h"
+#include "TerminalAoTest.h"
 
 void setup() {
   Serial.begin(9600);

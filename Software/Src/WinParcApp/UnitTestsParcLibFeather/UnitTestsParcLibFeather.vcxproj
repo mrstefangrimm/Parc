@@ -185,7 +185,9 @@
     <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h" />
     <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Feather\ProgramTest\ProgramTest.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ProgramTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
