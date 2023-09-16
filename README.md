@@ -1,3 +1,5 @@
+[![CI-Build](https://github.com/mrstefangrimm/Parc/actions/workflows/ci-build.yml/badge.svg)](https://github.com/mrstefangrimm/Parc/actions/workflows/ci-build.yml)
+
 # Parc
 Parc stand for Programmable Arduino Remote Control. This repository contains the software, the hardware and the mechanical design files.
 
