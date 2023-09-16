@@ -3,8 +3,4 @@
 //
 #include "pch.h"
 
-namespace StringParcTest {
-
 #include "../../ParcLib/Tests/Core/StringParcTest/StringParcTest.h"
-
-}

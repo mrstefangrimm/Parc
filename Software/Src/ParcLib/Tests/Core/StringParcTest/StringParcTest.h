@@ -3,6 +3,8 @@
 //
 #pragma once
 
+namespace StringParcTest {
+
 #include "Core/StringParc.h"
 
 BEGIN(StringParcTest)
@@ -118,3 +120,5 @@ TEST(
 }
 
 END
+
+}

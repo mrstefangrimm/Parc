@@ -8,6 +8,7 @@
 #include "Core/Shared.h"
 
 namespace HidAoTest {
+
 struct FakeLogger {
   template<class T>
   void print(T ch) {}

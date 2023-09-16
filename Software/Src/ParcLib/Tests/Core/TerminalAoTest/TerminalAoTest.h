@@ -37,45 +37,47 @@ template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const {
 
 namespace TerminalAoTest {
 
-  class FakeSerial {
-  public:
-    void setInputBuffer(const char* terminalInput) {
-      memset(_buf, '\0', 100);
-      _currentPos = 0;
-      _commandLen = strlen(terminalInput);
-      for (size_t n = 0; n < _commandLen; n++) {
-        _buf[n] = terminalInput[n];
-      }
+class FakeSerial {
+public:
+  void setInputBuffer(const char* terminalInput) {
+    memset(_buf, '\0', 100);
+    _currentPos = 0;
+    _commandLen = strlen(terminalInput);
+    for (size_t n = 0; n < _commandLen; n++) {
+      _buf[n] = terminalInput[n];
     }
+  }
 
-    template<class T>
-    void print(T ch) {}
-    template<class T>
-    void print(T ch, int mode) {}
-    template<class T>
-    void println(T ch) {}
-    template<class T>
-    void println(T ch, int mode) {}
-    void println() {}
+  template<class T>
+  void print(T ch) {}
+  template<class T>
+  void print(T ch, int mode) {}
+  template<class T>
+  void println(T ch) {}
+  template<class T>
+  void println(T ch, int mode) {}
+  void println() {}
 
-    bool available() { return _currentPos < _commandLen; }
-    int read() {
-      if (available()) {
-        char ret = _buf[_currentPos];
-        if (ret == '\0') {
-          _currentPos = -1;
-        }
-        _currentPos++;
-        return ret;
+  bool available() {
+    return _currentPos < _commandLen;
+  }
+  int read() {
+    if (available()) {
+      char ret = _buf[_currentPos];
+      if (ret == '\0') {
+        _currentPos = -1;
       }
-      return -1;
+      _currentPos++;
+      return ret;
     }
+    return -1;
+  }
 
-  private:
-    char _buf[100] = { 0 };
-    int _currentPos = -1;
-    size_t _commandLen = 0;
-  };
+private:
+  char _buf[100] = { 0 };
+  int _currentPos = -1;
+  size_t _commandLen = 0;
+};
 
 struct FakeLogger {
   template<class T>
@@ -113,7 +115,6 @@ struct FakeKeypadHw {
   bool pressed() {
     return false;
   }
-
 };
 
 template<class TLOGGERFAC>
@@ -123,8 +124,7 @@ struct FakeProgram {
       root = step;
       currentStep = step;
       return root;
-    }
-    else {
+    } else {
       return root->appendStep(step);
     }
   }
@@ -238,15 +238,15 @@ HidAo<LoggerFac_t, FakeProgram<LoggerFac_t>> hid(registers, programs);
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode Repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode Repeated, BLE Text, BLE Control Key
 using ProgramStepList =
-Typelist<FakeProgramStep,
   Typelist<FakeProgramStep,
-  Typelist<FakeProgramStep, 
-  Typelist<FakeProgramStep, 
-  Typelist<FakeProgramStep, 
-  Typelist<FakeBleProgramStep, 
-  Typelist<FakeBleProgramStep, 
-  Typelist<FakeBleProgramStep, 
-  Typelist<FakeBleProgramStep, NullType>>>>>>>>>;
+           Typelist<FakeProgramStep,
+                    Typelist<FakeProgramStep,
+                             Typelist<FakeProgramStep,
+                                      Typelist<FakeProgramStep,
+                                               Typelist<FakeBleProgramStep,
+                                                        Typelist<FakeBleProgramStep,
+                                                                 Typelist<FakeBleProgramStep,
+                                                                          Typelist<FakeBleProgramStep, NullType>>>>>>>>>;
 
 FakeSerial serial;
 TerminalAo<ProgramStepList, FakeSerial, LoggerFac_t, HidBleFac_t, NullType, FakeProgram<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 40> terminal(serial, registers, programs);
