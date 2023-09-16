@@ -12,36 +12,6 @@
 #define EQ(a, b) assertEqual(a, b)
 #define NN(a)
 
-class FakeSerial {
-public:
-  void setInputBuffer(const char* terminalInput) {
-    for (size_t n = 0; n < strlen(terminalInput); n++) {
-      //_buf.push_back(terminalInput[n]);
-    }
-  }
-
-  template<class T>
-  void print(T ch) {}
-  template<class T>
-  void print(T ch, int mode) {}
-  template<class T>
-  void println(T ch) {}
-  template<class T>
-  void println(T ch, int mode) {}
-  void println() {}
-
-  bool available() {
-    true;
-  }
-  int read() {
-
-    return -1;
-  }
-
-private:
-} FSerial;
-
-
 #include "TerminalAoTest.h"
 
 void setup() {
