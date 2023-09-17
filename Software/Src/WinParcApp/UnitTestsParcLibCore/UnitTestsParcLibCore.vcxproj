@@ -187,6 +187,7 @@
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Registers.h" />
     <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
     <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />

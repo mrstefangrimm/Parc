@@ -35,6 +35,9 @@
     <ClInclude Include="..\..\ParcLib\Tests\Core\SystemMonitorAoTest\SystemMonitorAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Registers.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parclib">
