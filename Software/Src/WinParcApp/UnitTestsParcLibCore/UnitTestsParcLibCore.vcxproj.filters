@@ -6,6 +6,7 @@
     <ClCompile Include="StringParcTest.cpp" />
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
+    <ClCompile Include="BitTimerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

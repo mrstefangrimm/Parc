@@ -51,18 +51,16 @@ TEST(
 
   Program<LoggerFac_t> programs[NumberOfPrograms];
   memset(programs, 0, NumberOfPrograms * sizeof(Program<LoggerFac_t>));
-  RegisterData_t registers[TOTAL_REGISTERS];
-  memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
+  Register registers;
 
-  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(&registers, programs);
 
   KeypadRegData hidInput(0, 1);
 
-  registers[KEYPAD_HID_INPUT] = hidInput.raw;
+  registers.set(KEYPAD_HID_INPUT, hidInput.raw);
   hid.checkRegisters();
 
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)0, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
 }
 
 TEST(
@@ -72,28 +70,25 @@ TEST(
 
   Program<LoggerFac_t> programs[NumberOfPrograms];
   memset(programs, 0, NumberOfPrograms * sizeof(Program<LoggerFac_t>));
-  RegisterData_t registers[TOTAL_REGISTERS];
-  memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
+  Register registers;
 
-  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(&registers, programs);
 
   KeypadRegData hidInput(0, 1);
   FakeProgramStep someProgramStep;
   programs[0].appendStep(&someProgramStep);
 
-  registers[KEYPAD_HID_INPUT] = hidInput.raw;
+  registers.set(KEYPAD_HID_INPUT, hidInput.raw);
 
   hid.checkRegisters();
   // Changed from state Idle to State Execute
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)1, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
   EQ((bool)false, someProgramStep.isPlaying);
   EQ((uint8_t)0, someProgramStep.currentTick);
 
   hid.checkRegisters();
   // State Execute
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)1, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
   EQ((bool)true, someProgramStep.isPlaying);
   EQ((uint8_t)0, someProgramStep.currentTick);
 }

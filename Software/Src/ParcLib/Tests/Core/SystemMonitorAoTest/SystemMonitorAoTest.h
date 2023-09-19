@@ -50,13 +50,13 @@ TEST(
   failed,
   LED_is_on_for_5_sec) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(registers);
+  Register registers;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(&registers);
 
   PinRegData pinData;
   pinData.failed = 2;
 
-  registers[KEYPAD_MONITOR_WRONGPIN] = pinData.raw;
+  registers.set(KEYPAD_MONITOR_WRONGPIN, pinData.raw);
   systemMonitorAo.checkRegisters();
 
   EQ(true, (bool)sysHw.isLedOn);
@@ -73,12 +73,12 @@ TEST(
   checkRegisters,
   LED_is_on_and_remains_on) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(registers);
+  Register registers;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(&registers);
 
   PinRegData pinData;
   pinData.failed = 1;
-  registers[KEYPAD_MONITOR_WRONGPIN] = pinData.raw;
+  registers.set(KEYPAD_MONITOR_WRONGPIN, pinData.raw);
   systemMonitorAo.checkRegisters();
 
   EQ(true, (bool)sysHw.isLedOn);
@@ -95,10 +95,10 @@ TEST(
   checkRegisters,
   LED_is_on) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(registers);
+  Register registers;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(&registers);
 
-  registers[TERMINAL_MONITOR_PROGCHANGE] = ProgramChangedRegData(1);
+  registers.set(TERMINAL_MONITOR_PROGCHANGE, ProgramChangedRegData(1));
   systemMonitorAo.checkRegisters();
 
   EQ(true, sysHw.isLedOn);
@@ -109,10 +109,10 @@ TEST(
   checkRegisters,
   LED_is_off) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(registers);
+  Register registers;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(&registers);
 
-  registers[TERMINAL_MONITOR_PROGCHANGE] = ProgramChangedRegData(1);
+  registers.set(TERMINAL_MONITOR_PROGCHANGE, ProgramChangedRegData(1));
   systemMonitorAo.checkRegisters();
 
   EQ(false, sysHw.isLedOn);

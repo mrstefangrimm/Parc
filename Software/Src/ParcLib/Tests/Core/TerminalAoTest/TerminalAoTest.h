@@ -156,7 +156,7 @@ typedef Factory<TerminalAoTest::FakeHidBle> HidBleFac_t;
 namespace TerminalAoTest {
 
 FakeProgram<LoggerFac_t> programs[NumberOfPrograms];
-RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
+Register registers;
 
 struct KnownKeycodes {
   static const uint8_t UsbRadix = 16;
@@ -226,8 +226,8 @@ struct FakeBleProgramStep : public ProgramStep<LoggerFac_t> {
 };
 
 FakeKeypadHw keypadHw;
-KeypadAo<LoggerFac_t, FakeKeypadHw> keypadAo(registers, keypadHw);
-HidAo<LoggerFac_t, FakeProgram<LoggerFac_t>> hid(registers, programs);
+KeypadAo<LoggerFac_t, FakeKeypadHw> keypadAo(&registers, keypadHw);
+HidAo<LoggerFac_t, FakeProgram<LoggerFac_t>> hid(&registers, programs);
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode Repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode Repeated, BLE Text, BLE Control Key
@@ -243,7 +243,7 @@ using ProgramStepList =
                                                                           Typelist<FakeBleProgramStep, NullType>>>>>>>>>;
 
 FakeSerial serial;
-TerminalAo<ProgramStepList, FakeSerial, LoggerFac_t, HidBleFac_t, NullType, FakeProgram<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 40> terminal(serial, registers, programs);
+TerminalAo<ProgramStepList, FakeSerial, LoggerFac_t, HidBleFac_t, NullType, FakeProgram<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 40> terminal(serial, &registers, programs);
 
 BEGIN(TerminalAoTest)
 
@@ -252,7 +252,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: W 1000; }");
 
   for (int n = 0; n < 100; n++) {
@@ -267,7 +267,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Ctrl> \"k d\"; }");
 
   for (int n = 0; n < 100; n++) {
@@ -282,7 +282,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK 'l'; }");
 
   for (int n = 0; n < 100; n++) {
@@ -297,7 +297,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Win> 'l'; }");
 
   for (int n = 0; n < 100; n++) {
@@ -312,7 +312,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Ctrl> <Alt> <Del>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -328,7 +328,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Enter>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -344,7 +344,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Win> <Space>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -360,7 +360,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK <Tab>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -376,7 +376,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK 0xFF; }");
 
   for (int n = 0; n < 100; n++) {
@@ -392,7 +392,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UK -r4 10; }");
 
   for (int n = 0; n < 100; n++) {
@@ -408,7 +408,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK 'l'; }");
 
   for (int n = 0; n < 100; n++) {
@@ -423,7 +423,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK <Win> 'l'; }");
 
   for (int n = 0; n < 100; n++) {
@@ -438,7 +438,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK <Ctrl> <Alt> <Del>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -454,7 +454,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK <Enter>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -470,7 +470,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK <Win> <Space>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -486,7 +486,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK <Tab>; }");
 
   for (int n = 0; n < 100; n++) {
@@ -502,7 +502,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK 0xFF; }");
 
   for (int n = 0; n < 100; n++) {
@@ -518,7 +518,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BK -r4 10; }");
 
   for (int n = 0; n < 100; n++) {
@@ -534,7 +534,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UT hello; }");
 
   for (int n = 0; n < 100; n++) {
@@ -549,7 +549,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: UT \"hello parc\"; }");
 
   for (int n = 0; n < 100; n++) {
@@ -564,7 +564,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BT hello; }");
 
   for (int n = 0; n < 100; n++) {
@@ -579,7 +579,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BT \"hello parc\"; }");
 
   for (int n = 0; n < 100; n++) {
@@ -594,7 +594,7 @@ TEST(
   read,
   added_step) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ 0 A: BC Mute; }");
 
   for (int n = 0; n < 100; n++) {
@@ -609,14 +609,14 @@ TEST(
   read,
   set) {
 
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   serial.setInputBuffer("{ P N: 1 0 1 1 3; }");
 
   for (int n = 0; n < 100; n++) {
     terminal.checkRegisters();
   }
 
-  PinRegData regData(registers[TERMINAL_KEYPAD_PIN]);
+  PinRegData regData(registers.get(TERMINAL_KEYPAD_PIN));
   EQ(regData.code3, (uint8_t)1);
   EQ(regData.code2, (uint8_t)0);
   EQ(regData.code1, (uint8_t)1);

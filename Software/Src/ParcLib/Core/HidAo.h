@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
@@ -13,7 +13,7 @@ template<class TLOGGERFAC, class TPROGRAM>
 class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
 
   public:
-    HidAo(RegisterData_t* registers, TPROGRAM* programs)
+    HidAo(Register* registers, TPROGRAM* programs)
       : Ao_t(registers), _programs(programs) {}
 
     TPROGRAM* programs() {
@@ -25,14 +25,14 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
         case State::Idle: stateIdle(); break;
         case State::Execute: stateExecute(); break;
       };
-      Ao_t::_registers[KEYPAD_HID_INPUT] = 0;
+      Ao_t::_registers->set(KEYPAD_HID_INPUT, 0);
     }
 
   private:
     void stateIdle() {
-      if (_state == State::Idle &&  Ao_t::_registers[KEYPAD_HID_INPUT] != 0) {
+      if (_state == State::Idle &&  Ao_t::_registers->get(KEYPAD_HID_INPUT) != 0) {
 
-        KeypadRegData args(Ao_t::_registers[KEYPAD_HID_INPUT]);
+        KeypadRegData args(Ao_t::_registers->get(KEYPAD_HID_INPUT));
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
         _ticksRemaining = _program->duration();
@@ -45,13 +45,12 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
         if (_ticksRemaining > 0) {
           log->print(F("Execute { "));
           _state = State::Execute;
-          Ao_t::_registers[HID_HID_TIMEOUT] = TimerRegData(1);
         }
       }
     }
 
     void stateExecute() {
-      if (_state == State::Execute && Ao_t::_registers[HID_HID_TIMEOUT] != 0) {
+      if (_state == State::Execute && _timer.increment()) {
 
         _ticksRemaining--;
         _program->play();
@@ -62,7 +61,6 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
           _program->rewind();
           _program = 0;
           _state = State::Idle;
-          Ao_t::_registers[HID_HID_TIMEOUT] = 0;
         }
       }
     }
@@ -79,6 +77,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     State _state = State::Idle;
     TPROGRAM* _program = 0;
     size_t _ticksRemaining = 0;
+    BitTimer<0> _timer;
 };
 
 }

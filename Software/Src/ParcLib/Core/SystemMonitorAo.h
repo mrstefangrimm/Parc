@@ -10,23 +10,23 @@ namespace parclib {
 template<class TLOGGERFAC, class TSYSTEMHWFAC, uint8_t LOWMEMORY>
 class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> {
   public:
-    SystemMonitorAo(RegisterData_t* registers)
+    explicit SystemMonitorAo(Register* registers)
       : Ao_t(registers), _gameOver(false) {
     }
 
     void checkRegisters() {
 
-      if (Ao_t::_registers[TERMINAL_MONITOR_PROGCHANGE] != 0) {
+      if (Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE) != 0) {
         logMemory();
-        Ao_t::_registers[TERMINAL_MONITOR_PROGCHANGE] = 0;
+        Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
       }
 
-      if (Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] != 0) {
+      if (Ao_t::_registers->get(KEYPAD_MONITOR_WRONGPIN) != 0) {
         auto sysHw = TSYSTEMHWFAC::create();
-        PinRegData pinData(Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN]);
+        PinRegData pinData(Ao_t::_registers->get(KEYPAD_MONITOR_WRONGPIN));
         if (pinData.failed > 0) {
           _gameOver = pinData.isGameOver();
-          Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
+          Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, TimerRegData(5000 / TimerPeriod));
           sysHw->warnLedOn();
         }
         else {
@@ -38,15 +38,16 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
             sysHw->warnLedOff();
           }
         }
-        Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = 0;
+        Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, 0);
       }
 
-      if (Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] > 1) {
-        Ao_t::_registers[MONITOR_MONITOR_TIMEOUT]--;
+      uint8_t counter = Ao_t::_registers->get(MONITOR_MONITOR_TIMEOUT);
+      if (counter > 1) {
+        Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, --counter);
       }
-      else if (Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] == 1) {
+      else if (Ao_t::_registers->get(MONITOR_MONITOR_TIMEOUT) == 1) {
         logMemory();
-        Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(25500 / TimerPeriod);
+        Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, TimerRegData(25500 / TimerPeriod));
       }
     }
 

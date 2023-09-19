@@ -11,28 +11,30 @@ namespace parclib {
 template<class TLOGGERFAC, class TKEYPADHW>
 class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   public:
-    KeypadAo(RegisterData_t* registers, TKEYPADHW& keypadHw)
+    KeypadAo(Register* registers, TKEYPADHW& keypadHw)
       : Ao_t(registers), _hw(keypadHw) {}
 
     void checkRegisters() {
 
-      if (Ao_t::_registers[TERMINAL_KEYPAD_PIN] != 0) {
+      if (Ao_t::_registers->get(TERMINAL_KEYPAD_PIN) != 0) {
         if (_pin.raw == 0) {
-          _pin = Ao_t::_registers[TERMINAL_KEYPAD_PIN];
+          _pin = PinRegData(Ao_t::_registers->get(TERMINAL_KEYPAD_PIN));
         }
         else {
           auto log = TLOGGERFAC::create();
           log->println(F("PIN not accepted."));
-          Ao_t::_registers[KEYPAD_TERMINAL_PINALREADYDEFINED] = PinAlreadyDefinedRegData(true);
+          Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, PinAlreadyDefinedRegData(true));
         }
-        Ao_t::_registers[TERMINAL_KEYPAD_PIN] = 0;
+        Ao_t::_registers->set(TERMINAL_KEYPAD_PIN, 0);
       }
-      else if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] != 0) {
+      else if (Ao_t::_registers->get(KEYPAD_KEYPAD_TIMEOUT) != 0) {
 
-        Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] -= 1;
-        if (Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] == 0) {
+        uint8_t count = Ao_t::_registers->get(KEYPAD_KEYPAD_TIMEOUT);
+        count -= 1;
+        Ao_t::_registers->set(KEYPAD_KEYPAD_TIMEOUT, count);
+        if (count == 0) {
 
-          KeypadRegData args = 0;
+          KeypadRegData args;
 
           // Buttons A - E, Multiple button presses is not supported
           if (_hw.template pressed<KeyPadSwitch::Btn_A>()) {
@@ -83,20 +85,20 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
-              Ao_t::_registers[KEYPAD_HID_INPUT] = args.raw;
-              Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
+              Ao_t::_registers->set(KEYPAD_HID_INPUT, args.raw);
+              Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
             }
             else if (_pin.raw != 0 && pin != 0) {
               log->print(F("Wrong PIN, remaining retries: ")); log->println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
                 log->println(F("Game Over."));
                 _pin.setGameOver();
-                Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
+                Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
               }
               else {
                 _pin.failed++;
                 longTimeout = true;
-                Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = _pin.raw;
+                Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
               }
             }
             else {
@@ -107,11 +109,11 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 
           if (longTimeout) {
             // Debug: _log.print(F("1"));
-            Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
+            Ao_t::_registers->set(KEYPAD_KEYPAD_TIMEOUT, TimerRegData(5000 / TimerPeriod));
           }
           else {
             // Debug: _log.print(F("5"));
-            Ao_t::_registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
+            Ao_t::_registers->set(KEYPAD_KEYPAD_TIMEOUT, TimerRegData(1));
           }
         }
       }

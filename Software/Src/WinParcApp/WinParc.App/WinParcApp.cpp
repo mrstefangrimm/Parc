@@ -156,15 +156,16 @@ template<> ApiSystemHw& Factory<ApiSystemHw>::instance = sysHw;
 typedef Factory<ApiSystemHw> SystemHwFac_t;
 
 Program<LoggerFac_t> programs[NumberOfPrograms];
-RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
+Register registers;
+
 
 ApiSerial terminal(parcApi);
 ApiKeypadHw keypadHw(parcApi);
 
-KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(registers, keypadHw);
-HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(registers, programs);
+KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(&registers, keypadHw);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(&registers, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(&registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -209,25 +210,25 @@ struct KnownKeycodes {
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode Repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode Repeated, BLE Text, BLE Control Key
-typedef Typelist<ProgramStepWait<LoggerFac_t>,
-  Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>,
-  NullType>>>>>>>>> ProgramStepList;
+using ProgramStepList = Typelist<ProgramStepWait<LoggerFac_t>, Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>, NullType>>>>>>>>>;
 
-TerminalAo<ProgramStepList, ApiSerial, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 40> terminalAo(terminal, registers, programs);
+TerminalAo<
+  ProgramStepList,
+  ApiSerial,
+  LoggerFac_t,
+  HidBleFac_t,
+  HidUsbFac_t,
+  Program<LoggerFac_t>,
+  SystemHwFac_t,
+  KnownKeycodes,
+  40> terminalAo(terminal, &registers, programs);
 
 void setup() {
   parcApi.Initialize();
 
-  registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
+  registers.set(KEYPAD_KEYPAD_TIMEOUT, TimerRegData(1));
+  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
+  registers.set(MONITOR_MONITOR_TIMEOUT, TimerRegData(10));
 }
 
 void loop() {

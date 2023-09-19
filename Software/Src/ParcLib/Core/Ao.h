@@ -10,7 +10,7 @@ namespace parclib {
 template<class TDERIVED>
 class Ao {
   public:
-    Ao(RegisterData_t* registers)
+    Ao(Register* registers)
       : _registers(registers) {}
 
     void checkRegisters() {
@@ -18,7 +18,7 @@ class Ao {
     }
 
   protected:
-    RegisterData_t* _registers;
+    Register* _registers;
 };
 
 }
