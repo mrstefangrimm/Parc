@@ -5,6 +5,8 @@
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
+#include <queue>
+#include <iostream>
 #include "Core/HidAo.h"
 #include "Core/Shared.h"
 #include "Core/Program.h"
@@ -40,11 +42,8 @@ namespace TerminalAoTest {
 class FakeSerial {
 public:
   void setInputBuffer(const char* terminalInput) {
-    memset(_buf, '\0', 100);
-    _currentPos = 0;
-    _commandLen = strlen(terminalInput);
-    for (size_t n = 0; n < _commandLen; n++) {
-      _buf[n] = terminalInput[n];
+    for (size_t n = 0; n < strlen(terminalInput); n++) {
+      _buf.push(terminalInput[n]);
     }
   }
 
@@ -59,24 +58,19 @@ public:
   void println() {}
 
   bool available() {
-    return _currentPos < _commandLen;
+    return !_buf.empty();
   }
   int read() {
     if (available()) {
-      char ret = _buf[_currentPos];
-      if (ret == '\0') {
-        _currentPos = -1;
-      }
-      _currentPos++;
+      char ret = _buf.front();
+      _buf.pop();
       return ret;
     }
     return -1;
   }
 
 private:
-  char _buf[100] = { 0 };
-  int _currentPos = -1;
-  size_t _commandLen = 0;
+  std::queue<char> _buf;
 };
 
 struct FakeLogger {

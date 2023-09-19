@@ -70,6 +70,7 @@ Libraries
 | Adafruit MCP23017 Arduino Library | BSD               |
 | Adafruit BluefruitLE nRF51        | BSD               |
 | Arduino.h                         | LGPL              |
+| StandardCplusplus.h               | LGPL              |
 | .NET 4.8.1                        | Microsoft license |
 
 

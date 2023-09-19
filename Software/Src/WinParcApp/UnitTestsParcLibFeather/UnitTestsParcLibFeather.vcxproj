@@ -186,6 +186,7 @@
     <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Feather\ProgramTest\ProgramTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProgramTest.h" />
   </ItemGroup>
