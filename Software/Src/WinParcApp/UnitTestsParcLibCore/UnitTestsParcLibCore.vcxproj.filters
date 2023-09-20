@@ -7,6 +7,7 @@
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
     <ClCompile Include="BitTimerTest.cpp" />
+    <ClCompile Include="KeypadAoTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -39,6 +40,12 @@
     <ClInclude Include="..\..\ParcLib\Core\Registers.h">
       <Filter>parclib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
+    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parclib">

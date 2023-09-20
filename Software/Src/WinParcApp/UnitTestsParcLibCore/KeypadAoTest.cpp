@@ -3,4 +3,6 @@
 //
 #include "pch.h"
 
-#include "../../ParcLib/Tests/Core/BitTimerTest/BitTimerTest.h"
+#define F(x) (x)
+
+#include "../../ParcLib/Tests/Core/KeypadAoTest/KeypadAoTest.h"

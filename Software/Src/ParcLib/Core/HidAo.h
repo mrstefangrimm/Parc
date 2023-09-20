@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Ao.h"
+#include "BitTimer.h"
 #include "ProgramStep.h"
 #include "Program.h"
 
@@ -50,7 +51,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     }
 
     void stateExecute() {
-      if (_state == State::Execute && _timer.increment()) {
+      if (_state == State::Execute && _executionTimer.increment()) {
 
         _ticksRemaining--;
         _program->play();
@@ -77,7 +78,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     State _state = State::Idle;
     TPROGRAM* _program = 0;
     size_t _ticksRemaining = 0;
-    BitTimer<0> _timer;
+    BitTimer<0> _executionTimer;
 };
 
 }

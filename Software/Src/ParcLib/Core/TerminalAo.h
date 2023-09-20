@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
@@ -52,15 +52,13 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _programs(programs) {}
 
     void checkRegisters() {
-      if (Ao_t::_registers->get(TERMINAL_TERMINAL_TIMEOUT) != 0) {
+      if (_timer.increment()) {
         switch (_state) {
           case State::Idle: stateIdle(); break;
           case State::ReadingProgramCode: stateReadingProgramCode(); break;
           case State::ReadingProgramSteps: stateReadingProgramSteps(); break;
           case State::ReadingPin: stateReadingPin(); break;
         };
-
-        Ao_t::_registers->set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
       }
 
       if (Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED) != 0) {
@@ -469,6 +467,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     uint8_t _itBuf = 0;
 
     KeypadRegData _keyPadState;
+    BitTimer<0> _timer;
 
 };
 

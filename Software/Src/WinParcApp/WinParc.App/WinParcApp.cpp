@@ -226,8 +226,6 @@ TerminalAo<
 void setup() {
   parcApi.Initialize();
 
-  registers.set(KEYPAD_KEYPAD_TIMEOUT, TimerRegData(1));
-  registers.set(TERMINAL_TERMINAL_TIMEOUT, TimerRegData(1));
   registers.set(MONITOR_MONITOR_TIMEOUT, TimerRegData(10));
 }
 

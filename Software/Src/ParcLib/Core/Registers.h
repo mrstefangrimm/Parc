@@ -6,13 +6,11 @@
 namespace parclib {
 
   enum Events {
-    KEYPAD_KEYPAD_TIMEOUT = 1,           // 6 bit (0-50)
-    TERMINAL_KEYPAD_PIN,                 // 8 bit (PinRegData)
+    TERMINAL_KEYPAD_PIN = 1,                 // 8 bit (PinRegData)
     KEYPAD_HID_INPUT,                    // 8 bit (KeypadRegData)
     MONITOR_MONITOR_TIMEOUT,             // 8 bit (0 - 255)
     KEYPAD_MONITOR_WRONGPIN,             // 8 bit (PinRegData)
     KEYPAD_TERMINAL_PINALREADYDEFINED,   // 1 bit
-    TERMINAL_TERMINAL_TIMEOUT,           // 1 bit
     TERMINAL_MONITOR_PROGCHANGE,         // 1 bit
     TOTAL_REGISTERS
   };
@@ -44,40 +42,9 @@ namespace parclib {
 
   };
 
-
-
 typedef RegisterData_t TimerRegData;
 typedef RegisterData_t PinAlreadyDefinedRegData;
 typedef RegisterData_t ProgramChangedRegData;
-
-template<size_t Timerbits, class Alloc = uint8_t>
-struct BitTimer {
-
-  enum { N = Timerbits };
-
-  BitTimer() : raw(0) {}
-
-  bool increment() {
-    return ++value == 0;
-  }
-
-  union {
-    struct {
-      Alloc value : N;
-    };
-    Alloc raw;
-  };
-};
-
-template<class Alloc>
-struct BitTimer<0, Alloc> {
-
-  BitTimer() {}
-
-  bool increment() {
-    return true;
-  }
-};
 
 struct KeypadRegData {
   KeypadRegData() : raw(0) {}

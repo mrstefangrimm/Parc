@@ -3,8 +3,6 @@
 //
 #include "pch.h"
 
-#include <list>
-
 #define F(x) (x)
 
 const int INPUT_PULLUP = 1;
