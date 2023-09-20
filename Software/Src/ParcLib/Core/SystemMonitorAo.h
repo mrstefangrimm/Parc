@@ -21,9 +21,9 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
         Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
       }
 
-      if (Ao_t::_registers->get(KEYPAD_MONITOR_WRONGPIN) != 0) {
+      if (Ao_t::_registers->get(KEYPAD_MONITOR_PIN) != 0) {
         auto sysHw = TSYSTEMHWFAC::create();
-        PinRegData pinData(Ao_t::_registers->get(KEYPAD_MONITOR_WRONGPIN));
+        PinRegData pinData(Ao_t::_registers->get(KEYPAD_MONITOR_PIN));
         if (pinData.failed > 0) {
           _gameOver = pinData.isGameOver();
           Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, TimerRegData(5000 / TimerPeriod));
@@ -38,7 +38,7 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
             sysHw->warnLedOff();
           }
         }
-        Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, 0);
+        Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
       }
 
       uint8_t counter = Ao_t::_registers->get(MONITOR_MONITOR_TIMEOUT);

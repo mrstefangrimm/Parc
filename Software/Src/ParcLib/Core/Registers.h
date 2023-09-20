@@ -6,10 +6,10 @@
 namespace parclib {
 
   enum Events {
-    TERMINAL_KEYPAD_PIN = 1,                 // 8 bit (PinRegData)
+    TERMINAL_KEYPAD_PIN = 1,             // 8 bit (PinRegData)
     KEYPAD_HID_INPUT,                    // 8 bit (KeypadRegData)
     MONITOR_MONITOR_TIMEOUT,             // 8 bit (0 - 255)
-    KEYPAD_MONITOR_WRONGPIN,             // 8 bit (PinRegData)
+    KEYPAD_MONITOR_PIN,                  // 8 bit (PinRegData)
     KEYPAD_TERMINAL_PINALREADYDEFINED,   // 1 bit
     TERMINAL_MONITOR_PROGCHANGE,         // 1 bit
     TOTAL_REGISTERS

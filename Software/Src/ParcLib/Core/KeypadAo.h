@@ -84,19 +84,19 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
             _pin.failed = 0;
             // Debug: _log.println(args.button);
             Ao_t::_registers->set(KEYPAD_HID_INPUT, args.raw);
-            Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
+            Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
           }
           else if (_pin.raw != 0 && pin != 0) {
             log->print(F("Wrong PIN, remaining retries: ")); log->println(_pin.retries - _pin.failed);
             if (_pin.failed == _pin.retries) {
               log->println(F("Game Over."));
               _pin.setGameOver();
-              Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
+              Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
             }
             else {
               _pin.failed++;
               longTimeout = true;
-              Ao_t::_registers->set(KEYPAD_MONITOR_WRONGPIN, _pin.raw);
+              Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
             }
           }
           else {

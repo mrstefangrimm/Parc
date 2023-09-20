@@ -56,7 +56,7 @@ TEST(
   PinRegData pinData;
   pinData.failed = 2;
 
-  registers.set(KEYPAD_MONITOR_WRONGPIN, pinData.raw);
+  registers.set(KEYPAD_MONITOR_PIN, pinData.raw);
   systemMonitorAo.checkRegisters();
 
   EQ(true, (bool)sysHw.isLedOn);
@@ -78,7 +78,7 @@ TEST(
 
   PinRegData pinData;
   pinData.failed = 1;
-  registers.set(KEYPAD_MONITOR_WRONGPIN, pinData.raw);
+  registers.set(KEYPAD_MONITOR_PIN, pinData.raw);
   systemMonitorAo.checkRegisters();
 
   EQ(true, (bool)sysHw.isLedOn);
