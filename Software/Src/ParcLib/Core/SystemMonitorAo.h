@@ -17,7 +17,7 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
     void checkRegisters() {
 
       if (Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE) != 0) {
-        logMemory();
+        logMemoryAndWarn();
         Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
       }
 
@@ -26,8 +26,11 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
         PinRegData pinData(Ao_t::_registers->get(KEYPAD_MONITOR_PIN));
         if (pinData.failed > 0) {
           _gameOver = pinData.isGameOver();
-          Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, TimerRegData(5000 / TimerPeriod));
           sysHw->warnLedOn();
+
+          const uint8_t ledOnfor5secTimeout = 5000 / TimerPeriod;
+          _timer = Timer_t((1 << 8) - ledOnfor5secTimeout);
+
         }
         else {
           auto freeMem = sysHw->freeMemory();
@@ -41,20 +44,16 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
         Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
       }
 
-      uint8_t counter = Ao_t::_registers->get(MONITOR_MONITOR_TIMEOUT);
-      if (counter > 1) {
-        Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, --counter);
-      }
-      else if (Ao_t::_registers->get(MONITOR_MONITOR_TIMEOUT) == 1) {
-        logMemory();
-        Ao_t::_registers->set(MONITOR_MONITOR_TIMEOUT, TimerRegData(25500 / TimerPeriod));
+      if (_timer.increment()) {
+        logMemoryAndWarn();
       }
     }
 
   private:
-    typedef Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> Ao_t;
+    using Ao_t = Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>>;
+    using Timer_t = BitTimer<8>;
 
-    void logMemory() {
+    void logMemoryAndWarn() {
       auto log = TLOGGERFAC::create();
       auto sysHw = TSYSTEMHWFAC::create();
       auto freeMem = sysHw->freeMemory();
@@ -68,6 +67,7 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
     }
 
     bool _gameOver;
+    Timer_t _timer;
 };
 
 }
