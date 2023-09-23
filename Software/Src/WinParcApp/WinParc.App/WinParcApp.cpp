@@ -165,7 +165,7 @@ ApiKeypadHw keypadHw(parcApi);
 KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(&registers, keypadHw);
 HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(&registers, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(&registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(&registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -229,10 +229,15 @@ void setup() {
 
 void loop() {
 
-  keypadAo.checkRegisters();
-  hidAo.checkRegisters();
-  terminalAo.checkRegisters();
-  systemMonitor.checkRegisters();
+  keypadAo.load();
+  hidAo.load();
+  terminalAo.load();
+  systemMonitorAo.load();
+
+  keypadAo.run();
+  hidAo.run();
+  terminalAo.run();
+  systemMonitorAo.run();
 
   //if (terminal.available()) {
   //  char ch = terminal.read();
@@ -244,7 +249,6 @@ void loop() {
   //}
 
   this_thread::sleep_for(chrono::milliseconds(TimerPeriod));
-
 }
 
 void thread_function() {

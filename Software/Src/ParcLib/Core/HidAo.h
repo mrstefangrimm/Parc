@@ -21,19 +21,23 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
       return _programs;
     }
 
-    void checkRegisters() {
+    void load() {
+      _inputMsg = Ao_t::_registers->get(KEYPAD_HID_INPUT);
+      Ao_t::_registers->set(KEYPAD_HID_INPUT, 0);
+    }
+
+    void run() {
       switch (_state) {
         case State::Idle: stateIdle(); break;
         case State::Execute: stateExecute(); break;
       };
-      Ao_t::_registers->set(KEYPAD_HID_INPUT, 0);
     }
 
   private:
     void stateIdle() {
-      if (_state == State::Idle &&  Ao_t::_registers->get(KEYPAD_HID_INPUT) != 0) {
+      if (_state == State::Idle && _inputMsg != 0) {
 
-        KeypadRegData args(Ao_t::_registers->get(KEYPAD_HID_INPUT));
+        KeypadRegData args(_inputMsg);
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
         _ticksRemaining = _program->duration();
@@ -67,7 +71,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     }
 
   private:
-    typedef Ao<HidAo<TLOGGERFAC, TPROGRAM>> Ao_t;
+    using Ao_t = Ao<HidAo<TLOGGERFAC, TPROGRAM>>;
 
     TPROGRAM* _programs;
 
@@ -76,9 +80,10 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
       Execute
     };
     State _state = State::Idle;
-    TPROGRAM* _program = 0;
+    TPROGRAM* _program = nullptr;
     size_t _ticksRemaining = 0;
     BitTimer<0> _executionTimer;
+    RegisterData_t _inputMsg = 0;
 };
 
 }

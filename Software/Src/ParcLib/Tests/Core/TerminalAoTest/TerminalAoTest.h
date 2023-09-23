@@ -255,7 +255,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: W 1000; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::Wait, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -269,7 +269,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Ctrl> \"k d\"; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycodes, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -283,7 +283,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK 'l'; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -297,7 +297,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Win> 'l'; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -311,7 +311,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Ctrl> <Alt> <Del>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -326,7 +326,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Enter>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -341,7 +341,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Win> <Space>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -356,7 +356,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK <Tab>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -371,7 +371,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK 0xFF; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -386,7 +386,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UK -r4 10; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbKeycodeRepeated, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -401,7 +401,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK 'l'; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -415,7 +415,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK <Win> 'l'; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -429,7 +429,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK <Ctrl> <Alt> <Del>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -444,7 +444,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK <Enter>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -459,7 +459,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK <Win> <Space>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -474,7 +474,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK <Tab>; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -489,7 +489,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK 0xFF; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycode, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -504,7 +504,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BK -r4 10; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleKeycodeRepeated, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -519,7 +519,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UT hello; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbText, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -533,7 +533,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: UT \"hello parc\"; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::UsbText, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -547,7 +547,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BT hello; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleText, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -561,7 +561,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BT \"hello parc\"; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleText, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -575,7 +575,7 @@ TEST(
   serial.setInputBuffer("{ 0 A: BC Mute; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
   NN(programs[0].root);
   EQ((uint8_t)PsType::BleControlkey, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
@@ -589,7 +589,7 @@ TEST(
   serial.setInputBuffer("{ P N: 1 0 1 1 3; }");
 
   for (int n = 0; n < 100; n++) {
-    terminal.checkRegisters();
+    terminal.load(); terminal.run();
   }
 
   PinRegData regData(registers.get(TERMINAL_KEYPAD_PIN));

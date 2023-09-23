@@ -50,14 +50,14 @@ template<> SystemHw& Factory<SystemHw>::instance = sysHw;
 typedef Factory<SystemHw> SystemHwFac_t;
 
 Program<LoggerFac_t> programs[NumberOfPrograms];
-RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
+Register registers;
 
 KeypadHw<LoggerFac_t> keypadHw;
-KeypadAo<LoggerFac_t, KeypadHw<LoggerFac_t>> keypad(registers, keypadHw);
+KeypadAo<LoggerFac_t, KeypadHw<LoggerFac_t>> keypad(&registers, keypadHw);
 
-HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(&registers, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(&registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const {
   return 'W' == another[0];
@@ -108,7 +108,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0x2C;
 };
 
-TerminalAo<ProgramStepList, Serial_, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(Serial, registers, programs);
+TerminalAo<ProgramStepList, Serial_, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(Serial, &registers, programs);
 
 void setup() {
   for (int n = 0; n < 50 && !Serial; n++) {
@@ -134,18 +134,19 @@ void setup() {
 
   ble.begin(false, false);
   Keyboard.begin();
-
-  registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
 }
 
 void loop() {
 
-  keypad.checkRegisters();
-  hid.checkRegisters();
-  terminal.checkRegisters();
-  systemMonitor.checkRegisters();
+  keypad.load();
+  hid.load();
+  terminal.load();
+  systemMonitor.load();
+
+  keypad.run();
+  hid.run();
+  terminal.run();
+  systemMonitor.run();
 
   delay(TimerPeriod);
 }

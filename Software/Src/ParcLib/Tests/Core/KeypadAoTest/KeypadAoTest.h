@@ -109,7 +109,7 @@ TEST(
   KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(&registers, keypadHw);
 
   registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.checkRegisters();
+  keypad.load(); keypad.run();
 
   EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
   EQ((RegisterData_t)0, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
@@ -130,13 +130,15 @@ TEST(
 
   // Set pin
   registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.checkRegisters();
+  keypad.load(); keypad.run();
+
   EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
   EQ((RegisterData_t)0, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
 
   // Set pin again
   registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.checkRegisters();
+  keypad.load(); keypad.run();
+
   EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
   EQ((RegisterData_t)1, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
 }
@@ -155,7 +157,7 @@ TEST(
   KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(&registers, keypadHw);
 
   keypadHw.buttonPressed = true;
-  keypad.checkRegisters();
+  keypad.load(); keypad.run();
 
   KeypadRegData expected;
   expected.button = 5;

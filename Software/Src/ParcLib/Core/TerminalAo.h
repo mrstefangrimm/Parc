@@ -51,7 +51,12 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     TerminalAo(TSERIAL& serialInput, Register* registers, TPROGRAM* programs)
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _programs(programs) {}
 
-    void checkRegisters() {
+    void load() {
+      _pinDefinedMsg = Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED);
+      Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, 0);
+    }
+
+    void run() {
       if (_timer.increment()) {
         switch (_state) {
           case State::Idle: stateIdle(); break;
@@ -61,9 +66,8 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
         };
       }
 
-      if (Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED) != 0) {
+      if (_pinDefinedMsg != 0) {
         _serial.println(F("PIN was not accepted. A PIN is already active."));
-        Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, 0);
       }
     }
 
@@ -441,16 +445,16 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     }
 
   private:
-    typedef Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>> Ao_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result Wait_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result BleKeycode_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result BleKeycodeRepeated_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result BleText_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result BleControlkey_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result UsbKeycode_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result UsbKeycodeRepeated_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodes>::Result UsbKeycodes_t;
-    typedef typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result UsbText_t;
+    using Ao_t = Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>>;
+    using Wait_t = typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result;
+    using BleKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result;
+    using BleKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result;
+    using BleText_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result;
+    using BleControlkey_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result;
+    using UsbKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result;
+    using UsbKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result;
+    using UsbKeycodes_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodes>::Result;
+    using UsbText_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result;
 
     enum class State {
       Blocked,
@@ -467,8 +471,8 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     uint8_t _itBuf = 0;
 
     KeypadRegData _keyPadState;
+    RegisterData_t _pinDefinedMsg = 0;
     BitTimer<0> _timer;
-
 };
 
 }

@@ -41,7 +41,7 @@ namespace WinParc.App.Specs.Steps {
 
     [Then(@"the program is executed")]
     public void ThenTheProgramIsExecuted() {
-      Thread.Sleep(500);
+      Thread.Sleep(800);
       _simulator.GetDebugOutput().Should().Contain("Execute { UT }");
     }
 

@@ -1,9 +1,10 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
 
 #include "Ao.h"
+#include "BitTimer.h"
 
 namespace parclib {
 
@@ -14,16 +15,22 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
       : Ao_t(registers), _gameOver(false) {
     }
 
-    void checkRegisters() {
+    void load() {
+      _progChangeMsg = Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE);
+      _pinMsg = Ao_t::_registers->get(KEYPAD_MONITOR_PIN);
 
-      if (Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE) != 0) {
+      Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
+      Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
+    }
+
+    void run() {
+      if (_progChangeMsg != 0) {
         logMemoryAndWarn();
-        Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
       }
 
-      if (Ao_t::_registers->get(KEYPAD_MONITOR_PIN) != 0) {
+      if (_pinMsg  != 0) {
         auto sysHw = TSYSTEMHWFAC::create();
-        PinRegData pinData(Ao_t::_registers->get(KEYPAD_MONITOR_PIN));
+        PinRegData pinData(_pinMsg);
         if (pinData.failed > 0) {
           _gameOver = pinData.isGameOver();
           sysHw->warnLedOn();
@@ -41,7 +48,6 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
             sysHw->warnLedOff();
           }
         }
-        Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
       }
 
       if (_timer.increment()) {
@@ -66,8 +72,10 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
       }
     }
 
-    bool _gameOver;
+    bool _gameOver = false;
     Timer_t _timer;
+    RegisterData_t _progChangeMsg = 0;
+    RegisterData_t _pinMsg = 0;
 };
 
 }

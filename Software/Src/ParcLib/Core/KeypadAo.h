@@ -17,18 +17,21 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
       _timer = Timer_t((1 << 7) - 1);
     }
 
-    void checkRegisters() {
+    void load() {
+      _pinMsg = Ao_t::_registers->get(TERMINAL_KEYPAD_PIN);
+      Ao_t::_registers->set(TERMINAL_KEYPAD_PIN, 0);
+    }
 
-      if (Ao_t::_registers->get(TERMINAL_KEYPAD_PIN) != 0) {
+    void run() {
+      if (_pinMsg != 0) {
         if (_pin.raw == 0) {
-          _pin = PinRegData(Ao_t::_registers->get(TERMINAL_KEYPAD_PIN));
+          _pin = PinRegData(_pinMsg);
         }
         else {
           auto log = TLOGGERFAC::create();
           log->println(F("PIN not accepted."));
           Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, PinAlreadyDefinedRegData(true));
         }
-        Ao_t::_registers->set(TERMINAL_KEYPAD_PIN, 0);
       }
       else if (_timer.increment()) {
 
@@ -125,7 +128,9 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 
     Hw_t& _hw;
 
+    RegisterData_t _pinMsg = 0;
     PinRegData _pin;
+
     Timer_t _timer;
 };
 

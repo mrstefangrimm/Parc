@@ -57,12 +57,12 @@ TEST(
   pinData.failed = 2;
 
   registers.set(KEYPAD_MONITOR_PIN, pinData.raw);
-  systemMonitorAo.checkRegisters();
+  systemMonitorAo.load(); systemMonitorAo.run();
 
   EQ(true, (bool)sysHw.isLedOn);
 
   for (int n = 0; n < 5000 / TimerPeriod; n++) {
-    systemMonitorAo.checkRegisters();
+    systemMonitorAo.load(); systemMonitorAo.run();
   }
 
   EQ(false, (bool)sysHw.isLedOn);
@@ -79,12 +79,12 @@ TEST(
   PinRegData pinData;
   pinData.failed = 1;
   registers.set(KEYPAD_MONITOR_PIN, pinData.raw);
-  systemMonitorAo.checkRegisters();
+  systemMonitorAo.load(); systemMonitorAo.run();
 
   EQ(true, (bool)sysHw.isLedOn);
 
   for (int n = 0; n < 5000 / TimerPeriod; n++) {
-    systemMonitorAo.checkRegisters();
+    systemMonitorAo.load(); systemMonitorAo.run();
   }
 
   EQ(true, sysHw.isLedOn);
@@ -99,7 +99,7 @@ TEST(
   SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(&registers);
 
   registers.set(TERMINAL_MONITOR_PROGCHANGE, ProgramChangedRegData(1));
-  systemMonitorAo.checkRegisters();
+  systemMonitorAo.load(); systemMonitorAo.run();
 
   EQ(true, sysHw.isLedOn);
 }
@@ -113,7 +113,7 @@ TEST(
   SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(&registers);
 
   registers.set(TERMINAL_MONITOR_PROGCHANGE, ProgramChangedRegData(1));
-  systemMonitorAo.checkRegisters();
+  systemMonitorAo.load(); systemMonitorAo.run();
 
   EQ(false, sysHw.isLedOn);
 }

@@ -58,7 +58,7 @@ TEST(
   KeypadRegData hidInput(0, 1);
 
   registers.set(KEYPAD_HID_INPUT, hidInput.raw);
-  hid.checkRegisters();
+  hid.load(); hid.run();
 
   EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
 }
@@ -80,13 +80,13 @@ TEST(
 
   registers.set(KEYPAD_HID_INPUT, hidInput.raw);
 
-  hid.checkRegisters();
+  hid.load(); hid.run();
   // Changed from state Idle to State Execute
   EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
   EQ((bool)false, someProgramStep.isPlaying);
   EQ((uint8_t)0, someProgramStep.currentTick);
 
-  hid.checkRegisters();
+  hid.load(); hid.run();
   // State Execute
   EQ((uint8_t)0, registers.get(KEYPAD_HID_INPUT));
   EQ((bool)true, someProgramStep.isPlaying);
