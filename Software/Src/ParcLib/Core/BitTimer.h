@@ -17,6 +17,10 @@ namespace parclib {
       return ++value == 0;
     }
 
+    bool current() {
+      return value == 0;
+    }
+
     union {
       struct {
         Alloc value : N;
@@ -31,6 +35,10 @@ namespace parclib {
     BitTimer() {}
 
     bool increment() {
+      return true;
+    }
+
+    bool current() {
       return true;
     }
   };

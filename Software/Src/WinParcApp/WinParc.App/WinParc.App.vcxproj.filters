@@ -38,6 +38,9 @@
     <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+      <Filter>parclib\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parclib">

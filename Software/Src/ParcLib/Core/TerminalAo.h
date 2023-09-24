@@ -52,22 +52,27 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
       : Ao_t(registers), _serial(serialInput), _state(State::Idle), _programs(programs) {}
 
     void load() {
-      _pinDefinedMsg = Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED);
-      Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, 0);
+      if (_timer.increment()) {
+        _pinDefinedMsg = Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED);
+        Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, 0);
+      }
     }
 
     void run() {
-      if (_timer.increment()) {
-        switch (_state) {
-          case State::Idle: stateIdle(); break;
-          case State::ReadingProgramCode: stateReadingProgramCode(); break;
-          case State::ReadingProgramSteps: stateReadingProgramSteps(); break;
-          case State::ReadingPin: stateReadingPin(); break;
-        };
-      }
+      if (_timer.current()) {
 
-      if (_pinDefinedMsg != 0) {
-        _serial.println(F("PIN was not accepted. A PIN is already active."));
+        switch (_state) {
+        case State::Idle: stateIdle(); break;
+        case State::ReadingProgramCode: stateReadingProgramCode(); break;
+        case State::ReadingProgramSteps: stateReadingProgramSteps(); break;
+        case State::ReadingPin: stateReadingPin(); break;
+        };
+
+        if (_pinDefinedMsg != 0) {
+          _serial.println(F("PIN was not accepted. A PIN is already active."));
+        }
+
+        _pinDefinedMsg = 0;
       }
     }
 

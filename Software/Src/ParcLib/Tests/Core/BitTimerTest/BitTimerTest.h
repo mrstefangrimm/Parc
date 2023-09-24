@@ -23,6 +23,18 @@ TEST(
 }
 
 TEST(
+  8bit_timer_with_0_bits,
+  incremented_serveral_times,
+  peek_is_always_true) {
+
+  BitTimer<0> bt;
+  EQ(true, bt.increment());
+  EQ(true, bt.current());
+  EQ(true, bt.increment());
+  EQ(true, bt.current());
+}
+
+TEST(
   16bit_timer_with_0_bits,
   incremented_serveral_times,
   overflows_always) {
@@ -60,6 +72,30 @@ TEST(
   EQ(false, bt.increment());
   EQ(false, bt.increment());
   EQ(true, bt.increment());
+}
+
+TEST(
+  8bit_timer_with_2_bits,
+  incremented_serveral_times,
+  overflows_at_4_and_peek_is_true_if_next_increment_returns_true) {
+
+  BitTimer<2> bt;
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(true, bt.increment());
+  EQ(true, bt.current());
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(false, bt.increment());
+  EQ(false, bt.current());
+  EQ(true, bt.increment());
+  EQ(true, bt.current());
 }
 
 TEST(

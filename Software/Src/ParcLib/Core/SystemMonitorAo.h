@@ -16,48 +16,56 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
     }
 
     void load() {
-      _progChangeMsg = Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE);
-      _pinMsg = Ao_t::_registers->get(KEYPAD_MONITOR_PIN);
+      if (_timer.increment()) {
+        _progChangeMsg = Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE);
+        _pinMsg = Ao_t::_registers->get(KEYPAD_MONITOR_PIN);
 
-      Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
-      Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
+        Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
+        Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
+      }
     }
 
     void run() {
-      if (_progChangeMsg != 0) {
-        logMemoryAndWarn();
-      }
+      if (_timer.current()) {
 
-      if (_pinMsg  != 0) {
-        auto sysHw = TSYSTEMHWFAC::create();
-        PinRegData pinData(_pinMsg);
-        if (pinData.failed > 0) {
-          _gameOver = pinData.isGameOver();
-          sysHw->warnLedOn();
-
-          const uint8_t ledOnfor5secTimeout = 5000 / TimerPeriod;
-          _timer = Timer_t((1 << 8) - ledOnfor5secTimeout);
-
+        if (_progChangeMsg != 0) {
+          logMemoryAndWarn();
         }
-        else {
-          auto freeMem = sysHw->freeMemory();
-          if (freeMem < LOWMEMORY) {
+
+        if (_pinMsg != 0) {
+          auto sysHw = TSYSTEMHWFAC::create();
+          PinRegData pinData(_pinMsg);
+          if (pinData.failed > 0) {
+            _gameOver = pinData.isGameOver();
             sysHw->warnLedOn();
+
+            const uint8_t ledOnfor5secTimeout = 5000 / TimerPeriod;
+            _notificationTimer = NotificationTimer_t((1 << 8) - ledOnfor5secTimeout);
+
           }
           else {
-            sysHw->warnLedOff();
+            auto freeMem = sysHw->freeMemory();
+            if (freeMem < LOWMEMORY) {
+              sysHw->warnLedOn();
+            }
+            else {
+              sysHw->warnLedOff();
+            }
           }
         }
+        _progChangeMsg = 0;
+        _pinMsg = 0;
       }
 
-      if (_timer.increment()) {
+      if (_notificationTimer.increment()) {
         logMemoryAndWarn();
       }
     }
 
   private:
     using Ao_t = Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>>;
-    using Timer_t = BitTimer<8>;
+    using Timer_t = BitTimer<0>;
+    using NotificationTimer_t = BitTimer<8>;
 
     void logMemoryAndWarn() {
       auto log = TLOGGERFAC::create();
@@ -74,6 +82,7 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
 
     bool _gameOver = false;
     Timer_t _timer;
+    NotificationTimer_t _notificationTimer;
     RegisterData_t _progChangeMsg = 0;
     RegisterData_t _pinMsg = 0;
 };
