@@ -40,7 +40,7 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
             sysHw->warnLedOn();
 
             const uint8_t ledOnfor5secTimeout = 5000 / TimerPeriod;
-            _notificationTimer = NotificationTimer_t((1 << 8) - ledOnfor5secTimeout);
+            _notificationTimer = NotificationTimer_t(ledOnfor5secTimeout);
 
           }
           else {

@@ -14,7 +14,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   public:
     KeypadAo(Register* registers, TKEYPADHW& keypadHw)
       : Ao_t(registers), _hw(keypadHw) {
-      _timer = Timer_t((1 << 7) - 1);
+      _timer = Timer_t(1);
     }
 
     void load() {
@@ -35,7 +35,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
             log->println(F("PIN not accepted."));
             Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, PinAlreadyDefinedRegData(true));
           }
-          _timer = Timer_t((1 << 7) - 1);
+          _timer = Timer_t(1);
         }
         else {
 
@@ -114,10 +114,10 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 
           if (longTimeout) {
             // Debug: _log.print(F("1"));
-            _timer = Timer_t((1 << 7) - (5000 / TimerPeriod));
+            _timer = Timer_t(5000 / TimerPeriod);
           }
           else {
-            _timer = Timer_t((1 << 7) - 1);
+            _timer = Timer_t(1);
           }
         }
         _pinMsg = 0;

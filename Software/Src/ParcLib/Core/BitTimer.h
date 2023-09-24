@@ -11,7 +11,7 @@ namespace parclib {
     enum { N = Timerbits };
 
     BitTimer() : raw(0) {}
-    explicit BitTimer(Alloc rawValue) : raw(rawValue) {}
+    explicit BitTimer(Alloc countDown) : raw((1 << N) - countDown) {}
 
     bool increment() {
       return ++value == 0;

@@ -127,8 +127,7 @@ TEST(
   initialize_value_changes,
   overflows_at_1024) {
 
-  uint16_t initValue = (1 << 10) - 2;
-  BitTimer<10, uint16_t> bt(initValue);
+  BitTimer<10, uint16_t> bt(2);
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 
@@ -138,7 +137,7 @@ TEST(
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 
-  bt = BitTimer<10, uint16_t>((1 << 10) - 2);
+  bt = BitTimer<10, uint16_t>(2);
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 }
