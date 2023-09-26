@@ -184,6 +184,7 @@
     <ClCompile Include="StringParcTest.cpp" />
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
+    <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ParcLib\Core\BitTimer.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
     <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
@@ -202,6 +204,7 @@
     <ClInclude Include="..\..\ParcLib\Tests\Core\StringParcTest\StringParcTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\SystemMonitorAoTest\SystemMonitorAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\ValueQueueTest\ValueQueueTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
