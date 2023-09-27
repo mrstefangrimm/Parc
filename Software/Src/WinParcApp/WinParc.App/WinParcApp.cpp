@@ -1,10 +1,11 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <list>
+#include <cassert>
 
 #include <stdio.h>
 #include <tchar.h>
@@ -35,7 +36,7 @@ WinParcAPIWrapper parcApi;
 
 class ApiLogger {
 public:
-  ApiLogger(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiLogger(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
 
   void print(const char* ch) {
     _parcApi.DebugPrint(ch);
@@ -66,11 +67,11 @@ private:
 };
 ApiLogger logger(parcApi);
 template<> ApiLogger& Factory<ApiLogger>::instance = logger;
-typedef Factory<ApiLogger> LoggerFac_t;
+using LoggerFac_t = Factory<ApiLogger>;
 
 class ApiSerial {
 public:
-  ApiSerial(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSerial(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
 
   void print(const char* ch) {
     _parcApi.TerminalPrint(ch);
@@ -112,7 +113,7 @@ private:
 class ApiKeypadHw {
 
 public:
-  ApiKeypadHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) {}
+  explicit ApiKeypadHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) {}
 
   void begin() {
   }
@@ -142,7 +143,7 @@ private:
 
 class ApiSystemHw {
 public:
-  ApiSystemHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSystemHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
 
   int freeMemory() { return 1000; }
   void warnLedOn() { _parcApi.SetWarnLed(true); }
@@ -223,42 +224,63 @@ TerminalAo<
   KnownKeycodes,
   40> terminalAo(terminal, &registers, programs);
 
+volatile bool tick_flag = false;
+volatile bool fatalError = false;
+
 void setup() {
   parcApi.Initialize();
 }
 
 void loop() {
 
-  keypadAo.load();
-  hidAo.load();
-  terminalAo.load();
-  systemMonitorAo.load();
+  assert(!fatalError);
+  if (tick_flag) {
+    keypadAo.load();
+    hidAo.load();
+    terminalAo.load();
+    systemMonitorAo.load();
 
-  keypadAo.run();
-  hidAo.run();
-  terminalAo.run();
-  systemMonitorAo.run();
+    keypadAo.run();
+    hidAo.run();
+    terminalAo.run();
+    systemMonitorAo.run();
 
-  //if (terminal.available()) {
-  //  char ch = terminal.read();
-  //  if (ch != 0) {
-  //    std::cout << ch;
-  //  }
-  //  logger.print(ch);
-  //  terminal.print(ch);
-  //}
+    //if (terminal.available()) {
+    //  char ch = terminal.read();
+    //  if (ch != 0) {
+    //    std::cout << ch;
+    //  }
+    //  logger.print(ch);
+    //  terminal.print(ch);
+    //}
 
-  this_thread::sleep_for(chrono::milliseconds(TimerPeriod));
+    tick_flag = false;
+  }
 }
 
-void thread_function() {
-  while (true) { loop(); }
+void timer1InterruptHandler() {
+  if (tick_flag == true) fatalError = true;
+  tick_flag = true;
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+void loop_thread() {
+  while (true) {
+    loop();
+    this_thread::sleep_for(chrono::milliseconds(1));
+  }
+}
+
+void timer1_thread() {
+  while (true) {
+    timer1InterruptHandler();
+    this_thread::sleep_for(chrono::milliseconds(TimerPeriod));
+  }
+}
+
+void main()
 {
   setup();
-  thread t(&thread_function);  // t starts running
-  t.join();                    // main thread waits for the thread t to finish
-  return 0;
+  thread st(&loop_thread);
+  thread tt(&timer1_thread);
+  st.join();
 }

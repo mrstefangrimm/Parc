@@ -70,7 +70,9 @@ Libraries
 | Adafruit MCP23017 Arduino Library | BSD               |
 | Adafruit BluefruitLE nRF51        | BSD               |
 | Arduino.h                         | LGPL              |
+| ArduinoUnit.h                     | MIT               |
 | StandardCplusplus.h               | LGPL              |
+| TimerOne.h                        | CC BY 3.0 US      |
 | .NET 4.8.1                        | Microsoft license |
 
 
