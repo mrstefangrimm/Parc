@@ -87,5 +87,17 @@ TEST(
   }
 }
 
+TEST(
+  queue_with_size_1_and_uint32_t,
+  items_queued_and_dequeued_sequentially,
+  pop_gets_latest_push) {
+
+  ValueQueue<1, uint32_t> q;
+  q.push(1);
+  EQ((uint32_t)1, q.pop());
+  q.push(2);
+  EQ((uint32_t)2, q.pop());
+}
+
 END
 }
