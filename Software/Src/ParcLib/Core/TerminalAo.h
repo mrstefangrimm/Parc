@@ -48,13 +48,12 @@ struct CmdComparator {
 template<class PROGSTEPFACTORY, class TSERIAL, class TLOGGERFAC, class THIDBLEFAC, class THIDUSBFAC, class TPROGRAM, class TSYSTEMHWFAC, class KNOWNKEYCODES, uint8_t BUFLEN>
 class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, THIDBLEFAC, THIDUSBFAC, TPROGRAM, TSYSTEMHWFAC, KNOWNKEYCODES, BUFLEN>> {
   public:
-    TerminalAo(TSERIAL& serialInput, Register* registers, TPROGRAM* programs)
-      : Ao_t(registers), _serial(serialInput), _state(State::Idle), _programs(programs) {}
+    TerminalAo(TSERIAL& serialInput, Messages& messages, TPROGRAM* programs)
+      : Ao_t(messages), _serial(serialInput), _state(State::Idle), _programs(programs) {}
 
     void load() {
       if (_timer.increment()) {
-        _pinDefinedMsg = Ao_t::_registers->get(KEYPAD_TERMINAL_PINALREADYDEFINED);
-        Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, 0);
+        _pinDefinedMsg = Ao_t::_messages.fromKeypadToTerminalQueue.pop();
       }
     }
 
@@ -209,7 +208,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
             pin.code0 = subStrs[3][0] == '1' ? 1 : 0;
             pin.retries = atoi(subStrs[4]);
 
-            Ao_t::_registers->set(TERMINAL_KEYPAD_PIN, pin.raw);
+            Ao_t::_messages.fromTerminalToKeypadQueue.push(pin.raw);
           }
           else {
             _serial.println(F(" This ain't dull, bye."));
@@ -272,7 +271,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
           if (progStep != 0) {
             uint8_t progIdx = _keyPadState.programIndex();
             _programs[progIdx].appendStep(progStep);
-            Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, ProgramChangedRegData(1));
+            Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(ProgramChangedRegData(1));
           }
           else {
             _serial.println(F(" Unknown command. This ain't dull, bye."));
@@ -476,7 +475,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     uint8_t _itBuf = 0;
 
     KeypadRegData _keyPadState;
-    RegisterData_t _pinDefinedMsg = 0;
+    MessageData_t _pinDefinedMsg = 0;
     BitTimer<0> _timer;
 };
 

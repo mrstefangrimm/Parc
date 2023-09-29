@@ -71,43 +71,4 @@ namespace parclib {
     ItemType _item1 = 0;
     ItemType _item2 = 0;
   };
-
-
-  template<size_t Timerbits, class Alloc = uint8_t>
-  struct BitTimer {
-
-    enum { N = Timerbits };
-
-    BitTimer() : raw(0) {}
-    explicit BitTimer(Alloc countDown) : raw((1 << N) - countDown) {}
-
-    bool increment() {
-      return ++value == 0;
-    }
-
-    bool current() {
-      return value == 0;
-    }
-
-    union {
-      struct {
-        Alloc value : N;
-      };
-      Alloc raw;
-    };
-  };
-
-  template<class Alloc>
-  struct BitTimer<0, Alloc> {
-
-    BitTimer() {}
-
-    bool increment() {
-      return true;
-    }
-
-    bool current() {
-      return true;
-    }
-  };
 }

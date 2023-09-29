@@ -3,6 +3,7 @@
 //
 #include <SoftwareSerial.h>
 #include "Adafruit_MCP23X08.h"
+#include "LowPower.h"
 
 // MCP expander pins
 const uint8_t Pin_E = 0;
@@ -96,5 +97,10 @@ void loop() {
     logger.println("Btn_D");
   }
 
-  delay(500);
+  //attachInterrupt(0, Pin_A, HIGH);
+  //LowPower.powerDown(SLEEP_500MS, ADC_OFF, BOD_OFF); 
+  //detachInterrupt(0); 
+  //delay(500);
+    LowPower.idle(SLEEP_500MS, ADC_OFF, TIMER4_OFF, TIMER3_OFF, TIMER1_OFF, 
+  		  TIMER0_OFF, SPI_OFF, USART1_OFF, TWI_OFF, USB_OFF);
 }

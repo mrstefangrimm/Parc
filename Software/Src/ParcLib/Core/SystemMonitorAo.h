@@ -11,17 +11,14 @@ namespace parclib {
 template<class TLOGGERFAC, class TSYSTEMHWFAC, uint8_t LOWMEMORY>
 class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> {
   public:
-    explicit SystemMonitorAo(Register* registers)
-      : Ao_t(registers), _gameOver(false) {
+    explicit SystemMonitorAo(Messages& messages)
+      : Ao_t(messages), _gameOver(false) {
     }
 
     void load() {
       if (_timer.increment()) {
-        _progChangeMsg = Ao_t::_registers->get(TERMINAL_MONITOR_PROGCHANGE);
-        _pinMsg = Ao_t::_registers->get(KEYPAD_MONITOR_PIN);
-
-        Ao_t::_registers->set(TERMINAL_MONITOR_PROGCHANGE, 0);
-        Ao_t::_registers->set(KEYPAD_MONITOR_PIN, 0);
+        _progChangeMsg = Ao_t::_messages.fromTerminalToServiceMonitorQueue.pop();
+        _pinMsg = Ao_t::_messages.fromKeypadToServiceMonitorQueue.pop();
       }
     }
 
@@ -83,8 +80,8 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
     bool _gameOver = false;
     Timer_t _timer;
     NotificationTimer_t _notificationTimer;
-    RegisterData_t _progChangeMsg = 0;
-    RegisterData_t _pinMsg = 0;
+    MessageData_t _progChangeMsg = 0;
+    MessageData_t _pinMsg = 0;
 };
 
 }

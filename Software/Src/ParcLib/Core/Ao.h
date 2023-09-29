@@ -3,15 +3,15 @@
 //
 #pragma once
 
-#include "Registers.h"
+#include "Messages.h"
 
 namespace parclib {
 
 template<class TDERIVED>
 class Ao {
   public:
-    Ao(Register* registers)
-      : _registers(registers) {}
+    Ao(Messages& messages)
+      : _messages(messages) {}
 
     void load() {
       static_cast<TDERIVED*>(this)->load();
@@ -22,7 +22,7 @@ class Ao {
     }
 
   protected:
-    Register* _registers;
+    Messages& _messages;
 };
 
 }

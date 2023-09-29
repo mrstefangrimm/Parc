@@ -14,8 +14,8 @@ template<class TLOGGERFAC, class TPROGRAM>
 class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
 
   public:
-    HidAo(Register* registers, TPROGRAM* programs)
-      : Ao_t(registers), _programs(programs) {}
+    HidAo(Messages& messages, TPROGRAM* programs)
+      : Ao_t(messages), _programs(programs) {}
 
     TPROGRAM* programs() {
       return _programs;
@@ -23,8 +23,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
 
     void load() {
       if (_timer.increment()) {
-        _inputMsg = Ao_t::_registers->get(KEYPAD_HID_INPUT);
-        Ao_t::_registers->set(KEYPAD_HID_INPUT, 0);
+        _inputMsg = Ao_t::_messages.fromKeypadToHidQueue.pop();
       }
     }
 
@@ -39,7 +38,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     }
 
   private:
-    void stateIdle(RegisterData_t inputMsg) {
+    void stateIdle(MessageData_t inputMsg) {
       if (inputMsg != 0) {
 
         KeypadRegData args(inputMsg);
@@ -86,7 +85,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     TPROGRAM* _program = nullptr;
     size_t _ticksRemaining = 0;
     BitTimer<0> _timer;
-    RegisterData_t _inputMsg = 0;
+    MessageData_t _inputMsg = 0;
 };
 
 }

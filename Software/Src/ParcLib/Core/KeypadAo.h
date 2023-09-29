@@ -12,15 +12,14 @@ namespace parclib {
 template<class TLOGGERFAC, class TKEYPADHW>
 class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   public:
-    KeypadAo(Register* registers, TKEYPADHW& keypadHw)
-      : Ao_t(registers), _hw(keypadHw) {
+    KeypadAo(Messages& messages, TKEYPADHW& keypadHw)
+      : Ao_t(messages), _hw(keypadHw) {
       _timer = Timer_t(1);
     }
 
     void load() {
       if (_timer.increment()) {
-        _pinMsg = Ao_t::_registers->get(TERMINAL_KEYPAD_PIN);
-        Ao_t::_registers->set(TERMINAL_KEYPAD_PIN, 0);
+        _pinMsg = Ao_t::_messages.fromTerminalToKeypadQueue.pop();
       }
     }
 
@@ -33,7 +32,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
           else {
             auto log = TLOGGERFAC::create();
             log->println(F("PIN not accepted."));
-            Ao_t::_registers->set(KEYPAD_TERMINAL_PINALREADYDEFINED, PinAlreadyDefinedRegData(true));
+            Ao_t::_messages.fromKeypadToTerminalQueue.push(PinAlreadyDefinedRegData(true));
           }
           _timer = Timer_t(1);
         }
@@ -90,20 +89,20 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
             if (_pin.raw == 0 || _pin.pin() == pin) {
               _pin.failed = 0;
               // Debug: _log.println(args.button);
-              Ao_t::_registers->set(KEYPAD_HID_INPUT, args.raw);
-              Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
+              Ao_t::_messages.fromKeypadToHidQueue.push(args.raw);
+              Ao_t::_messages.fromKeypadToServiceMonitorQueue.push(_pin.raw);
             }
             else if (_pin.raw != 0 && pin != 0) {
               log->print(F("Wrong PIN, remaining retries: ")); log->println(_pin.retries - _pin.failed);
               if (_pin.failed == _pin.retries) {
                 log->println(F("Game Over."));
                 _pin.setGameOver();
-                Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
+                Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(_pin.raw);
               }
               else {
                 _pin.failed++;
                 longTimeout = true;
-                Ao_t::_registers->set(KEYPAD_MONITOR_PIN, _pin.raw);
+                Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(_pin.raw);
               }
             }
             else {
@@ -133,7 +132,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 
     Hw_t& _hw;
 
-    RegisterData_t _pinMsg = 0;
+    MessageData_t _pinMsg = 0;
     PinRegData _pin;
 
     Timer_t _timer;

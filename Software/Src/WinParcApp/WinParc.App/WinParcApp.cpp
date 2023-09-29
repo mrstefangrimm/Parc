@@ -5,7 +5,6 @@
 #include <chrono>
 #include <thread>
 #include <list>
-#include <cassert>
 
 #include <stdio.h>
 #include <tchar.h>
@@ -18,8 +17,10 @@ enum SerialFakeMode { BIN, HEX };
 const int INPUT_PULLUP = 1;
 const int OUTPUT = 2;
 
+void assert(bool) {}
+
 #include "Core/Ao.h"
-#include "Core/Registers.h"
+#include "Core/Messages.h"
 #include "Core/HidAo.h"
 #include "Core/KeypadAo.h"
 #include "Core/StringParc.h"
@@ -36,7 +37,7 @@ WinParcAPIWrapper parcApi;
 
 class ApiLogger {
 public:
-  explicit ApiLogger(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiLogger(WinParcAPIWrapper& api) : _parcApi(api) { }
 
   void print(const char* ch) {
     _parcApi.DebugPrint(ch);
@@ -45,7 +46,7 @@ public:
     char str[2] = { ch, '\0' };
     _parcApi.DebugPrint(str);
   }
-  void print(char ch, uint8_t mode) {
+  void print(char ch, uint8_t) {
     char str[2] = { ch, '\0' };
     _parcApi.DebugPrint(str);
   }
@@ -55,7 +56,7 @@ public:
     _parcApi.DebugPrint(str);
   }
   void println(const char* ch) { _parcApi.DebugPrintLn(ch); }
-  void println(const char* ch, SerialFakeMode mode) { _parcApi.DebugPrintLn(ch); }
+  void println(const char* ch, SerialFakeMode) { _parcApi.DebugPrintLn(ch); }
   void println(int val) {
     char str[10];
     itoa(val, str, 10);
@@ -71,7 +72,7 @@ using LoggerFac_t = Factory<ApiLogger>;
 
 class ApiSerial {
 public:
-  explicit ApiSerial(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSerial(WinParcAPIWrapper& api) : _parcApi(api) { }
 
   void print(const char* ch) {
     _parcApi.TerminalPrint(ch);
@@ -80,19 +81,19 @@ public:
     char str[2] = { ch, '\0' };
     _parcApi.TerminalPrint(str);
   }
-  void print(char ch, SerialFakeMode mode) {
+  void print(char ch, SerialFakeMode) {
     char str[2] = { ch, '\0' };
     _parcApi.TerminalPrint(str);
   }
   void println(const char* ch) { _parcApi.TerminalPrintLn(ch); }
-  void println(const char* ch, SerialFakeMode mode) { _parcApi.TerminalPrintLn(ch); }
+  void println(const char* ch, SerialFakeMode) { _parcApi.TerminalPrintLn(ch); }
   void println() { _parcApi.TerminalPrintLn("\r\n"); }
   void println(int val) {
     char str[10];
     itoa(val, str, 10);
     _parcApi.TerminalPrintLn(str);
   }
-  void write(const uint8_t* buf, int bufLen) { cout << (const char*)buf; }
+  void write(const uint8_t* buf, int) { cout << (const char*)buf; }
 
 
   bool available() { return parcApi.TerminalIsAvailable(); }
@@ -113,10 +114,9 @@ private:
 class ApiKeypadHw {
 
 public:
-  explicit ApiKeypadHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) {}
+  explicit ApiKeypadHw(WinParcAPIWrapper& api) : _parcApi(api) {}
 
-  void begin() {
-  }
+  void begin() {}
 
   template<KeyPadSwitch SWITCH>
   bool pressed() { return pressed(Int2Type<SWITCH>()); }
@@ -143,7 +143,7 @@ private:
 
 class ApiSystemHw {
 public:
-  explicit ApiSystemHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSystemHw(WinParcAPIWrapper& api) : _parcApi(api) {}
 
   int freeMemory() { return 1000; }
   void warnLedOn() { _parcApi.SetWarnLed(true); }
@@ -154,19 +154,19 @@ private:
 };
 ApiSystemHw sysHw(parcApi);
 template<> ApiSystemHw& Factory<ApiSystemHw>::instance = sysHw;
-typedef Factory<ApiSystemHw> SystemHwFac_t;
+using SystemHwFac_t = Factory<ApiSystemHw>;
 
 Program<LoggerFac_t> programs[NumberOfPrograms];
-Register registers;
 
+Messages messages;
 
 ApiSerial terminal(parcApi);
 ApiKeypadHw keypadHw(parcApi);
 
-KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(&registers, keypadHw);
-HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(&registers, programs);
+KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(messages, keypadHw);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(messages, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(&registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(messages);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -177,19 +177,19 @@ template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another
 template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
 
 struct FakeUsbKeyboard {
-  void print(const char* ch) { }
-  void press(uint8_t val) { }
-  void releaseAll() { }
+  void print(const char* ch) {}
+  void press(uint8_t val) {}
+  void releaseAll() {}
 };
 FakeUsbKeyboard usb;
 template<> FakeUsbKeyboard& Factory<FakeUsbKeyboard>::instance = usb;
-typedef Factory<FakeUsbKeyboard> HidUsbFac_t;
+using HidUsbFac_t = Factory<FakeUsbKeyboard>;
 
 struct FakeHidBle {
-  void sendKeyCode(KeyCode keyCode) { }
+  void sendKeyCode(KeyCode) {}
   bool waitForOK() { return true; }
-  void print(const char*) { }
-  void println(const char*) { }
+  void print(const char*) {}
+  void println(const char*) {}
 };
 FakeHidBle ble;
 template<> FakeHidBle& Factory<FakeHidBle>::instance = ble;
@@ -222,7 +222,7 @@ TerminalAo<
   Program<LoggerFac_t>,
   SystemHwFac_t,
   KnownKeycodes,
-  40> terminalAo(terminal, &registers, programs);
+  40> terminalAo(terminal, messages, programs);
 
 volatile bool tick_flag = false;
 volatile bool fatalError = false;

@@ -23,7 +23,7 @@
     <ClInclude Include="..\..\ParcLib\Feather\ProgramSteps.h">
       <Filter>parclib\Feather</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ParcLib\Core\Registers.h">
+    <ClInclude Include="..\..\ParcLib\Core\Messages.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ParcLib\Core\Shared.h">
@@ -39,6 +39,9 @@
       <Filter>parclib\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+      <Filter>parclib\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
   </ItemGroup>

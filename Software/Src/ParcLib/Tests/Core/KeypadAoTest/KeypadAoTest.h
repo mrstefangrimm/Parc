@@ -100,19 +100,20 @@ TEST(
   pin_not_yet_defined,
   pin_is_accepted) {
 
-  Register registers;
+  Messages messages;
   PinRegData pin;
   pin.code0 = 1;
   pin.code3 = 1;
 
   FakeKeypadHw keypadHw;
-  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(&registers, keypadHw);
+  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(messages, keypadHw);
 
-  registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.load(); keypad.run();
+  messages.fromTerminalToKeypadQueue.push(pin.raw);
+  keypad.load();
+  keypad.run();
 
-  EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
-  EQ((RegisterData_t)0, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
+  EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
+  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
 }
 
 TEST(
@@ -120,27 +121,29 @@ TEST(
   pin_already_defined,
   pin_is_not_accepted_and_pin_already_defined_is_set) {
 
-  Register registers;
+  Messages messages;
   PinRegData pin;
   pin.code0 = 1;
   pin.code3 = 1;
 
   FakeKeypadHw keypadHw;
-  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(&registers, keypadHw);
+  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(messages, keypadHw);
 
   // Set pin
-  registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.load(); keypad.run();
+  messages.fromTerminalToKeypadQueue.push(pin.raw);
+  keypad.load();
+  keypad.run();
 
-  EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
-  EQ((RegisterData_t)0, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
+  EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
+  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
 
   // Set pin again
-  registers.set(TERMINAL_KEYPAD_PIN, pin.raw);
-  keypad.load(); keypad.run();
+  messages.fromTerminalToKeypadQueue.push(pin.raw);
+  keypad.load();
+  keypad.run();
 
-  EQ((RegisterData_t)0, registers.get(TERMINAL_KEYPAD_PIN));
-  EQ((RegisterData_t)1, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
+  EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
+  EQ((MessageData_t)1, messages.fromKeypadToTerminalQueue.pop());
 }
 
 TEST(
@@ -148,21 +151,22 @@ TEST(
   pin_not_defined,
   hid_input_is_set) {
 
-  Register registers;
+  Messages messages;
   PinRegData pin;
   pin.code0 = 1;
   pin.code3 = 1;
 
   FakeKeypadHw keypadHw;
-  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(&registers, keypadHw);
+  KeypadAo<LoggerFac_t, FakeKeypadHw> keypad(messages, keypadHw);
 
   keypadHw.buttonPressed = true;
-  keypad.load(); keypad.run();
+  keypad.load();
+  keypad.run();
 
   KeypadRegData expected;
   expected.button = 5;
-  EQ((RegisterData_t)expected.raw, registers.get(KEYPAD_HID_INPUT));
-  EQ((RegisterData_t)0, registers.get(KEYPAD_TERMINAL_PINALREADYDEFINED));
+  EQ((MessageData_t)expected.raw, messages.fromKeypadToHidQueue.pop());
+  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
 }
 
 END

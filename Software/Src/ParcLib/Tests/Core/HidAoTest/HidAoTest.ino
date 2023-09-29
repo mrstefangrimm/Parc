@@ -7,6 +7,10 @@
 #include "ParcLib.h"
 #include "Tests/NotquiteBDD.h"
 
+void assert(bool condition) {
+  TRUE(condition);
+}
+
 #include "HidAoTest.h"
 
 void setup() {
