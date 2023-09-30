@@ -7,7 +7,7 @@
 #include "ParcLib.h"
 #include "Tests/NotquiteBDD.h"
 
-//#include "BitTimerTest.h"
+#include "BitTimerTest.h"
 
 void setup() {
   while (!Serial)
