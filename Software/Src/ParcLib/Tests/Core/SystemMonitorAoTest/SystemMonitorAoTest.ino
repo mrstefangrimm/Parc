@@ -14,8 +14,10 @@ void rtassert(bool condition) {
 #include "SystemMonitorAoTest.h"
 
 void setup() {
+  while (!Serial)
+    ;
+
   Serial.begin(9600);
-  while (!Serial) {}
 }
 
 void loop() {
