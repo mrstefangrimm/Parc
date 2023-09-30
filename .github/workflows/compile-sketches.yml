@@ -21,3 +21,4 @@ jobs:
             - Software/Src/ParcLib/Tests/Core/BitTimerTest
           libraries: |
             - name: ArduinoUnit
+            - source-url: https://github.com/mrstefangrimm/Parc.git
