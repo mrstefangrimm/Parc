@@ -14,10 +14,7 @@ enum class VirtualAction {
 template<class TLOGGERFAC>
 class ProgramStep {
   public:
-    ProgramStep(uint8_t duration)
-      : _duration(duration), _next(nullptr) {
-      // Debug: static int numSteps = 0; numSteps++;_log.println(numSteps);
-    }
+    explicit ProgramStep(uint8_t duration);
 
     void dispose();
     ProgramStep<TLOGGERFAC>* play(uint8_t& tick);
@@ -29,10 +26,16 @@ class ProgramStep {
     virtual void action(VirtualAction type, uint8_t& tick) = 0;
 
   protected:
-    ProgramStep* _next;
+    ProgramStep* _next = nullptr;
     uint8_t _duration;
 
 };
+
+template<class TLOGGERFAC>
+inline ProgramStep<TLOGGERFAC>::ProgramStep(uint8_t duration)
+  : _duration(duration) {
+  // Debug: static int numSteps = 0; numSteps++;_log.println(numSteps);
+}
 
 template<class TLOGGERFAC>
 inline void ProgramStep<TLOGGERFAC>::dispose() {
