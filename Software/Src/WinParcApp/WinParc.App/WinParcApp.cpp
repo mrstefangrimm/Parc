@@ -5,9 +5,9 @@
 #include <chrono>
 #include <thread>
 #include <list>
-
 #include <stdio.h>
 #include <tchar.h>
+#include <cassert>
 
 #include "WinParcAPIWrapper.h"
 
@@ -16,8 +16,6 @@
 enum SerialFakeMode { BIN, HEX };
 const int INPUT_PULLUP = 1;
 const int OUTPUT = 2;
-
-void assert(bool) {}
 
 #include "Core/Ao.h"
 #include "Core/Messages.h"
@@ -32,6 +30,8 @@ void assert(bool) {}
 
 using namespace std;
 using namespace parclib;
+
+void rtassert(bool condition) { assert(condition); }
 
 WinParcAPIWrapper parcApi;
 
