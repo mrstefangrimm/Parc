@@ -173,11 +173,11 @@ struct KnownKeycodes {
 };
 
 struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
-  FakeProgramStep(uint16_t waitMs)
+  FakeProgramStep(uint16_t)
     : ProgramStep<LoggerFac_t>(0) {
     type = PsType::Wait;
   }
-  FakeProgramStep(const char* text)
+  FakeProgramStep(const char*)
     : ProgramStep<LoggerFac_t>(0) {
     type = PsType::UsbText;
   }
@@ -186,12 +186,12 @@ struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
     type = PsType::UsbKeycode;
     hexCode = keyCode.hexCode;
   }
-  FakeProgramStep(KeyCode keyCode, uint8_t repetitions)
+  FakeProgramStep(KeyCode keyCode, uint8_t)
     : ProgramStep(0) {
     type = PsType::UsbKeycodeRepeated;
     hexCode = keyCode.hexCode;
   }
-  FakeProgramStep(KeyCode keyCode, char secondKey)
+  FakeProgramStep(KeyCode keyCode, char)
     : ProgramStep<LoggerFac_t>(0) {
     type = PsType::UsbKeycodes;
     hexCode = keyCode.hexCode;

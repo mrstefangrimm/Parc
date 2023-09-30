@@ -461,7 +461,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     using UsbText_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result;
 
     enum class State {
-      Blocked,
+      //Blocked,
       Idle,
       ReadingProgramCode,
       ReadingProgramSteps,
