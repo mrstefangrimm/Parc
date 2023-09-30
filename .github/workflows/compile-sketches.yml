@@ -1,0 +1,32 @@
+name: Compile Sketches
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  compile-sketches:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # See: https://github.com/arduino/compile-sketches#readme
+      - name: Compile sketches
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: arduino:avr:uno
+          sketch-paths: |
+            - Software/Src/ParcLib/Tests/Core/BitTimerTest
+            - Software/Src/ParcLib/Tests/Core/HidAoTest
+            - Software/Src/ParcLib/Tests/Core/KeypadAoTest
+            - Software/Src/ParcLib/Tests/Core/StringParcTest
+            - Software/Src/ParcLib/Tests/Core/SystemMonitorAoTest
+            - Software/Src/ParcLib/Tests/Core/TerminalAoTest
+            - Software/Src/ParcLib/Tests/Core/ValueQueueTest
+            - Software/Src/ParcLib/Tests/Feather/ProgramTest
+          libraries: |
+            - name: ArduinoUnit
+            - source-url: https://github.com/mrstefangrimm/StandardCplusplus.git
+            - source-path: Software/Src/ParcLib
