@@ -75,11 +75,11 @@ private:
 
 struct FakeLogger {
   template<class T>
-  void print(T ch) {}
+  void print(T) {}
   template<class T>
-  void print(T ch, uint8_t mode) {}
+  void print(T, uint8_t) {}
   template<class T>
-  void println(T ch) {}
+  void println(T) {}
 };
 
 struct FakeSystemHw {
@@ -91,7 +91,7 @@ struct FakeSystemHw {
 };
 
 struct FakeHidBle {
-  void sendKeyCode(KeyCode keyCode) {}
+  void sendKeyCode(KeyCode) {}
   bool waitForOK() {
     return true;
   }
@@ -113,8 +113,9 @@ struct FakeKeypadHw {
 
 template<class TLOGGERFAC>
 struct FakeProgram {
+
   ProgramStep<TLOGGERFAC>* appendStep(ProgramStep<TLOGGERFAC>* step) {
-    if (root == 0) {
+    if (root == nullptr) {
       root = step;
       currentStep = step;
       return root;
@@ -123,20 +124,24 @@ struct FakeProgram {
     }
   }
 
+  virtual ~FakeProgram() {
+    dispose();
+  }
+
   void dispose() {
-    if (root != 0) {
+    if (root != nullptr) {
       root->dispose();
       delete root;
-      root = 0;
+      root = nullptr;
     }
   }
 
   bool hasSteps() const {
-    return root != 0;
+    return root != nullptr;
   }
 
-  ProgramStep<TLOGGERFAC>* root = 0;
-  ProgramStep<TLOGGERFAC>* currentStep = 0;
+  ProgramStep<TLOGGERFAC>* root = nullptr;
+  ProgramStep<TLOGGERFAC>* currentStep = nullptr;
 };
 
 }
@@ -173,15 +178,15 @@ struct KnownKeycodes {
 };
 
 struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
-  FakeProgramStep(uint16_t)
+  explicit FakeProgramStep(uint16_t)
     : ProgramStep<LoggerFac_t>(0) {
     type = PsType::Wait;
   }
-  FakeProgramStep(const char*)
+  explicit FakeProgramStep(const char*)
     : ProgramStep<LoggerFac_t>(0) {
     type = PsType::UsbText;
   }
-  FakeProgramStep(KeyCode keyCode)
+  explicit FakeProgramStep(KeyCode keyCode)
     : ProgramStep(0) {
     type = PsType::UsbKeycode;
     hexCode = keyCode.hexCode;
@@ -204,11 +209,11 @@ struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
 };
 
 struct FakeBleProgramStep : public ProgramStep<LoggerFac_t> {
-  FakeBleProgramStep(const char* text)
+  explicit FakeBleProgramStep(const char* text)
     : ProgramStep<LoggerFac_t>(0) {
     type = strcmp("Mute", text) == 0 ? type = PsType::BleControlkey : PsType::BleText;
   }
-  FakeBleProgramStep(KeyCode keyCode)
+  explicit FakeBleProgramStep(KeyCode keyCode)
     : ProgramStep(0) {
     type = PsType::BleKeycode;
     hexCode = keyCode.hexCode;
