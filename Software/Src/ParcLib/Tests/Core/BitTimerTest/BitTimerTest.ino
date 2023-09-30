@@ -4,7 +4,7 @@
 
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
-//#include "ParcLib.h"
+#include "ParcLib.h"
 //#include "Tests/NotquiteBDD.h"
 
 //#include "BitTimerTest.h"
