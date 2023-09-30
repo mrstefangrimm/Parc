@@ -19,6 +19,13 @@ jobs:
           fqbn: arduino:avr:uno
           sketch-paths: |
             - Software/Src/ParcLib/Tests/Core/BitTimerTest
+            - Software/Src/ParcLib/Tests/Core/HidAoTest
+            - Software/Src/ParcLib/Tests/Core/KeypadAoTest
+            - Software/Src/ParcLib/Tests/Core/StringParcTest
+            - Software/Src/ParcLib/Tests/Core/SystemMonitorAoTest
+            - Software/Src/ParcLib/Tests/Core/TerminalAoTest
+            - Software/Src/ParcLib/Tests/Core/ValueQueueTest
+            - Software/Src/ParcLib/Tests/Feather/ProgramTest
           libraries: |
             - name: ArduinoUnit
             - source-path: Software/Src/ParcLib
