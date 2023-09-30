@@ -7,7 +7,7 @@
 #include "ParcLib.h"
 #include "Tests/NotquiteBDD.h"
 
-void assert(bool condition) {
+void rtassert(bool condition) {
   TRUE(condition);
 }
 

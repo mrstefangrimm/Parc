@@ -3,7 +3,7 @@
 //
 #pragma once
 
-extern void assert(bool);
+void rtassert(bool condition);
 
 namespace parclib {
 
@@ -36,7 +36,7 @@ namespace parclib {
   class ValueQueue<1, ItemType> {
   public:
     void push(ItemType item) {
-      assert(_item == 0);
+      rtassert(_item == 0);
       _item = item;
     }
     ItemType pop() {
@@ -52,7 +52,7 @@ namespace parclib {
   class ValueQueue<2, ItemType> {
   public:
     void push(ItemType item) {
-      assert(_item1 == 0 || _item2 == 0);
+      rtassert(_item1 == 0 || _item2 == 0);
       if (_item1 == 0) {
         _item1 = item;
       }

@@ -3,6 +3,4 @@
 //
 #include "pch.h"
 
-void assert(bool condition) { TRUE(condition); }
-
 #include "../../ParcLib/Tests/Core/ValueQueueTest/ValueQueueTest.h"
