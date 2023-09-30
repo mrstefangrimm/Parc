@@ -15,6 +15,9 @@ template<class TLOGGERFAC>
 class ProgramStep {
   public:
     explicit ProgramStep(uint8_t duration);
+    virtual ~ProgramStep() {
+      dispose();
+    }
 
     void dispose();
     ProgramStep<TLOGGERFAC>* play(uint8_t& tick);
