@@ -26,9 +26,9 @@ class ProgramStep {
     virtual void action(VirtualAction type, uint8_t& tick) = 0;
 
   protected:
-    ProgramStep* _next;
+    ProgramStep* _next = nullptr;
 
-    uint8_t _duration;
+    uint8_t _duration = 0;
 
 };
 
