@@ -7,15 +7,17 @@
 #include "ParcLib.h"
 #include "Tests/NotquiteBDD.h"
 
-void assert(bool condition) {
+void rtassert(bool condition) {
   TRUE(condition);
 }
 
 #include "HidAoTest.h"
 
 void setup() {
+  while (!Serial)
+    ;
+
   Serial.begin(9600);
-  while (!Serial) {}
 }
 
 void loop() {
