@@ -50,19 +50,21 @@ TEST(
   failed,
   LED_is_on_for_5_sec) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(registers);
+  Messages messages;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(messages);
 
   PinRegData pinData;
   pinData.failed = 2;
 
-  registers[KEYPAD_MONITOR_WRONGPIN] = pinData.raw;
-  systemMonitorAo.checkRegisters();
+  messages.fromKeypadToServiceMonitorQueue.push(pinData.raw);
+  systemMonitorAo.load();
+  systemMonitorAo.run();
 
   EQ(true, (bool)sysHw.isLedOn);
 
   for (int n = 0; n < 5000 / TimerPeriod; n++) {
-    systemMonitorAo.checkRegisters();
+    systemMonitorAo.load();
+    systemMonitorAo.run();
   }
 
   EQ(false, (bool)sysHw.isLedOn);
@@ -73,18 +75,20 @@ TEST(
   checkRegisters,
   LED_is_on_and_remains_on) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(registers);
+  Messages messages;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(messages);
 
   PinRegData pinData;
   pinData.failed = 1;
-  registers[KEYPAD_MONITOR_WRONGPIN] = pinData.raw;
-  systemMonitorAo.checkRegisters();
+  messages.fromKeypadToServiceMonitorQueue.push(pinData.raw);
+  systemMonitorAo.load();
+  systemMonitorAo.run();
 
   EQ(true, (bool)sysHw.isLedOn);
 
   for (int n = 0; n < 5000 / TimerPeriod; n++) {
-    systemMonitorAo.checkRegisters();
+    systemMonitorAo.load();
+    systemMonitorAo.run();
   }
 
   EQ(true, sysHw.isLedOn);
@@ -95,11 +99,12 @@ TEST(
   checkRegisters,
   LED_is_on) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(registers);
+  Messages messages;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(messages);
 
-  registers[TERMINAL_MONITOR_PROGCHANGE] = ProgramChangedRegData(1);
-  systemMonitorAo.checkRegisters();
+  messages.fromTerminalToServiceMonitorQueue.push(ProgramChangedRegData(1));
+  systemMonitorAo.load();
+  systemMonitorAo.run();
 
   EQ(true, sysHw.isLedOn);
 }
@@ -109,11 +114,12 @@ TEST(
   checkRegisters,
   LED_is_off) {
   sysHw.isLedOn = false;
-  RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
-  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(registers);
+  Messages messages;
+  SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 50> systemMonitorAo(messages);
 
-  registers[TERMINAL_MONITOR_PROGCHANGE] = ProgramChangedRegData(1);
-  systemMonitorAo.checkRegisters();
+  messages.fromTerminalToServiceMonitorQueue.push(ProgramChangedRegData(1));
+  systemMonitorAo.load();
+  systemMonitorAo.run();
 
   EQ(false, sysHw.isLedOn);
 }

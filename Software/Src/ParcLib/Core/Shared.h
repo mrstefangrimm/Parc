@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
@@ -7,6 +7,8 @@ namespace parclib {
 
 // Intervals per ActiveObject (BSP_Tick)
 const uint8_t TimerPeriod = 100;
+// TODO: main loop must have a sleep for the defined value.
+//const uint8_t TimerPeriod = 125;
 
 // Given by 5 buttons (A-E) and 4 modes (0-3)
 const uint8_t NumberOfPrograms = 20;
@@ -59,10 +61,6 @@ template<uint8_t V>
 struct Int2Type {
   enum { value = V };
 };
-
-// From Modern C++
-template<bool> struct CTAssert;
-template<> struct CTAssert<true> {};
 
 // From Modern C++
 class NullType {};

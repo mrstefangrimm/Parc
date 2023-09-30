@@ -51,18 +51,18 @@ TEST(
 
   Program<LoggerFac_t> programs[NumberOfPrograms];
   memset(programs, 0, NumberOfPrograms * sizeof(Program<LoggerFac_t>));
-  RegisterData_t registers[TOTAL_REGISTERS];
-  memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
 
-  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+  Messages messages;
+
+  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(messages, programs);
 
   KeypadRegData hidInput(0, 1);
 
-  registers[KEYPAD_HID_INPUT] = hidInput.raw;
-  hid.checkRegisters();
+  messages.fromKeypadToHidQueue.push(hidInput.raw);
+  hid.load();
+  hid.run();
 
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)0, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, messages.fromKeypadToHidQueue.pop());
 }
 
 TEST(
@@ -72,28 +72,28 @@ TEST(
 
   Program<LoggerFac_t> programs[NumberOfPrograms];
   memset(programs, 0, NumberOfPrograms * sizeof(Program<LoggerFac_t>));
-  RegisterData_t registers[TOTAL_REGISTERS];
-  memset(registers, 0, TOTAL_REGISTERS * sizeof(RegisterData_t));
 
-  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+  Messages messages;
+
+  HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(messages, programs);
 
   KeypadRegData hidInput(0, 1);
   FakeProgramStep someProgramStep;
   programs[0].appendStep(&someProgramStep);
 
-  registers[KEYPAD_HID_INPUT] = hidInput.raw;
+  messages.fromKeypadToHidQueue.push(hidInput.raw);
 
-  hid.checkRegisters();
+  hid.load();
+  hid.run();
   // Changed from state Idle to State Execute
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)1, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, messages.fromKeypadToHidQueue.pop());
   EQ((bool)false, someProgramStep.isPlaying);
   EQ((uint8_t)0, someProgramStep.currentTick);
 
-  hid.checkRegisters();
+  hid.load();
+  hid.run();
   // State Execute
-  EQ((uint8_t)0, registers[KEYPAD_HID_INPUT]);
-  EQ((uint8_t)1, registers[HID_HID_TIMEOUT]);
+  EQ((uint8_t)0, messages.fromKeypadToHidQueue.pop());
   EQ((bool)true, someProgramStep.isPlaying);
   EQ((uint8_t)0, someProgramStep.currentTick);
 }

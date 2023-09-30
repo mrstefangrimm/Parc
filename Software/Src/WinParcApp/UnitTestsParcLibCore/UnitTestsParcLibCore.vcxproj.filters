@@ -6,6 +6,9 @@
     <ClCompile Include="StringParcTest.cpp" />
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
+    <ClCompile Include="BitTimerTest.cpp" />
+    <ClCompile Include="KeypadAoTest.cpp" />
+    <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -36,6 +39,16 @@
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
     <ClInclude Include="..\..\ParcLib\Core\Registers.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
+    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+      <Filter>parclib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\ValueQueueTest\ValueQueueTest.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h">
       <Filter>parclib</Filter>
     </ClInclude>
   </ItemGroup>

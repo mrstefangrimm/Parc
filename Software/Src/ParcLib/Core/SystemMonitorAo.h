@@ -1,59 +1,70 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
 
 #include "Ao.h"
+#include "BitTimer.h"
 
 namespace parclib {
 
 template<class TLOGGERFAC, class TSYSTEMHWFAC, uint8_t LOWMEMORY>
 class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> {
   public:
-    SystemMonitorAo(RegisterData_t* registers)
-      : Ao_t(registers), _gameOver(false) {
+    explicit SystemMonitorAo(Messages& messages)
+      : Ao_t(messages), _gameOver(false) {
     }
 
-    void checkRegisters() {
-
-      if (Ao_t::_registers[TERMINAL_MONITOR_PROGCHANGE] != 0) {
-        logMemory();
-        Ao_t::_registers[TERMINAL_MONITOR_PROGCHANGE] = 0;
+    void load() {
+      if (_timer.increment()) {
+        _progChangeMsg = Ao_t::_messages.fromTerminalToServiceMonitorQueue.pop();
+        _pinMsg = Ao_t::_messages.fromKeypadToServiceMonitorQueue.pop();
       }
+    }
 
-      if (Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] != 0) {
-        auto sysHw = TSYSTEMHWFAC::create();
-        PinRegData pinData(Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN]);
-        if (pinData.failed > 0) {
-          _gameOver = pinData.isGameOver();
-          Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(5000 / TimerPeriod);
-          sysHw->warnLedOn();
+    void run() {
+      if (_timer.current()) {
+
+        if (_progChangeMsg != 0) {
+          logMemoryAndWarn();
         }
-        else {
-          auto freeMem = sysHw->freeMemory();
-          if (freeMem < LOWMEMORY) {
+
+        if (_pinMsg != 0) {
+          auto sysHw = TSYSTEMHWFAC::create();
+          PinRegData pinData(_pinMsg);
+          if (pinData.failed > 0) {
+            _gameOver = pinData.isGameOver();
             sysHw->warnLedOn();
+
+            const uint8_t ledOnfor5secTimeout = 5000 / TimerPeriod;
+            _notificationTimer = NotificationTimer_t(ledOnfor5secTimeout);
+
           }
           else {
-            sysHw->warnLedOff();
+            auto freeMem = sysHw->freeMemory();
+            if (freeMem < LOWMEMORY) {
+              sysHw->warnLedOn();
+            }
+            else {
+              sysHw->warnLedOff();
+            }
           }
         }
-        Ao_t::_registers[KEYPAD_MONITOR_WRONGPIN] = 0;
+        _progChangeMsg = 0;
+        _pinMsg = 0;
       }
 
-      if (Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] > 1) {
-        Ao_t::_registers[MONITOR_MONITOR_TIMEOUT]--;
-      }
-      else if (Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] == 1) {
-        logMemory();
-        Ao_t::_registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(25500 / TimerPeriod);
+      if (_notificationTimer.increment()) {
+        logMemoryAndWarn();
       }
     }
 
   private:
-    typedef Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>> Ao_t;
+    using Ao_t = Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>>;
+    using Timer_t = BitTimer<0>;
+    using NotificationTimer_t = BitTimer<8>;
 
-    void logMemory() {
+    void logMemoryAndWarn() {
       auto log = TLOGGERFAC::create();
       auto sysHw = TSYSTEMHWFAC::create();
       auto freeMem = sysHw->freeMemory();
@@ -66,7 +77,11 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
       }
     }
 
-    bool _gameOver;
+    bool _gameOver = false;
+    Timer_t _timer;
+    NotificationTimer_t _notificationTimer;
+    MessageData_t _progChangeMsg = 0;
+    MessageData_t _pinMsg = 0;
 };
 
 }

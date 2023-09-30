@@ -54,12 +54,12 @@ typedef UnoBreadboard<LoggerFac_t> Keypad_t;
 Keypad_t keypadHw;
 
 Program<LoggerFac_t> programs[NumberOfPrograms];
-RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
+Register registers;
 
-KeypadAo<LoggerFac_t, Keypad_t> keypad(registers, keypadHw);
-HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(registers, programs);
+KeypadAo<LoggerFac_t, Keypad_t> keypad(&registers, keypadHw);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hid(&registers, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(&registers);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const {
   return 'W' == another[0];
@@ -103,7 +103,7 @@ struct KnownKeycodes {
   static const uint8_t BleKeyCodeSpace = 0;
 };
 
-TerminalAo<ProgramStepList, TerminalConsole_t, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(terminalConsole, registers, programs);
+TerminalAo<ProgramStepList, TerminalConsole_t, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 30> terminal(terminalConsole, &registers, programs);
 
 void setup() {
   for (int n = 0; n < 50 && !Serial; n++) {
@@ -120,18 +120,19 @@ void setup() {
   keypadHw.pinMode<KeyPadSwitch::Btn_D>();
   keypadHw.pinMode<KeyPadSwitch::Btn_E>();
   keypadHw.pinMode<KeyPadSwitch::Sw_M0>();
-
-  registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
 }
 
 void loop() {
 
-  keypad.checkRegisters();
-  hid.checkRegisters();
-  terminal.checkRegisters();
-  systemMonitor.checkRegisters();
+  keypad.load();
+  hid.load();
+  terminal.load();
+  systemMonitor.load();
 
+  keypad.run();
+  hid.run();
+  terminal.run();
+  systemMonitor.run();
+  
   delay(TimerPeriod);
 }

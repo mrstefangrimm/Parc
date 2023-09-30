@@ -172,7 +172,9 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BitTimerTest.cpp" />
     <ClCompile Include="HidAoTest.cpp" />
+    <ClCompile Include="KeypadAoTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -182,8 +184,10 @@
     <ClCompile Include="StringParcTest.cpp" />
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
+    <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h" />
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />
@@ -192,10 +196,15 @@
     <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
     <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\StringParcTest\StringParcTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\SystemMonitorAoTest\SystemMonitorAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\ValueQueueTest\ValueQueueTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

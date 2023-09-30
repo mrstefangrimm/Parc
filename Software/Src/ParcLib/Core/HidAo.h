@@ -1,9 +1,10 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
 
 #include "Ao.h"
+#include "BitTimer.h"
 #include "ProgramStep.h"
 #include "Program.h"
 
@@ -13,26 +14,34 @@ template<class TLOGGERFAC, class TPROGRAM>
 class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
 
   public:
-    HidAo(RegisterData_t* registers, TPROGRAM* programs)
-      : Ao_t(registers), _programs(programs) {}
+    HidAo(Messages& messages, TPROGRAM* programs)
+      : Ao_t(messages), _programs(programs) {}
 
     TPROGRAM* programs() {
       return _programs;
     }
 
-    void checkRegisters() {
-      switch (_state) {
-        case State::Idle: stateIdle(); break;
+    void load() {
+      if (_timer.increment()) {
+        _inputMsg = Ao_t::_messages.fromKeypadToHidQueue.pop();
+      }
+    }
+
+    void run() {
+      if (_timer.current()) {
+        switch (_state) {
+        case State::Idle: stateIdle(_inputMsg); break;
         case State::Execute: stateExecute(); break;
-      };
-      Ao_t::_registers[KEYPAD_HID_INPUT] = 0;
+        };
+        _inputMsg = 0;
+      }
     }
 
   private:
-    void stateIdle() {
-      if (_state == State::Idle &&  Ao_t::_registers[KEYPAD_HID_INPUT] != 0) {
+    void stateIdle(MessageData_t inputMsg) {
+      if (inputMsg != 0) {
 
-        KeypadRegData args(Ao_t::_registers[KEYPAD_HID_INPUT]);
+        KeypadRegData args(inputMsg);
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
         _ticksRemaining = _program->duration();
@@ -45,30 +54,26 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
         if (_ticksRemaining > 0) {
           log->print(F("Execute { "));
           _state = State::Execute;
-          Ao_t::_registers[HID_HID_TIMEOUT] = TimerRegData(1);
         }
       }
     }
 
     void stateExecute() {
-      if (_state == State::Execute && Ao_t::_registers[HID_HID_TIMEOUT] != 0) {
 
-        _ticksRemaining--;
-        _program->play();
+      _ticksRemaining--;
+      _program->play();
 
-        if (_ticksRemaining == 0) {
-          auto log = TLOGGERFAC::create();
-          log->println(F("}"));
-          _program->rewind();
-          _program = 0;
-          _state = State::Idle;
-          Ao_t::_registers[HID_HID_TIMEOUT] = 0;
-        }
+      if (_ticksRemaining == 0) {
+        auto log = TLOGGERFAC::create();
+        log->println(F("}"));
+        _program->rewind();
+        _program = 0;
+        _state = State::Idle;
       }
     }
 
   private:
-    typedef Ao<HidAo<TLOGGERFAC, TPROGRAM>> Ao_t;
+    using Ao_t = Ao<HidAo<TLOGGERFAC, TPROGRAM>>;
 
     TPROGRAM* _programs;
 
@@ -77,8 +82,10 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
       Execute
     };
     State _state = State::Idle;
-    TPROGRAM* _program = 0;
+    TPROGRAM* _program = nullptr;
     size_t _ticksRemaining = 0;
+    BitTimer<0> _timer;
+    MessageData_t _inputMsg = 0;
 };
 
 }

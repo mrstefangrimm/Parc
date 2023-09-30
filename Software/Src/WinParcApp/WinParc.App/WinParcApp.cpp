@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #include <iostream>
@@ -17,8 +17,10 @@ enum SerialFakeMode { BIN, HEX };
 const int INPUT_PULLUP = 1;
 const int OUTPUT = 2;
 
+void assert(bool) {}
+
 #include "Core/Ao.h"
-#include "Core/Registers.h"
+#include "Core/Messages.h"
 #include "Core/HidAo.h"
 #include "Core/KeypadAo.h"
 #include "Core/StringParc.h"
@@ -35,7 +37,7 @@ WinParcAPIWrapper parcApi;
 
 class ApiLogger {
 public:
-  ApiLogger(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiLogger(WinParcAPIWrapper& api) : _parcApi(api) { }
 
   void print(const char* ch) {
     _parcApi.DebugPrint(ch);
@@ -44,7 +46,7 @@ public:
     char str[2] = { ch, '\0' };
     _parcApi.DebugPrint(str);
   }
-  void print(char ch, uint8_t mode) {
+  void print(char ch, uint8_t) {
     char str[2] = { ch, '\0' };
     _parcApi.DebugPrint(str);
   }
@@ -54,7 +56,7 @@ public:
     _parcApi.DebugPrint(str);
   }
   void println(const char* ch) { _parcApi.DebugPrintLn(ch); }
-  void println(const char* ch, SerialFakeMode mode) { _parcApi.DebugPrintLn(ch); }
+  void println(const char* ch, SerialFakeMode) { _parcApi.DebugPrintLn(ch); }
   void println(int val) {
     char str[10];
     itoa(val, str, 10);
@@ -66,11 +68,11 @@ private:
 };
 ApiLogger logger(parcApi);
 template<> ApiLogger& Factory<ApiLogger>::instance = logger;
-typedef Factory<ApiLogger> LoggerFac_t;
+using LoggerFac_t = Factory<ApiLogger>;
 
 class ApiSerial {
 public:
-  ApiSerial(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSerial(WinParcAPIWrapper& api) : _parcApi(api) { }
 
   void print(const char* ch) {
     _parcApi.TerminalPrint(ch);
@@ -79,19 +81,19 @@ public:
     char str[2] = { ch, '\0' };
     _parcApi.TerminalPrint(str);
   }
-  void print(char ch, SerialFakeMode mode) {
+  void print(char ch, SerialFakeMode) {
     char str[2] = { ch, '\0' };
     _parcApi.TerminalPrint(str);
   }
   void println(const char* ch) { _parcApi.TerminalPrintLn(ch); }
-  void println(const char* ch, SerialFakeMode mode) { _parcApi.TerminalPrintLn(ch); }
+  void println(const char* ch, SerialFakeMode) { _parcApi.TerminalPrintLn(ch); }
   void println() { _parcApi.TerminalPrintLn("\r\n"); }
   void println(int val) {
     char str[10];
     itoa(val, str, 10);
     _parcApi.TerminalPrintLn(str);
   }
-  void write(const uint8_t* buf, int bufLen) { cout << (const char*)buf; }
+  void write(const uint8_t* buf, int) { cout << (const char*)buf; }
 
 
   bool available() { return parcApi.TerminalIsAvailable(); }
@@ -112,10 +114,9 @@ private:
 class ApiKeypadHw {
 
 public:
-  ApiKeypadHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) {}
+  explicit ApiKeypadHw(WinParcAPIWrapper& api) : _parcApi(api) {}
 
-  void begin() {
-  }
+  void begin() {}
 
   template<KeyPadSwitch SWITCH>
   bool pressed() { return pressed(Int2Type<SWITCH>()); }
@@ -142,7 +143,7 @@ private:
 
 class ApiSystemHw {
 public:
-  ApiSystemHw(WinParcAPIWrapper& parcApi) : _parcApi(parcApi) { }
+  explicit ApiSystemHw(WinParcAPIWrapper& api) : _parcApi(api) {}
 
   int freeMemory() { return 1000; }
   void warnLedOn() { _parcApi.SetWarnLed(true); }
@@ -153,18 +154,19 @@ private:
 };
 ApiSystemHw sysHw(parcApi);
 template<> ApiSystemHw& Factory<ApiSystemHw>::instance = sysHw;
-typedef Factory<ApiSystemHw> SystemHwFac_t;
+using SystemHwFac_t = Factory<ApiSystemHw>;
 
 Program<LoggerFac_t> programs[NumberOfPrograms];
-RegisterData_t registers[TOTAL_REGISTERS] = { 0 };
+
+Messages messages;
 
 ApiSerial terminal(parcApi);
 ApiKeypadHw keypadHw(parcApi);
 
-KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(registers, keypadHw);
-HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(registers, programs);
+KeypadAo<LoggerFac_t, ApiKeypadHw> keypadAo(messages, keypadHw);
+HidAo<LoggerFac_t, Program<LoggerFac_t>> hidAo(messages, programs);
 
-SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitor(registers);
+SystemMonitorAo<LoggerFac_t, SystemHwFac_t, 216> systemMonitorAo(messages);
 
 template<> bool CmdComparator<PsType::Wait>::equals(const char* another) const { return 'W' == another[0]; }
 template<> bool CmdComparator<PsType::UsbKeycode>::equals(const char* another) const { return 'U' == another[0] && 'K' == another[1]; }
@@ -175,19 +177,19 @@ template<> bool CmdComparator<PsType::BleControlkey>::equals(const char* another
 template<> bool CmdComparator<CmdType::Pin>::equals(char** another) const { return 'P' == another[0][0] && 'N' == another[1][0]; }
 
 struct FakeUsbKeyboard {
-  void print(const char* ch) { }
-  void press(uint8_t val) { }
-  void releaseAll() { }
+  void print(const char* ch) {}
+  void press(uint8_t val) {}
+  void releaseAll() {}
 };
 FakeUsbKeyboard usb;
 template<> FakeUsbKeyboard& Factory<FakeUsbKeyboard>::instance = usb;
-typedef Factory<FakeUsbKeyboard> HidUsbFac_t;
+using HidUsbFac_t = Factory<FakeUsbKeyboard>;
 
 struct FakeHidBle {
-  void sendKeyCode(KeyCode keyCode) { }
+  void sendKeyCode(KeyCode) {}
   bool waitForOK() { return true; }
-  void print(const char*) { }
-  void println(const char*) { }
+  void print(const char*) {}
+  void println(const char*) {}
 };
 FakeHidBle ble;
 template<> FakeHidBle& Factory<FakeHidBle>::instance = ble;
@@ -209,55 +211,76 @@ struct KnownKeycodes {
 
 // Has to filled in the order of the enum PsType, that is:
 //  Wait, USB Keycode, USB Keycode Repeated, USB Keycodes, USB Text, BLE Keycode, BLE Keycode Repeated, BLE Text, BLE Control Key
-typedef Typelist<ProgramStepWait<LoggerFac_t>,
-  Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>,
-  Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>,
-  Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>,
-  NullType>>>>>>>>> ProgramStepList;
+using ProgramStepList = Typelist<ProgramStepWait<LoggerFac_t>, Typelist<ProgramStepUsbKeyboardCode<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardCodeRepeated<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardCodes<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepUsbKeyboardText<LoggerFac_t, HidUsbFac_t>, Typelist<ProgramStepBleKeyboardCode<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleKeyboardCodeRepeated<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleKeyboardText<LoggerFac_t, HidBleFac_t>, Typelist<ProgramStepBleControlKey<LoggerFac_t, HidBleFac_t>, NullType>>>>>>>>>;
 
-TerminalAo<ProgramStepList, ApiSerial, LoggerFac_t, HidBleFac_t, HidUsbFac_t, Program<LoggerFac_t>, SystemHwFac_t, KnownKeycodes, 40> terminalAo(terminal, registers, programs);
+TerminalAo<
+  ProgramStepList,
+  ApiSerial,
+  LoggerFac_t,
+  HidBleFac_t,
+  HidUsbFac_t,
+  Program<LoggerFac_t>,
+  SystemHwFac_t,
+  KnownKeycodes,
+  40> terminalAo(terminal, messages, programs);
+
+volatile bool tick_flag = false;
+volatile bool fatalError = false;
 
 void setup() {
   parcApi.Initialize();
-
-  registers[KEYPAD_KEYPAD_TIMEOUT] = TimerRegData(1);
-  registers[TERMINAL_TERMINAL_TIMEOUT] = TimerRegData(1);
-  registers[MONITOR_MONITOR_TIMEOUT] = TimerRegData(10);
 }
 
 void loop() {
 
-  keypadAo.checkRegisters();
-  hidAo.checkRegisters();
-  terminalAo.checkRegisters();
-  systemMonitor.checkRegisters();
+  assert(!fatalError);
+  if (tick_flag) {
+    keypadAo.load();
+    hidAo.load();
+    terminalAo.load();
+    systemMonitorAo.load();
 
-  //if (terminal.available()) {
-  //  char ch = terminal.read();
-  //  if (ch != 0) {
-  //    std::cout << ch;
-  //  }
-  //  logger.print(ch);
-  //  terminal.print(ch);
-  //}
+    keypadAo.run();
+    hidAo.run();
+    terminalAo.run();
+    systemMonitorAo.run();
 
-  this_thread::sleep_for(chrono::milliseconds(TimerPeriod));
+    //if (terminal.available()) {
+    //  char ch = terminal.read();
+    //  if (ch != 0) {
+    //    std::cout << ch;
+    //  }
+    //  logger.print(ch);
+    //  terminal.print(ch);
+    //}
 
+    tick_flag = false;
+  }
 }
 
-void thread_function() {
-  while (true) { loop(); }
+void timer1InterruptHandler() {
+  if (tick_flag == true) fatalError = true;
+  tick_flag = true;
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+void loop_thread() {
+  while (true) {
+    loop();
+    this_thread::sleep_for(chrono::milliseconds(1));
+  }
+}
+
+void timer1_thread() {
+  while (true) {
+    timer1InterruptHandler();
+    this_thread::sleep_for(chrono::milliseconds(TimerPeriod));
+  }
+}
+
+void main()
 {
   setup();
-  thread t(&thread_function);  // t starts running
-  t.join();                    // main thread waits for the thread t to finish
-  return 0;
+  thread st(&loop_thread);
+  thread tt(&timer1_thread);
+  st.join();
 }
