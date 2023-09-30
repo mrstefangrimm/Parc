@@ -48,13 +48,13 @@ public:
   }
 
   template<class T>
-  void print(T ch) {}
+  void print(T) {}
   template<class T>
-  void print(T ch, int mode) {}
+  void print(T, int) {}
   template<class T>
-  void println(T ch) {}
+  void println(T) {}
   template<class T>
-  void println(T ch, int mode) {}
+  void println(T, int) {}
   void println() {}
 
   bool available() {

@@ -11,11 +11,11 @@ namespace HidAoTest {
 
 struct FakeLogger {
   template<class T>
-  void print(T ch) {}
+  void print(T) {}
   template<class T>
-  void print(T ch, uint8_t mode) {}
+  void print(T, uint8_t) {}
   template<class T>
-  void println(T ch) {}
+  void println(T) {}
 };
 }
 

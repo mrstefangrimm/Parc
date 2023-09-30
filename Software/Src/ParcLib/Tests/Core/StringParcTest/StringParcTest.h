@@ -15,7 +15,7 @@ TEST(
   spaces_are_removed) {
   char text[30];
   strcpy_s(text, "  Text ");
-  parclib::trimFront(text, strlen(text));
+  parclib::trimFront(text);
   EQ("Text ", text);
 }
 
@@ -25,7 +25,7 @@ TEST(
   spaces_are_removed) {
   char text[11];
   strcpy_s(text, "  Text Txt");
-  parclib::trimFront(text, strlen(text));
+  parclib::trimFront(text);
   EQ("Text Txt", text);
 }
 
