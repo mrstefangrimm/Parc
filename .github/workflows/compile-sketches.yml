@@ -28,5 +28,5 @@ jobs:
             - Software/Src/ParcLib/Tests/Feather/ProgramTest
           libraries: |
             - name: ArduinoUnit
-            - name: StandardCplusplus
+            - source-url: https://github.com/maniacbug/StandardCplusplus.git
             - source-path: Software/Src/ParcLib
