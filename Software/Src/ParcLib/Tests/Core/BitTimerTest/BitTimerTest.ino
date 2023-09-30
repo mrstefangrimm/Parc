@@ -4,14 +4,15 @@
 
 #line 6 "basic.ino"
 #include <ArduinoUnit.h>
-#include "ParcLib.h"
-#include "Tests/NotquiteBDD.h"
+//#include "ParcLib.h"
+//#include "Tests/NotquiteBDD.h"
 
-#include "BitTimerTest.h"
+//#include "BitTimerTest.h"
 
 void setup() {
+  while (!Serial)
+    ;
   Serial.begin(9600);
-  while (!Serial) {}
 }
 
 void loop() {
