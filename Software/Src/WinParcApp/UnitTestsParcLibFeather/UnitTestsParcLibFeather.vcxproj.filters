@@ -18,7 +18,6 @@
     <ClInclude Include="..\..\ParcLib\Core\Shared.h">
       <Filter>parclib</Filter>
     </ClInclude>
-    <ClInclude Include="ProgramTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Feather\ProgramTest\ProgramTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
   </ItemGroup>

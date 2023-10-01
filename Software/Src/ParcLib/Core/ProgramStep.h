@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
@@ -15,9 +15,9 @@ template<class TLOGGERFAC>
 class ProgramStep {
   public:
     explicit ProgramStep(uint8_t duration);
-    virtual ~ProgramStep() {
-      dispose();
-    }
+    //virtual ~ProgramStep() {
+    // A virtual destructor is very expensive, more ROM and RAM is used. Memory is managed by dispose().
+    //}
 
     void dispose();
     ProgramStep<TLOGGERFAC>* play(uint8_t& tick);
@@ -42,10 +42,10 @@ inline ProgramStep<TLOGGERFAC>::ProgramStep(uint8_t duration)
 
 template<class TLOGGERFAC>
 inline void ProgramStep<TLOGGERFAC>::dispose() {
-  if (_next != 0) {
+  if (_next != nullptr) {
     _next->dispose();
     delete _next;
-    _next = 0;
+    _next = nullptr;
   }
   action(VirtualAction::Dispose, _duration);
 }

@@ -3,8 +3,6 @@
 //
 #pragma once
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 #include <queue>
 #include <iostream>
 #include "Core/HidAo.h"
@@ -202,7 +200,7 @@ struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
     hexCode = keyCode.hexCode;
   }
 
-  void action(VirtualAction type, uint8_t& tick) override{};
+  void action(VirtualAction, uint8_t&) override{};
 
   PsType type;
   uint8_t hexCode = 0;
@@ -218,13 +216,13 @@ struct FakeBleProgramStep : public ProgramStep<LoggerFac_t> {
     type = PsType::BleKeycode;
     hexCode = keyCode.hexCode;
   }
-  FakeBleProgramStep(KeyCode keyCode, uint8_t repetitions)
+  FakeBleProgramStep(KeyCode keyCode, uint8_t)
     : ProgramStep(0) {
     type = PsType::BleKeycodeRepeated;
     hexCode = keyCode.hexCode;
   }
 
-  void action(VirtualAction type, uint8_t& tick) override{};
+  void action(VirtualAction, uint8_t&) override{};
 
   PsType type;
   uint8_t hexCode = 0;
