@@ -75,7 +75,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
   private:
     using Ao_t = Ao<HidAo<TLOGGERFAC, TPROGRAM>>;
 
-    TPROGRAM* _programs;
+    TPROGRAM* _programs = nullptr;
 
     enum class State {
       Idle,

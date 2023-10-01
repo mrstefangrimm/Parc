@@ -12,6 +12,7 @@
 void setup() {
   while (!Serial)
     ;
+
   Serial.begin(9600);
 }
 

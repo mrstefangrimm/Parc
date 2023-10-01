@@ -11,11 +11,11 @@ namespace HidAoTest {
 
 struct FakeLogger {
   template<class T>
-  void print(T ch) {}
+  void print(T) {}
   template<class T>
-  void print(T ch, uint8_t mode) {}
+  void print(T, uint8_t) {}
   template<class T>
-  void println(T ch) {}
+  void println(T) {}
 };
 }
 
@@ -29,15 +29,15 @@ using namespace parclib;
 
 struct FakeProgramStep : public ProgramStep<LoggerFac_t> {
   FakeProgramStep()
-    : ProgramStep<LoggerFac_t>(10), isPlaying(false), currentTick(0) {}
+    : ProgramStep<LoggerFac_t>(10) {}
 
   void action(VirtualAction type, uint8_t& tick) override {
     isPlaying = type == VirtualAction::Tick;
     currentTick = tick;
   };
 
-  bool isPlaying;
-  uint8_t currentTick;
+  bool isPlaying = false;
+  uint8_t currentTick = 0;
 };
 
 // Test naming scheme: Given-When-Then

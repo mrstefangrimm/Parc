@@ -81,7 +81,7 @@
 #define N(a) Microsoft::VisualStudio::CppUnitTestFramework::Assert::IsNull(a)
 #define NN(a) Microsoft::VisualStudio::CppUnitTestFramework::Assert::IsNotNull(a)
 
-#else defined(ARDUINO_UNIT_TESTS)
+#elif defined(ARDUINO_UNIT_TESTS)
 
 #define BEGIN(name)
 #define END

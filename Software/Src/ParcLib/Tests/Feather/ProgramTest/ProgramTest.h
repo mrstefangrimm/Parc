@@ -13,32 +13,30 @@ namespace ProgramTest {
 
 struct FakeLogger {
   template<class T>
-  void print(T ch) {}
+  void print(T) {}
   template<class T>
-  void print(T ch, uint8_t mode) {}
+  void print(T, uint8_t) {}
   template<class T>
-  void println(T ch) {}
+  void println(T) {}
 };
 
 struct FakeUsbKeyboard {
-  FakeUsbKeyboard()
-    : printInvokeCounter(0) {}
 
-  int printInvokeCounter;
-  void print(const char* ch) {
+  int printInvokeCounter = 0;
+
+  void print(const char*) {
     printInvokeCounter++;
   }
-  void press(uint8_t val) {}
+  void press(uint8_t) {}
   void releaseAll() {}
 
 private:
-  void println(const char* ch) {}
+  void println(const char*) {}
 };
 
 struct FakeHidBle {
-  FakeHidBle()
-    : printlnInvokeCounter(0) {}
-  bool sendKeyCode(KeyCode keyCode) {
+
+  bool sendKeyCode(KeyCode) {
     return false;
   }
   bool waitForOK() {
@@ -48,7 +46,8 @@ struct FakeHidBle {
   void print(const char*) {}
   void print(const __FlashStringHelper*) {}
 
-  int printlnInvokeCounter;
+  int printlnInvokeCounter = 0;
+
   void println(const char* text) {
     strcpy(lastPrintln, text);
     printlnInvokeCounter++;

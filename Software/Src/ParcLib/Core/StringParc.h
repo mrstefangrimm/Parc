@@ -5,7 +5,7 @@
 
 namespace parclib {
 
-void trimFront(char* buf, uint8_t bufLen) {
+void trimFront(char* buf) {
   uint8_t pos = 0;
   while (buf[pos] == ' ' && buf[pos] != '\0') pos++;
   if (pos > 0) {

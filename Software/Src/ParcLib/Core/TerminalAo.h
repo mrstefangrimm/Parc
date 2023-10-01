@@ -120,7 +120,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
         char ch = _serial.read();
         _serial.print(ch);
         if (ch == ':') {
-          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimFront(_buf);
           parclib::trimBack(_buf, BUFLEN);
           parclib::squeeze(_buf);
           // Debug: _serial.println(_buf);
@@ -193,7 +193,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
         else if (ch == ';') {
           // create programstep. If failed, go to wait state
           //_log.print(_buf);
-          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimFront(_buf);
           parclib::trimBack(_buf, BUFLEN);
           parclib::squeeze(_buf);
           uint8_t numSubStr;
@@ -238,7 +238,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
         }
         else if (ch == ';') {
           // create programstep. If failed, go to wait state
-          parclib::trimFront(_buf, BUFLEN);
+          parclib::trimFront(_buf);
           parclib::trimBack(_buf, BUFLEN);
           parclib::squeeze(_buf);
           // Debug: _serial.println(_buf);
@@ -461,7 +461,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     using UsbText_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result;
 
     enum class State {
-      Blocked,
+      //Blocked,
       Idle,
       ReadingProgramCode,
       ReadingProgramSteps,
