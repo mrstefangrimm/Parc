@@ -43,12 +43,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\ParcLib</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\ParcLib</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

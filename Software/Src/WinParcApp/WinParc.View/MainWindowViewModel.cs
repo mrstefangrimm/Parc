@@ -130,7 +130,7 @@ namespace WinParc.View {
     }
 
     public string SendText {
-      get { return _sendText == null ? null : _sendText.Replace('ö', ';'); }
+      get { return _sendText; }
       set {
         if (_sendText != value) {
           _sendText = value;

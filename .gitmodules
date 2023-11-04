@@ -1,0 +1,3 @@
+[submodule "Software/TemplateStateMachine"]
+	path = Software/TemplateStateMachine
+	url = https://github.com/mrstefangrimm/TemplateStateMachine
