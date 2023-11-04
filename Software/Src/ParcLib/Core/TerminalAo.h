@@ -644,7 +644,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
       template<class Event> void entry(const Event&, Identity<Event>) {}
       void entry(const Trigger::Timeout& ev, Identity< Trigger::Timeout>) {
 
-        ao = static_cast<TerminalAo*>(ev.owner);
+        auto ao = static_cast<TerminalAo*>(ev.owner);
         readingDone = ao->stateReadingPinEntry();
 
         //auto serial = &ao->_serial;
@@ -711,7 +711,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     struct ToReadingProgramStepsFromReadingProgramCodeGuard
     {
       bool eval(const ReadingProgramCode&, const Trigger::Timeout& ev) {
-        ao = static_cast<TerminalAo*>(ev.owner);
+        auto ao = static_cast<TerminalAo*>(ev.owner);
         auto idx = ao->_keyPadInput.programIndex();
 
         return 0 <= idx && idx < NumberOfPrograms;
@@ -721,7 +721,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
     struct ToReadingPinFromReadingProgramCodeGuard
     {
       bool eval(const ReadingProgramCode&, const Trigger::Timeout& ev) {
-        ao = static_cast<TerminalAo*>(ev.owner);
+        auto ao = static_cast<TerminalAo*>(ev.owner);
 
         return ao->_keyPadInput.isPin;
       }
