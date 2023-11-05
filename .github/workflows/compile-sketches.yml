@@ -29,4 +29,5 @@ jobs:
           libraries: |
             - name: ArduinoUnit
             - source-url: https://github.com/mrstefangrimm/StandardCplusplus-Fork205.git
+            - source-url: https://github.com/mrstefangrimm/TemplateStateMachine.git
             - source-path: Software/Src/ParcLib
