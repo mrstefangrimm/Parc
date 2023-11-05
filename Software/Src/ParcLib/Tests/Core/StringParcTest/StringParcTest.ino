@@ -13,7 +13,7 @@
 test(given_text_with_leading_spaces_when_trimFront_then_spaces_are_removed) {
   char text[30];
   strcpy(text, "  Text ");
-  parclib::trimFront(text, strlen(text));
+  parclib::trimFront(text);
   assertEqual('T', text[0]);
 }
 
