@@ -1,16 +1,20 @@
-// Copyright (c) 2021 Stefan Grimm. All rights reserved.
+// Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
 #pragma once
 
 namespace parclib {
 
-void trimFront(char* buf, uint8_t bufLen) {
+void trimFront(char* buf) {
   uint8_t pos = 0;
   while (buf[pos] == ' ' && buf[pos] != '\0') pos++;
   if (pos > 0) {
-    // Depends on the implemation of memcpy.
-    memcpy(buf, &buf[pos], bufLen - pos);
+    int n = 0;
+    while (buf[n + pos] != '\0') {
+      buf[n] = buf[n + pos];
+      n++;
+    }
+    buf[n] = '\0';
   }
 }
 
