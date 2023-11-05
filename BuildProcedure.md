@@ -17,7 +17,7 @@ Create a package folder.
 2. Set 'WinParc.App' as startup project
 3. Set the build configuration to 'Release' and 'x86'
 4. Build the solution
-5. Copy these file from the folder '\Software\Src\WinParcApp\Release' to a folder ' package\Simulator':
+5. Copy these file from the folder '\Software\Src\WinParcApp\Release' to a folder ' package\Software\Simulator':
    - WinParc.App.exe
    - WinParc.APIWrapper.dll
    - WinParcAPI.dll
@@ -43,13 +43,18 @@ Create a package folder.
 
 ## 4. Finalize the package
 
+1. Check the version in Software\ParcLib\library.properties
+2.  Zip the folder ParcLib to ParcLib.zip
+
+## 5. Finalize the package
+
 Package structure:
 
 package_v0_0_1_0.zip/
 
 ​	/Software/Simulator/*
 
-​	/Software/ParcLib/*
+​	/Software/ParcLib.zip
 
 ​	/Software/ParcApp/*
 
