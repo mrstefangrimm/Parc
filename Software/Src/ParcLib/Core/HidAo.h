@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Ao.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 #include "ProgramStep.h"
 #include "Program.h"
 
@@ -84,7 +84,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     State _state = State::Idle;
     TPROGRAM* _program = nullptr;
     size_t _ticksRemaining = 0;
-    BitTimer<0> _timer;
+    BitCounter<0> _timer;
     MessageData_t _inputMsg = 0;
 };
 

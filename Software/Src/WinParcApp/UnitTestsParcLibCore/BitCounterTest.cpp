@@ -3,4 +3,4 @@
 //
 #include "pch.h"
 
-#include "../../ParcLib/Tests/Core/BitTimerTest/BitTimerTest.h"
+#include "../../ParcLib/Tests/Core/BitCounterTest/BitCounterTest.h"

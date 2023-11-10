@@ -3,20 +3,20 @@
 //
 #pragma once
 
-#include "Core/BitTimer.h"
+#include "Core/BitCounter.h"
 
-namespace BitTimerTest {
+namespace BitCounterTest {
 
 using namespace parclib;
 
-BEGIN(BitTimerTest)
+BEGIN(BitCounterTest)
 
 TEST(
   8bit_timer_with_0_bits,
   incremented_serveral_times,
   overflows_always) {
 
-  BitTimer<0> bt;
+  BitCounter<0> bt;
   EQ(true, bt.increment());
   EQ(true, bt.increment());
   EQ(true, bt.increment());
@@ -27,7 +27,7 @@ TEST(
   incremented_serveral_times,
   peek_is_always_true) {
 
-  BitTimer<0> bt;
+  BitCounter<0> bt;
   EQ(true, bt.increment());
   EQ(true, bt.current());
   EQ(true, bt.increment());
@@ -39,7 +39,7 @@ TEST(
   incremented_serveral_times,
   overflows_always) {
 
-  BitTimer<0, uint16_t> bt;
+  BitCounter<0, uint16_t> bt;
   EQ(true, bt.increment());
   EQ(true, bt.increment());
   EQ(true, bt.increment());
@@ -50,7 +50,7 @@ TEST(
   incremented_serveral_times,
   overflows_at_2) {
 
-  BitTimer<1> bt;
+  BitCounter<1> bt;
   EQ(false, bt.increment());
   EQ(true, bt.increment());
   EQ(false, bt.increment());
@@ -63,7 +63,7 @@ TEST(
   incremented_serveral_times,
   overflows_at_4) {
 
-  BitTimer<2> bt;
+  BitCounter<2> bt;
   EQ(false, bt.increment());
   EQ(false, bt.increment());
   EQ(false, bt.increment());
@@ -79,7 +79,7 @@ TEST(
   incremented_serveral_times,
   overflows_at_4_and_peek_is_true_if_next_increment_returns_true) {
 
-  BitTimer<2> bt;
+  BitCounter<2> bt;
   EQ(false, bt.increment());
   EQ(false, bt.current());
   EQ(false, bt.increment());
@@ -103,7 +103,7 @@ TEST(
   incremented_serveral_times,
   overflows_at_256) {
 
-  BitTimer<8> bt;
+  BitCounter<8> bt;
   for (int n = 0; n < 255; n++) {
     EQ(false, bt.increment());
   }
@@ -115,7 +115,7 @@ TEST(
   incremented_serveral_times,
   overflows_at_1024) {
 
-  BitTimer<10, uint16_t> bt;
+  BitCounter<10, uint16_t> bt;
   for (int n = 0; n < 1023; n++) {
     EQ(false, bt.increment());
   }
@@ -127,7 +127,7 @@ TEST(
   initialize_value_changes,
   overflows_at_1024) {
 
-  BitTimer<10, uint16_t> bt(2);
+  BitCounter<10, uint16_t> bt(2);
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 
@@ -137,7 +137,7 @@ TEST(
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 
-  bt = BitTimer<10, uint16_t>(2);
+  bt = BitCounter<10, uint16_t>(2);
   EQ(false, bt.increment());
   EQ(true, bt.increment());
 }

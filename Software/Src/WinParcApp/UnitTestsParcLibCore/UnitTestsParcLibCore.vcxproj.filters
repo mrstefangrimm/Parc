@@ -6,7 +6,7 @@
     <ClCompile Include="StringParcTest.cpp" />
     <ClCompile Include="SystemMonitorAoTest.cpp" />
     <ClCompile Include="TerminalAoTest.cpp" />
-    <ClCompile Include="BitTimerTest.cpp" />
+    <ClCompile Include="BitCounterTest.cpp" />
     <ClCompile Include="KeypadAoTest.cpp" />
     <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
@@ -41,7 +41,7 @@
       <Filter>parclib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
-    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+    <ClInclude Include="..\..\ParcLib\Core\BitCounter.h">
       <Filter>parclib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />

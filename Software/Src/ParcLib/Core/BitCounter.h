@@ -6,12 +6,12 @@
 namespace parclib {
 
   template<size_t Timerbits, class Alloc = uint8_t>
-  struct BitTimer {
+  struct BitCounter {
 
     enum { N = Timerbits };
 
-    BitTimer() : raw(0) {}
-    explicit BitTimer(Alloc countDown) : raw((1 << N) - countDown) {}
+    BitCounter() : raw(0) {}
+    explicit BitCounter(Alloc countDown) : raw((1 << N) - countDown) {}
 
     bool increment() {
       return ++value == 0;
@@ -30,9 +30,9 @@ namespace parclib {
   };
 
   template<class Alloc>
-  struct BitTimer<0, Alloc> {
+  struct BitCounter<0, Alloc> {
 
-    BitTimer() {}
+    BitCounter() {}
 
     bool increment() {
       return true;

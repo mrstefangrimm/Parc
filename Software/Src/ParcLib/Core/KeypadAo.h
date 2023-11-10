@@ -5,7 +5,7 @@
 
 #include "Ao.h"
 #include "Shared.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 
 namespace parclib {
 
@@ -126,7 +126,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   private:
     using Ao_t = Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>>;
     using Hw_t = TKEYPADHW;
-    using Timer_t = BitTimer<7, uint8_t>;
+    using Timer_t = BitCounter<7, uint8_t>;
 
     enum KeypadButton { A = 1, B, C, D, E };
 

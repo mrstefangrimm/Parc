@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Ao.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 
 namespace parclib {
 
@@ -61,8 +61,8 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
 
   private:
     using Ao_t = Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>>;
-    using Timer_t = BitTimer<0>;
-    using NotificationTimer_t = BitTimer<8>;
+    using Timer_t = BitCounter<0>;
+    using NotificationTimer_t = BitCounter<8>;
 
     void logMemoryAndWarn() {
       auto log = TLOGGERFAC::create();

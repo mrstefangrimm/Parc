@@ -172,7 +172,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BitTimerTest.cpp" />
+    <ClCompile Include="BitCounterTest.cpp" />
     <ClCompile Include="HidAoTest.cpp" />
     <ClCompile Include="KeypadAoTest.cpp" />
     <ClCompile Include="pch.cpp">
@@ -187,7 +187,7 @@
     <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h" />
+    <ClInclude Include="..\..\ParcLib\Core\BitCounter.h" />
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />

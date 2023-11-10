@@ -763,7 +763,7 @@ class TerminalAo : public Ao<TerminalAo<PROGSTEPFACTORY, TSERIAL, TLOGGERFAC, TH
 
     KeypadRegData _keyPadInput;
     MessageData_t _pinDefinedMsg = 0;
-    BitTimer<0> _timer;
+    BitCounter<0> _timer;
 };
 
 }
