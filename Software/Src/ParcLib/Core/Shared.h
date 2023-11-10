@@ -103,4 +103,8 @@ struct TypeAt<Typelist<HEAD, TAIL>, INDEX>
 //  enum { Result = Temp == -1 ? -1 : 1 + Temp };
 //};
 
+// From Stackoverflow
+template<typename T>
+struct Identity { typedef T type; };
+
 }

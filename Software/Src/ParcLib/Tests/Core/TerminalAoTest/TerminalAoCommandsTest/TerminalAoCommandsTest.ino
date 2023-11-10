@@ -7,12 +7,13 @@
 #include <StandardCplusplus.h>  // Commented out all code in new_handler.cpp is commented out. This fix did not work: https://github.com/mike-matera/ArduinoSTL/issues/66 (ArduinoSTL does not create output, so I used StandardCplusplus)
 #include "ParcLib.h"
 #include "Tests/NotquiteBDD.h"
+#include "Tests/Core/TerminalAoTest/TerminalAoTestShared.h"
 
 void rtassert(bool condition) {
   TRUE(condition);
 }
 
-#include "TerminalAoTest.h"
+#include "TerminalAoCommandsTest.h"
 
 void setup() {
   while (!Serial)
