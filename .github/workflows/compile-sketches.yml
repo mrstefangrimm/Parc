@@ -18,7 +18,7 @@ jobs:
         with:
           fqbn: arduino:avr:uno
           sketch-paths: |
-            - Software/Src/ParcLib/Tests/Core/BitTimerTest
+            - Software/Src/ParcLib/Tests/Core/BitCounterTest
             - Software/Src/ParcLib/Tests/Core/HidAoTest
             - Software/Src/ParcLib/Tests/Core/KeypadAoTest
             - Software/Src/ParcLib/Tests/Core/StringParcTest
