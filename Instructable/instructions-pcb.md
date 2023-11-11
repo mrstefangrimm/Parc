@@ -163,15 +163,17 @@ For the following steps, the [Arduino IDE](https://www.arduino.cc/en/software) i
 
 
 
-Follow the steps from Adafruit and install the "Adafruit AVR Boards" board package. Adafruit has always great, [step-by-step instructions](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup).
+Follow the steps from Adafruit and install the "Adafruit AVR Boards" board package. Adafruit has always great [step-by-step instructions](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup).
 
-Download the [library for the MCP23008](https://github.com/adafruit/Adafruit-MCP23008-library) and unzip it into the folder Documents\Arduino\libraries.
+In the Arduino IDE library manager, install the libraries "Adafruit MCP23008 library" and "TimerOne".
 
+Download the  [Template State Machine library](https://github.com/mrstefangrimm/TemplateStateMachine/releases) and [import the .zip file](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#importing-a-zip-library) in the Arduino IDE.
 
+Download the latestes [packages_v0.1.x.x.zip version from releases](https://github.com/mrstefangrimm/Parc/releases). Unzip the package folder and [import the Parclib.zip](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#importing-a-zip-library) in the Arduino IDE.
 
-Download the libraries [ParcLib.zip](https://github.com/mrstefangrimm/Parc/blob/main/Instructable/ParcLib.zip) and [ParcApp.zip](https://github.com/mrstefangrimm/Parc/blob/main/Instructable/ParcApp.zip). Unzip ParcLib into the folder Documents\Arduino\libraries. Unzip ParcApp into your project folder and open the ParcApp.ino in the  Arduino IDE.
+Copy PcbParcApp in the package folder into your project folder and open the PcbParcApp.ino in the  Arduino IDE.
 
-Attach the Parc remote control to your PC with the USB cable. In the  IDE, select the board "Adafruit Feather 32u4" and select the COM port with the same label.
+Attach the PCB Parc remote control to your PC with the USB cable. In the  IDE, select the board "Adafruit Feather 32u4" and select the COM port with the same label.
 
 If compiling and uploading succeeds, your device is ready for use.
 
