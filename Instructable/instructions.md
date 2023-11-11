@@ -212,9 +212,9 @@ Login Commands:
 `{ 1 A: BK <Ctrl> <Alt> <Del>; W 2000; BT password; W 1000; BK <Enter>; }`
 
 - "1 A" defines the key and mode the program is for. "1" is mode 1 which is  set with the slide switch M0. "A" is the upper left button
-- "BK <Ctrl> <Alt> <Del>" sends a "Del" keypress with the control keys "Ctrl" and "Alt"
+- `BK <Ctrl> <Alt> <Del>` sends a "Del" keypress with the control keys "Ctrl" and "Alt"
 - "W 2000" lets the program wait for 2 seconds. The program waits for the Windows login screen before it writes the password
-- "BT password" sends keypresses "p", "a", "s", ... . Note that it assumes a US-English keyboard. If you have keyboard settings for a different keyboard, there is a simple trick: Send "BK <Win> <Space>" as the first program step. This will change the keyboard on the PC.
+- "BT password" sends keypresses "p", "a", "s", ... . Note that it assumes a US-English keyboard. If you have keyboard settings for a different keyboard, there is a simple trick: Send `BK <Win> <Space>` as the first program step. This will change the keyboard on the PC.
 
 
 
