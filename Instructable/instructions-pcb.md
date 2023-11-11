@@ -199,7 +199,7 @@ It is time to code. To give you an idea, I describe some of the programs used in
 
 Login Commands:
 
-{ 1 A: BK <Ctrl> <Alt> <Del>; W 2000; BT password; W 1000; BK <Enter>; }
+`{ 1 A: BK <Ctrl> <Alt> <Del>; W 2000; BT password; W 1000; BK <Enter>; }`
 
 - "1 A" defines the key and mode the program is for. "1" is mode 1 which is  set with the slide switch M0. "A" is the upper left button
 - "BK <Ctrl> <Alt> <Del>" sends a "Del" keypress with the control keys "Ctrl" and "Alt"
@@ -209,11 +209,13 @@ Login Commands:
 
 
 Remote Control Commands:
-{ 3 A: BC PlayPause; }
+
+```{ 3 A: BC PlayPause; }
 { 3 B: BC MediaNext; }
 { 3 C: BC Volume+; }
 { 3 D: BC Volume-; }
 { 3 E: BC Mute 1000; }
+```
 
 - "3 A" defines the program for mode 3 and key "A". Mode 3 is set with the slide switches "M1" and "M0"
 - "BC" stands for Bluetooth Controlkey. This sends commands that most Bluetooth connected devices "understand"
