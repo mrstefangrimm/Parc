@@ -289,15 +289,21 @@ protected:
     }
   };
 
-  struct ReadingProgramSteps : public tsmlib::BasicState<ReadingProgramSteps, StatePolicy, false, false, true>, public tsmlib::SingletonCreator<ReadingProgramSteps> {
+  struct ReadingProgramSteps : public tsmlib::BasicState<ReadingProgramSteps, StatePolicy, true, false, true>, public tsmlib::SingletonCreator<ReadingProgramSteps> {
 
     bool readingDone = false;
+
+    template<class Event> void entry(const Event& ev) { entry(ev, Identity<Event>()); }
+    template<class Event> void entry(const Event&, Identity<Event>) {}
+    void entry(const Trigger::Timeout& ev, Identity<Trigger::Timeout>) {
+      auto ao = static_cast<TerminalAo*>(ev.owner);
+      ao->clearReadBuffer();
+    }
 
     template<class Event> void doit(const Event& ev) { doit(ev, Identity<Event>()); }
     template<class Event> void doit(const Event&, Identity<Event>) {}
     void doit(const Trigger::Timeout& ev, Identity<Trigger::Timeout>) {
       auto ao = static_cast<TerminalAo*>(ev.owner);
-      ao->clearReadBuffer();
       readingDone = ao->onStateReadingProgramStepsOnDo();
     }
   };
@@ -565,6 +571,7 @@ protected:
           Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(ProgramChangedRegData(1));
 
           // Steps remaining.
+          clearReadBuffer();
           return false;
         }
 

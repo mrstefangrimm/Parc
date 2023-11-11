@@ -125,6 +125,34 @@ TEST(
   EQ((uint8_t)PsType::Wait, (uint8_t) static_cast<FakeProgramStep*>(static_cast<FakeProgramStep*>(programs[0].root)->next())->type);
 }
 
+TEST(
+  manual_input,
+  read,
+  added_step) {
+
+  reset();
+
+  serial.setInputBuffer("{ 0 ");
+  serialInput("A: W");
+  serialInput(" 1000;");
+  serialInput(" }");
+
+  EQ((uint8_t)TestTerminalAo::State::Idle, (uint8_t)terminal.getState());
+  TRUE(programs[0].hasSteps());
+  EQ((uint8_t)PsType::Wait, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
+}
+
+void serialInput(const char* input) {
+
+  serial.sendInputBuffer(input);
+
+  // process
+  for (int n = 0; n < 5; n++) {
+    terminal.load();
+    terminal.run();
+  }
+
+}
 
 END
 }

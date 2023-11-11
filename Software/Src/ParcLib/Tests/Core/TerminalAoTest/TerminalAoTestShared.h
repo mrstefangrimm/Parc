@@ -48,6 +48,12 @@ public:
     }
   }
 
+  void sendInputBuffer(const char* terminalInput) {
+    for (size_t n = 0; n < strlen(terminalInput); n++) {
+      _buf.push(terminalInput[n]);
+    }
+  }
+
   template<class T>
   void print(T) {}
   template<class T>
