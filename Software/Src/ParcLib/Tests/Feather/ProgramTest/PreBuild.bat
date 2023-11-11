@@ -4,4 +4,4 @@ rmdir /Q Feather
 
 mklink /D Core "..\..\..\Core"
 mklink /D Feather "..\..\..\Feather"
-mklink /D "Feather\Core" "..\..\..\Software\ParcLib\Core"
+mklink /D "Feather\Core" "..\Core"

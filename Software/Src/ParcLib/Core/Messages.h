@@ -1,7 +1,8 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_MESSAGES_H
+#define PARCLIB_MESSAGES_H
 
 #include "ValueQueue.h"
 
@@ -69,3 +70,5 @@ struct PinRegData {
 };
 
 }
+
+#endif

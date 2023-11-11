@@ -96,7 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ParcLib\Core\Ao.h" />
-    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h" />
+    <ClInclude Include="..\..\ParcLib\Core\BitCounter.h" />
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />

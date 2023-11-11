@@ -187,11 +187,13 @@
     <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ParcLib\Core\Ao.h" />
     <ClInclude Include="..\..\ParcLib\Core\BitCounter.h" />
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Messages.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />
-    <ClInclude Include="..\..\ParcLib\Core\Registers.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h" />
     <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
     <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
@@ -199,15 +201,13 @@
     <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
-    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\StringParcTest\StringParcTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\SystemMonitorAoTest\SystemMonitorAoTest.h" />
-    <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoCommandsTest\TerminalAoCommandsTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoTestShared.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoVariousTest\TerminalAoVariousTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\ValueQueueTest\ValueQueueTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
-    <ClInclude Include="..\..\ParcLib\Tests\TerminalAoTestShared.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

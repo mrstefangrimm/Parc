@@ -1,7 +1,8 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_KEYPADAO_H
+#define PARCLIB_KEYPADAO_H
 
 #include "Ao.h"
 #include "Shared.h"
@@ -139,3 +140,5 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 };
 
 }
+
+#endif

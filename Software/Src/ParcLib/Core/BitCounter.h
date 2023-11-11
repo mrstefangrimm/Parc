@@ -1,7 +1,8 @@
 // Copyright (c) 2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_BITCOUNTER_H
+#define PARCLIB_BITCOUNTER_H
 
 namespace parclib {
 
@@ -43,3 +44,5 @@ namespace parclib {
     }
   };
 }
+
+#endif

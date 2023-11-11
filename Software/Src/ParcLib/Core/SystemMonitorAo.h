@@ -1,7 +1,8 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_SYSTEMMONITORAO_H
+#define PARCLIB_SYSTEMMONITORAO_H
 
 #include "Ao.h"
 #include "BitCounter.h"
@@ -85,3 +86,5 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
 };
 
 }
+
+#endif

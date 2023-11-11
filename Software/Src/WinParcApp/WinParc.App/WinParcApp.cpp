@@ -245,15 +245,6 @@ void loop() {
     terminalAo.run();
     systemMonitorAo.run();
 
-    //if (terminal.available()) {
-    //  char ch = terminal.read();
-    //  if (ch != 0) {
-    //    std::cout << ch;
-    //  }
-    //  logger.print(ch);
-    //  terminal.print(ch);
-    //}
-
     tick_flag = false;
   }
 }

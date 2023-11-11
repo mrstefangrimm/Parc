@@ -276,7 +276,7 @@ struct TestTerminalAo : TerminalAo_t {
     ReadingPin
   };
 
-  tsmlib::DispatchResult<Sm::StatePolicy> lastResult = tsmlib::DispatchResult<Sm::StatePolicy>::null;
+  tsmlib::DispatchResult<SM_t::StatePolicy> lastResult = tsmlib::DispatchResult<SM_t::StatePolicy>::null;
 
   TestTerminalAo(FakeSerial& serialInput, parclib::Messages& messages, FakeProgram<LoggerFac_t>* programs)
     : TerminalAo_t(serialInput, messages, programs) {
