@@ -48,10 +48,8 @@ public:
     }
   }
 
-  void sendInputBuffer(const char* terminalInput) {
-    for (size_t n = 0; n < strlen(terminalInput); n++) {
-      _buf.push(terminalInput[n]);
-    }
+  void sendInputBuffer(char ch) {
+    _buf.push(ch);
   }
 
   template<class T>
@@ -290,14 +288,36 @@ struct TestTerminalAo : TerminalAo_t {
 
   // Careful: This hides the TerminalAo implementation
   void run() {
-    if (_timer.current()) {
-      lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
+    if (_timer.current())
+    {
+      if (!_msg.isPinMessage)
+      {
+        if (_msg.invalidProgramCode)
+        {
+          lastResult = _statemachine.dispatch(Trigger::InvalidData{});
+        }
+        else if (_msg.gotPin)
+        {
+          lastResult = _statemachine.dispatch(Trigger::GotPin{ this });
+        }
+        else if (_msg.gotProgramSteps)
+        {
+          lastResult = _statemachine.dispatch(Trigger::GotProgramSteps{ this });
+        }
+        else
+        {
+          lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
+        }
+      }
+      else {
+        lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
+      }
 
-      if (_pinDefinedMsg != 0) {
+      if (_msg.isPinMessage && _msg.isPinDefined) {
         _serial.println(F("PIN was not accepted. A PIN is already active."));
       }
 
-      _pinDefinedMsg = 0;
+      _msg = TerminalData();
     }
   }
 

@@ -19,7 +19,7 @@ using namespace TerminalAoTestShared;
 BEGIN(TerminalAoVariousTest)
 
 void reset() {
-  messages.fromKeypadToTerminalQueue.pop();
+  messages.toTerminalQueue.pop();
   messages.fromTerminalToKeypadQueue.pop();
   messages.fromKeypadToHidQueue.pop();
   messages.fromKeypadToServiceMonitorQueue.pop();
@@ -127,27 +127,56 @@ TEST(
 
 TEST(
   manual_input,
-  read,
-  added_step) {
+  program_steps,
+  added_steps) {
 
   reset();
 
-  serial.setInputBuffer("{ 0 ");
-  serialInput("A: W");
-  serialInput(" 1000;");
-  serialInput(" }");
+  const char* input = "{ 0 A: W 1000; W 1000; }";
+
+  serial.setInputBuffer("");
+
+  for (int n = 0; n < strlen(input); n++)
+  {
+    serialInput(input[n]);
+  }
 
   EQ((uint8_t)TestTerminalAo::State::Idle, (uint8_t)terminal.getState());
   TRUE(programs[0].hasSteps());
   EQ((uint8_t)PsType::Wait, (uint8_t) static_cast<FakeProgramStep*>(programs[0].root)->type);
 }
 
-void serialInput(const char* input) {
+TEST(
+  manual_input,
+  pin,
+  pin_is_set) {
 
-  serial.sendInputBuffer(input);
+  reset();
+
+  const char* input = "{ P N: 1 0 1 1 3; }";
+
+  serial.setInputBuffer("");
+
+  for (int n = 0; n < strlen(input); n++)
+  {
+    serialInput(input[n]);
+  }
+
+  EQ((uint8_t)TestTerminalAo::State::Idle, (uint8_t)terminal.getState());
+  parclib::PinRegData regData(messages.fromTerminalToKeypadQueue.pop());
+  EQ(regData.code3, (uint8_t)1);
+  EQ(regData.code2, (uint8_t)0);
+  EQ(regData.code1, (uint8_t)1);
+  EQ(regData.code0, (uint8_t)1);
+  EQ(regData.retries, (uint8_t)3);
+}
+
+void serialInput(char ch) {
+
+  serial.sendInputBuffer(ch);
 
   // process
-  for (int n = 0; n < 5; n++) {
+  for (int n = 0; n < 10; n++) {
     terminal.load();
     terminal.run();
   }

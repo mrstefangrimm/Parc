@@ -20,7 +20,7 @@ using namespace TerminalAoTestShared;
 BEGIN(TerminalAoCommandsTest)
 
 void reset() {
-  messages.fromKeypadToTerminalQueue.pop();
+  messages.toTerminalQueue.pop();
   messages.fromTerminalToKeypadQueue.pop();
   messages.fromKeypadToHidQueue.pop();
   messages.fromKeypadToServiceMonitorQueue.pop();

@@ -113,7 +113,8 @@ TEST(
   keypad.run();
 
   EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
-  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
+  TerminalData data(messages.toTerminalQueue.pop());
+  FALSE(data.isPinDefined);
 }
 
 TEST(
@@ -135,7 +136,8 @@ TEST(
   keypad.run();
 
   EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
-  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
+  TerminalData data(messages.toTerminalQueue.pop());
+  FALSE(data.isPinDefined);
 
   // Set pin again
   messages.fromTerminalToKeypadQueue.push(pin.raw);
@@ -143,7 +145,8 @@ TEST(
   keypad.run();
 
   EQ((MessageData_t)0, messages.fromTerminalToKeypadQueue.pop());
-  EQ((MessageData_t)1, messages.fromKeypadToTerminalQueue.pop());
+  TerminalData data2(messages.toTerminalQueue.pop());
+  TRUE(data2.isPinDefined);
 }
 
 TEST(
@@ -166,7 +169,8 @@ TEST(
   KeypadRegData expected;
   expected.button = 5;
   EQ((MessageData_t)expected.raw, messages.fromKeypadToHidQueue.pop());
-  EQ((MessageData_t)0, messages.fromKeypadToTerminalQueue.pop());
+  TerminalData data(messages.toTerminalQueue.pop());
+  FALSE(data.isPinDefined);
 }
 
 END

@@ -33,7 +33,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
           else {
             auto log = TLOGGERFAC::create();
             log->println(F("PIN not accepted."));
-            Ao_t::_messages.fromKeypadToTerminalQueue.push(PinAlreadyDefinedRegData(true));
+            Ao_t::_messages.toTerminalQueue.push(TerminalData(true, true).raw);
           }
           _timer = Timer_t(1);
         }
