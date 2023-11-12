@@ -483,7 +483,7 @@ protected:
           log->println(F("got pin"));
           TerminalData msg;
           msg.gotPin = true;
-          _messages.toTerminalQueue.push(msg.raw);
+          Ao_t::_messages.toTerminalQueue.push(msg.raw);
           return;
         }
         auto idx = _keyPadInput.programIndex();
@@ -496,13 +496,13 @@ protected:
           prog.dispose();
           TerminalData msg;
           msg.gotProgramSteps = true;
-          _messages.toTerminalQueue.push(msg.raw);
+          Ao_t::_messages.toTerminalQueue.push(msg.raw);
           return;
         }
         _serial.println(F(" This ain't dull, bye."));
         TerminalData msg;
         msg.invalidProgramCode = true;
-        _messages.toTerminalQueue.push(msg.raw);
+        Ao_t::_messages.toTerminalQueue.push(msg.raw);
       }
       else if (_itBuf < BUFLEN) {
         // omit preceding spaces to save the buffer for the data.
