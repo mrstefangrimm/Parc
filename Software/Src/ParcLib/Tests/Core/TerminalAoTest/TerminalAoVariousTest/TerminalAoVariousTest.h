@@ -29,6 +29,18 @@ void reset() {
   programs[0].dispose();
 }
 
+void serialInput(char ch) {
+
+  serial.sendInputBuffer(ch);
+
+  // process
+  for (int n = 0; n < 10; n++) {
+    terminal.load();
+    terminal.run();
+  }
+
+}
+
 TEST(
   valid_help,
   read,
@@ -171,17 +183,6 @@ TEST(
   EQ(regData.retries, (uint8_t)3);
 }
 
-void serialInput(char ch) {
-
-  serial.sendInputBuffer(ch);
-
-  // process
-  for (int n = 0; n < 10; n++) {
-    terminal.load();
-    terminal.run();
-  }
-
-}
-
 END
+
 }
