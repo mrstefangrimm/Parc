@@ -17,7 +17,7 @@ Create a package folder.
 2. Set 'WinParc.App' as startup project
 3. Set the build configuration to 'Release' and 'x86'
 4. Build the solution
-5. Copy these file from the folder '\Software\Src\WinParcApp\Release' to a folder ' package\Simulator':
+5. Copy these file from the folder '\Software\Src\WinParcApp\Release' to a folder ' package\Software\Simulator':
    - WinParc.App.exe
    - WinParc.APIWrapper.dll
    - WinParcAPI.dll
@@ -41,7 +41,12 @@ Create a package folder.
 5. In all folders form above, remove the file `PreBuild.bat`
 6. In all the folders form above,  remove the links to the folders 'Core' and 'Feather' (don't forget the Test-folders in the ParcLib)
 
-## 4. Finalize the package
+## 4. Create ParcLib Arduino library
+
+1. Check the version in Software\ParcLib\library.properties
+2.  Zip the folder ParcLib to ParcLib.zip (the root folder of ParcLib.zip is ParcLib; that is correct.)
+
+## 5. Finalize the package
 
 Package structure:
 
@@ -49,7 +54,7 @@ package_v0_0_1_0.zip/
 
 ​	/Software/Simulator/*
 
-​	/Software/ParcLib/*
+​	/Software/ParcLib.zip
 
 ​	/Software/ParcApp/*
 

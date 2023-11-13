@@ -20,24 +20,25 @@ Required PARC devices and Hardware:
 - Debug cable
 - USB cable
 
-
-
 ## 1. Unit Tests
 
-1. Connect the PC to the PARC device, USB cable
-1. In the Arduino IDE, open the project \Documents\Arduino\libraries\ParcLib\Tests\Core\HidAoTest\HidAoTest.ino.
+1. Connect the PC to the PARC device or Arduino UNO, USB cable
+1. In the Arduino IDE, open the sketch in \Documents\Arduino\libraries\ParcLib\Tests\Core\BitCounterTest.
 1. Upload the firmware and open the Serial Monitor
    - All tests pass
-1. In the Arduino IDE, open the project \Documents\Arduino\libraries\ParcLib\Tests\Core\StringParcTest\StringParcTest.ino.
-1. Upload the firmware and open the Serial Monitor
-   - All tests pass
-1. In the Arduino IDE, open the project \Documents\Arduino\libraries\ParcLib\Tests\Feather\ProgramTest\ProgramTest.ino.
-1. Upload the firmware and open the Serial Monitor
-   - All tests pass
+1. Repeat test steps 2 and 3 for
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\HidAoTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\KeypadAoTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\StringParcTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\SystemMonitorAoTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\TerminalAoTest\TerminalAoCommandsTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\TerminalAoTest\TerminalAoVariousTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Core\ValueQueueTest
+   - \Documents\Arduino\libraries\ParcLib\Tests\Feather\ProgramTest
 
 ## 2. Test PARC
 
-8. Connect the PC to the PARC device, USB and Debug cable
+5. Connect the PC to the PARC device, USB and Debug cable
 1. In the Arduino IDE, open the project \Software\Src\ParcApp\ParcApp.ino 
 1. Enable the logging by changing the logging from `FakeLogger`to `SoftwareSerial`
 1. Upload the firmware
@@ -63,23 +64,26 @@ Required PARC devices and Hardware:
     - On the debug monitor, "got pin" is logged.
 1. On the device, set a wrong pin, set the mode to "0" and press the "A"-button
     - The status light is lit
-    - On the debug monitor, "Wrong pin" is logged
+    - On the debug monitor, "Wrong PIN" is logged
 1. On the device, set the correct pin, set the mode to "0" and press the "A"-button
     - The program is executed, the notepad is opened and "hello" is written
 1. End of the test
+     - Disable the logging by changing the logging from `SoftwareSerial` to `FakeLogger`
+     - Disconnect the device from Bluetooth
 
 ## 3.  Test PCB PARC
 
-24. Connect the PC to the PCB PARC device, USB and Debug cable
+21. Connect the PC to the PCB PARC device, USB and Debug cable
 1. In the Arduino IDE, open the project \Software\Src\PcbParcApp\PcbParcApp.ino 
 1. Execute the test steps from "Test Parc"
-1. End of the test
+1.. End of the test
+    - Disable the logging by changing the logging from `SoftwareSerial` to `FakeLogger`
+    - Disconnect the device from Bluetooth
 
 ## 4. Test UNO PARC
 
-28. Connect the PC to the UNOPARC breadboard, USB and Debug cable
+24. Connect the PC to the UNOPARC breadboard, USB and Debug cable
 1. In the Arduino IDE, open the project \Software\Src\UnoParcApp\UnoParcApp.ino 
-1. Enable the logging by changing the logging from `FakeLogger`to `SoftwareSerial`
 1. Upload the firmware
 1. In the debug monitor, which is log output and terminal, send a `?`
     - The programs slots are listed, non is used
@@ -88,16 +92,18 @@ Required PARC devices and Hardware:
 1. In Flip, connect via USB
 1. In Flip, load the Arduino-keyboard-0.3.hex to the UNO
 1. In Flip, run the firmware update
-1. Unplug and re-plug the Arduino UNO
-1. In the debug monitor, send `{ 0 A: UK <Win>; W 2000; UK <Win> } ` 
+1. Unplug and re-plug the Arduino UNO (the Arduino UNO is now acting as a USB keyboard)
+1. In the debug monitor, send `{ 0 A: UK <Win>; W 2000; UK <Win>; } ` 
     - The program is repeated on the debug monitor and accepted with "thank you"
     - The created program steps are logged on the debug monitor
 1. On the UNO PARC breadboard, press the "A"-button
     - The Windows opens for 2 seconds
+1. End of the test
+     - In Flip, revert the firmware (HEX file).
 
 ## 5. Test Simulator
 
-41. Start the application 'WinParc.App.exe'
+37. Start the application 'WinParc.App.exe'
 1. In the text field "Serial Monitor" send a `?`
     - The programs slots are listed, non is used
 1. In the text field "Serial Monitor" send a `{ P N: 1 1 0 1 2; }`
@@ -110,6 +116,7 @@ Required PARC devices and Hardware:
     - "Button press ignored." on the debug output
 1. Set the code C4=true and press the "A"-button
     - "Wrong PIN, remaining retries: 2" on the debug output
+    - Warn LED is "On" for 5 seconds
 1. Set the code C4=true, C3=true, C1=true and press the "A"-button
     - "Execute { UT }" on the debug output
 1. End of the test
