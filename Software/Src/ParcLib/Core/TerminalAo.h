@@ -48,9 +48,9 @@ struct CmdComparator {
 };
 
 template<class PROGSTEPFACTORY, class TLOGGERFAC, class KNOWNKEYCODES>
-class ProgramStepFactory {
+class ProgramStepCreator {
 public:
-  ProgramStep<TLOGGERFAC>* createProgramStepWait(const char* delay) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepWait(const char* delay) {
     uint16_t waitMs = atoi(delay);
     // Debug: _log.print(F("Delay: ")); _log.println(waitMs);
 
@@ -59,7 +59,7 @@ public:
     return new Wait_t(waitMs);
   }
 
-  ProgramStep<TLOGGERFAC>* createProgramStepBleKeyboardCode(char* subStrs[], uint8_t numSubStr) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepBleKeyboardCode(char* subStrs[], uint8_t numSubStr) {
     KeyCode keyCode;
     uint8_t repetitions = 0;
     for (int n = 1; n < numSubStr; n++) {
@@ -88,14 +88,14 @@ public:
     return new BleKeycodeRepeated_t(keyCode, repetitions);
   }
 
-  ProgramStep<TLOGGERFAC>* createProgramStepBleKeyboardText(char* text) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepBleKeyboardText(char* text) {
     auto log = TLOGGERFAC::create();
     //_log.print("TEXT: "); _log.println(text);
     log->println(F("Create BleText_t"));
     return new BleText_t(text);
   }
 
-  ProgramStep<TLOGGERFAC>* createProgramStepBleControlKey(char* subStrs[], uint8_t numSubStr) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepBleControlKey(char* subStrs[], uint8_t numSubStr) {
     auto log = TLOGGERFAC::create();
     // _log.print("Control Key: "); _log.print(subStrs[1]);
 
@@ -110,7 +110,7 @@ public:
     return new BleControlkey_t(subStrs[1]);
   }
 
-  ProgramStep<TLOGGERFAC>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepUsbKeyboardCode(char* subStrs[], uint8_t numSubStr) {
     KeyCode keyCode;
     uint8_t repetitions = 0;
     char second = 0;
@@ -158,55 +158,55 @@ public:
     return new UsbKeycodeRepeated_t(keyCode, repetitions);
   }
 
-  ProgramStep<TLOGGERFAC>* createProgramStepUsbKeyboardText(char* text) {
+  static ProgramStep<TLOGGERFAC>* createProgramStepUsbKeyboardText(char* text) {
     auto log = TLOGGERFAC::create();
     // log.print("TEXT: "); _log.println(text);
     log->println(F("Create UsbText_t"));
     return new UsbText_t(text);
   }
 
-  private:
-    using Wait_t = typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result;
-    using UsbKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result;
-    using UsbKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result;
-    using UsbKeycodes_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodes>::Result;
-    using UsbText_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result;
-    using BleKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result;
-    using BleKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result;
-    using BleText_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result;
-    using BleControlkey_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result;
+private:
+  using Wait_t = typename TypeAt<PROGSTEPFACTORY, PsType::Wait>::Result;
+  using UsbKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycode>::Result;
+  using UsbKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodeRepeated>::Result;
+  using UsbKeycodes_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbKeycodes>::Result;
+  using UsbText_t = typename TypeAt<PROGSTEPFACTORY, PsType::UsbText>::Result;
+  using BleKeycode_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycode>::Result;
+  using BleKeycodeRepeated_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleKeycodeRepeated>::Result;
+  using BleText_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleText>::Result;
+  using BleControlkey_t = typename TypeAt<PROGSTEPFACTORY, PsType::BleControlkey>::Result;
 
-    uint8_t symbolToUsbKeyode(const char* code) {
-      if (strcmp(code, "<Del>") == 0) {
-        return KNOWNKEYCODES::UsbKeyCodeDel;
-      }
-      if (strcmp(code, "<Tab>") == 0) {
-        return KNOWNKEYCODES::UsbKeyCodeTab;
-      }
-      if (strcmp(code, "<Enter>") == 0) {
-        return KNOWNKEYCODES::UsbKeyCodeEnter;
-      }
-      if (strcmp(code, "<Space>") == 0) {
-        return KNOWNKEYCODES::UsbKeyCodeSpace;
-      }
-      return 0;
+  static uint8_t symbolToUsbKeyode(const char* code) {
+    if (strcmp(code, "<Del>") == 0) {
+      return KNOWNKEYCODES::UsbKeyCodeDel;
     }
+    if (strcmp(code, "<Tab>") == 0) {
+      return KNOWNKEYCODES::UsbKeyCodeTab;
+    }
+    if (strcmp(code, "<Enter>") == 0) {
+      return KNOWNKEYCODES::UsbKeyCodeEnter;
+    }
+    if (strcmp(code, "<Space>") == 0) {
+      return KNOWNKEYCODES::UsbKeyCodeSpace;
+    }
+    return 0;
+  }
 
-    uint8_t symbolToBleKeyode(const char* code) {
-      if (strcmp(code, "<Del>") == 0) {
-        return KNOWNKEYCODES::BleKeyCodeDel;
-      }
-      if (strcmp(code, "<Tab>") == 0) {
-        return KNOWNKEYCODES::BleKeyCodeTab;
-      }
-      if (strcmp(code, "<Enter>") == 0) {
-        return KNOWNKEYCODES::BleKeyCodeEnter;
-      }
-      if (strcmp(code, "<Space>") == 0) {
-        return KNOWNKEYCODES::BleKeyCodeSpace;
-      }
-      return 0;
+  static uint8_t symbolToBleKeyode(const char* code) {
+    if (strcmp(code, "<Del>") == 0) {
+      return KNOWNKEYCODES::BleKeyCodeDel;
     }
+    if (strcmp(code, "<Tab>") == 0) {
+      return KNOWNKEYCODES::BleKeyCodeTab;
+    }
+    if (strcmp(code, "<Enter>") == 0) {
+      return KNOWNKEYCODES::BleKeyCodeEnter;
+    }
+    if (strcmp(code, "<Space>") == 0) {
+      return KNOWNKEYCODES::BleKeyCodeSpace;
+    }
+    return 0;
+  }
 
 };
 
@@ -217,7 +217,6 @@ namespace Trigger {
     void* owner;
   };
   struct InvalidData {
-    void* owner;
   };
   struct GotPin {
     void* owner;
@@ -249,11 +248,13 @@ public:
   void run() {
     if (_timer.current())
     {
-      if (!_msg.isPinMessage)
-      {
+      if (_msg.raw == 0 || _msg.isPinMessage) {
+        _statemachine.dispatch(Trigger::Timeout{ this });
+      }
+      else {
         if (_msg.invalidProgramCode)
         {
-          _statemachine.dispatch(Trigger::InvalidData{ this });
+          _statemachine.dispatch(Trigger::InvalidData{});
         }
         else if (_msg.gotPin)
         {
@@ -263,13 +264,6 @@ public:
         {
           _statemachine.dispatch(Trigger::GotProgramSteps{ this });
         }
-        else
-        {
-          _statemachine.dispatch(Trigger::Timeout{ this });
-        }
-      }
-      else {
-        _statemachine.dispatch(Trigger::Timeout{ this });
       }
 
       if (_msg.isPinMessage && _msg.isPinDefined) {
@@ -294,7 +288,6 @@ protected:
     template<class Event> void doit(const Event&, Identity<Event>) {}
     void doit(const Trigger::Timeout& ev, Identity<Trigger::Timeout>) {
       auto ao = static_cast<TerminalAo*>(ev.owner);
-      ao->clearReadBuffer();
       gotProgramCode = ao->onStateIdleDo();
     }
   };
@@ -314,7 +307,6 @@ protected:
       auto ao = static_cast<TerminalAo*>(ev.owner);
       ao->onStateReadingProgramCodeDo();
     }
-
   };
 
   struct ReadingProgramSteps : public tsmlib::BasicState<ReadingProgramSteps, StatePolicy, true, false, true>, public tsmlib::SingletonCreator<ReadingProgramSteps> {
@@ -515,23 +507,23 @@ protected:
   }
 
   bool onStateReadingPinDo() {
-    //auto log = TLOGGERFAC::create();
+    // Debug:auto log = TLOGGERFAC::create();
 
     while (_serial.available()) {
       char ch = _serial.read();
       _serial.print(ch);
-      //log->print(ch);
+      // Debug: log->print(ch);
 
       if (ch == '}') {
         _serial.println(F(", thank you."));
-        //log->println(F(", thank you."));
+        // Debug: log->println(F(", thank you."));
 
         return true;
         // send unblocked to KeypadAo
       }
       else if (ch == ';') {
         // create programstep. If failed, go to wait state
-        //log->print(_buf);
+        // Debug: log->print(_buf);
         parclib::trimFront(_buf);
         parclib::trimBack(_buf, BUFLEN);
         parclib::squeeze(_buf);
@@ -541,7 +533,7 @@ protected:
 
         if (numSubStr != 5) {
           _serial.println(F(" This ain't dull, bye."));
-          //log->print(F(" This ain't dull, bye."));
+          // Debug: log->print(F(" This ain't dull, bye."));
           return true;
         }
         PinRegData pin;
@@ -572,8 +564,8 @@ protected:
       if (ch == '}') {
         _serial.println(F(", thank you."));
         Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(ProgramChangedRegData(1));
-        return true;
         // send unblocked to KeypadAo
+        return true;
       }
       else if (ch == ';') {
         // create programstep. If failed, go to wait state
@@ -589,22 +581,22 @@ protected:
         ProgramStep<TLOGGERFAC>* progStep = 0;
 
         if (CmdComparator<PsType::Wait>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepWait(subStrs[1]);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepWait(subStrs[1]);
         }
         else if (CmdComparator<PsType::BleKeycode>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepBleKeyboardCode(subStrs, numSubStr);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepBleKeyboardCode(subStrs, numSubStr);
         }
         else if (CmdComparator<PsType::BleText>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepBleKeyboardText(subStrs[1]);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepBleKeyboardText(subStrs[1]);
         }
         else if (CmdComparator<PsType::BleControlkey>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepBleControlKey(subStrs, numSubStr);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepBleControlKey(subStrs, numSubStr);
         }
         else if (CmdComparator<PsType::UsbKeycode>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepUsbKeyboardCode(subStrs, numSubStr);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepUsbKeyboardCode(subStrs, numSubStr);
         }
         else if (CmdComparator<PsType::UsbText>()(subStrs[0])) {
-          progStep = _stepFactory.createProgramStepUsbKeyboardText(subStrs[1]);
+          progStep = ProgramStepCreator<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES>::createProgramStepUsbKeyboardText(subStrs[1]);
         }
 
         if (progStep != 0) {
@@ -643,8 +635,6 @@ protected:
     _itBuf = 0;
     memset(_buf, 0, BUFLEN);
   }
-
-  ProgramStepFactory<PROGSTEPFACTORY, TLOGGERFAC, KNOWNKEYCODES> _stepFactory;
 
   TPROGRAM* _programs;
 

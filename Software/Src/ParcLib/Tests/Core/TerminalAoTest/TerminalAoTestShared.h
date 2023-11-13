@@ -290,8 +290,10 @@ struct TestTerminalAo : TerminalAo_t {
   void run() {
     if (_timer.current())
     {
-      if (!_msg.isPinMessage)
-      {
+      if (_msg.raw == 0 || _msg.isPinMessage) {
+        lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
+      }
+      else {
         if (_msg.invalidProgramCode)
         {
           lastResult = _statemachine.dispatch(Trigger::InvalidData{});
@@ -304,13 +306,6 @@ struct TestTerminalAo : TerminalAo_t {
         {
           lastResult = _statemachine.dispatch(Trigger::GotProgramSteps{ this });
         }
-        else
-        {
-          lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
-        }
-      }
-      else {
-        lastResult = _statemachine.dispatch(Trigger::Timeout{ this });
       }
 
       if (_msg.isPinMessage && _msg.isPinDefined) {
