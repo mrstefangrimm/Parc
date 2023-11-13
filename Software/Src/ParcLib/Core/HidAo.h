@@ -1,10 +1,11 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_HIDAO_H
+#define PARCLIB_HIDAO_H
 
 #include "Ao.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 #include "ProgramStep.h"
 #include "Program.h"
 
@@ -84,8 +85,10 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     State _state = State::Idle;
     TPROGRAM* _program = nullptr;
     size_t _ticksRemaining = 0;
-    BitTimer<0> _timer;
+    BitCounter<0> _timer;
     MessageData_t _inputMsg = 0;
 };
 
 }
+
+#endif

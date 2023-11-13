@@ -1,7 +1,8 @@
 // Copyright (c) 2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_VALUEQUEUE_H
+#define PARCLIB_VALUEQUEUE_H
 
 void rtassert(bool condition);
 
@@ -72,3 +73,5 @@ namespace parclib {
     ItemType _item2 = 0;
   };
 }
+
+#endif

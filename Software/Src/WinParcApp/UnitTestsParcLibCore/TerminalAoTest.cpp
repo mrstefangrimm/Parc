@@ -8,4 +8,6 @@
 const int INPUT_PULLUP = 1;
 const int OUTPUT = 2;
 
-#include "../../ParcLib/Tests/Core/TerminalAoTest/TerminalAoTest.h"
+#include "../../ParcLib/Tests/Core/TerminalAoTest/TerminalAoTestShared.h"
+#include "../../ParcLib/Tests/Core/TerminalAoTest/TerminalAoVariousTest/TerminalAoVariousTest.h"
+#include "../../ParcLib/Tests/Core/TerminalAoTest/TerminalAoCommandsTest/TerminalAoCommandsTest.h"

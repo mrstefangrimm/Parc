@@ -1,11 +1,12 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_KEYPADAO_H
+#define PARCLIB_KEYPADAO_H
 
 #include "Ao.h"
 #include "Shared.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 
 namespace parclib {
 
@@ -32,7 +33,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
           else {
             auto log = TLOGGERFAC::create();
             log->println(F("PIN not accepted."));
-            Ao_t::_messages.fromKeypadToTerminalQueue.push(PinAlreadyDefinedRegData(true));
+            Ao_t::_messages.toTerminalQueue.push(TerminalData(true, true).raw);
           }
           _timer = Timer_t(1);
         }
@@ -97,12 +98,12 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
               if (_pin.failed == _pin.retries) {
                 log->println(F("Game Over."));
                 _pin.setGameOver();
-                Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(_pin.raw);
+                Ao_t::_messages.fromKeypadToServiceMonitorQueue.push(_pin.raw);
               }
               else {
                 _pin.failed++;
                 longTimeout = true;
-                Ao_t::_messages.fromTerminalToServiceMonitorQueue.push(_pin.raw);
+                Ao_t::_messages.fromKeypadToServiceMonitorQueue.push(_pin.raw);
               }
             }
             else {
@@ -126,7 +127,7 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
   private:
     using Ao_t = Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>>;
     using Hw_t = TKEYPADHW;
-    using Timer_t = BitTimer<7, uint8_t>;
+    using Timer_t = BitCounter<7, uint8_t>;
 
     enum KeypadButton { A = 1, B, C, D, E };
 
@@ -139,3 +140,5 @@ class KeypadAo : public Ao<KeypadAo<TLOGGERFAC, TKEYPADHW>> {
 };
 
 }
+
+#endif

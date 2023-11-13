@@ -38,10 +38,10 @@
     <ClInclude Include="..\..\ParcLib\Core\TerminalAo.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h">
+    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h">
+    <ClInclude Include="..\..\ParcLib\Core\BitCounter.h">
       <Filter>parclib\Core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NOTQUITEBDD_H
+#define NOTQUITEBDD_H
+
 // Written by Stefan Grimm, 2023.
 // Released into the public domain.
 
@@ -93,5 +95,7 @@
 #define FALSE(a) assertFalse(a)
 #define N(a) assertEqual(true, (a == nullptr))
 #define NN(a) assertEqual(true, (a != nullptr))
+
+#endif
 
 #endif

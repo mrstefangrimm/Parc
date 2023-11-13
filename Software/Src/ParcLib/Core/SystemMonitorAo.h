@@ -1,10 +1,11 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_SYSTEMMONITORAO_H
+#define PARCLIB_SYSTEMMONITORAO_H
 
 #include "Ao.h"
-#include "BitTimer.h"
+#include "BitCounter.h"
 
 namespace parclib {
 
@@ -61,8 +62,8 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
 
   private:
     using Ao_t = Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWMEMORY>>;
-    using Timer_t = BitTimer<0>;
-    using NotificationTimer_t = BitTimer<8>;
+    using Timer_t = BitCounter<0>;
+    using NotificationTimer_t = BitCounter<8>;
 
     void logMemoryAndWarn() {
       auto log = TLOGGERFAC::create();
@@ -85,3 +86,5 @@ class SystemMonitorAo : public Ao<SystemMonitorAo<TLOGGERFAC, TSYSTEMHWFAC, LOWM
 };
 
 }
+
+#endif

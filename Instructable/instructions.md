@@ -1,10 +1,10 @@
 # Programmable Arduino Remote Control
 
-![parc1](./parc1.jpg)
+![parc1](./parc1.JPG)
 
-![parc2](./parc2.jpg)
+![parc2](./parc2.JPG)
 
-![parts](./parc-parts.jpg)
+![parts](./parc-parts.JPG)
 
 With this small, palm-sized device, it is possible to remote control your PC or your Smartphone. Or to control your PC and your Smartphone at the same time.
 
@@ -163,13 +163,15 @@ For the following steps, the [Arduino IDE](https://www.arduino.cc/en/software) i
 
 
 
-Follow the steps from Adafruit and install the "Adafruit AVR Boards" board package. Adafruit has always great, [step-by-step instructions](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup).
+Follow the steps from Adafruit and install the "Adafruit AVR Boards" board package. Adafruit has always great [step-by-step instructions](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup).
 
-Download the [library for the MCP23008](https://github.com/adafruit/Adafruit-MCP23008-library) and unzip it into the folder Documents\Arduino\libraries.
+In the Arduino IDE library manager, install the libraries "Adafruit MCP23008 library" and "TimerOne".
 
+Download the  [Template State Machine library](https://github.com/mrstefangrimm/TemplateStateMachine/releases) and [import the .zip file](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#importing-a-zip-library) in the Arduino IDE.
 
+Download the latestes [packages_v0.1.x.x.zip version from releases](https://github.com/mrstefangrimm/Parc/releases). Unzip the package folder and [import the Parclib.zip](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#importing-a-zip-library) in the Arduino IDE.
 
-Download the libraries [ParcLib.zip](https://github.com/mrstefangrimm/Parc/blob/main/Instructable/ParcLib.zip) and [ParcApp.zip](https://github.com/mrstefangrimm/Parc/blob/main/Instructable/ParcApp.zip) from github. Unzip ParcLib into the folder Documents\Arduino\libraries. Unzip ParcApp into your project folder and open the ParcApp.ino in the  Arduino IDE.
+Copy ParcApp in package folder into your project folder and open the ParcApp.ino in the  Arduino IDE.
 
 Attach the Parc remote control to your PC with the USB cable. In the  IDE, select the board "Adafruit Feather 32u4" and select the COM port with the same label.
 
@@ -209,21 +211,23 @@ It is time to code. To give you an idea, I describe some of the programs used in
 
 Login Commands:
 
-{ 1 A: BK <Ctrl> <Alt> <Del>; W 2000; BT password; W 1000; BK <Enter>; }
+`{ 1 A: BK <Ctrl> <Alt> <Del>; W 2000; BT password; W 1000; BK <Enter>; }`
 
 - "1 A" defines the key and mode the program is for. "1" is mode 1 which is  set with the slide switch M0. "A" is the upper left button
-- "BK <Ctrl> <Alt> <Del>" sends a "Del" keypress with the control keys "Ctrl" and "Alt"
+- `BK <Ctrl> <Alt> <Del>` sends a "Del" keypress with the control keys "Ctrl" and "Alt"
 - "W 2000" lets the program wait for 2 seconds. The program waits for the Windows login screen before it writes the password
-- "BT password" sends keypresses "p", "a", "s", ... . Note that it assumes a US-English keyboard. If you have keyboard settings for a different keyboard, there is a simple trick: Send "BK <Win> <Space>" as the first program step. This will change the keyboard on the PC.
+- "BT password" sends keypresses "p", "a", "s", ... . Note that it assumes a US-English keyboard. If you have keyboard settings for a different keyboard, there is a simple trick: Send `BK <Win> <Space>` as the first program step. This will change the keyboard on the PC.
 
 
 
 Remote Control Commands:
-{ 3 A: BC PlayPause; }
+
+```{ 3 A: BC PlayPause; }
 { 3 B: BC MediaNext; }
 { 3 C: BC Volume+; }
 { 3 D: BC Volume-; }
 { 3 E: BC Mute 1000; }
+```
 
 - "3 A" defines the program for mode 3 and key "A". Mode 3 is set with the slide switches "M1" and "M0"
 - "BC" stands for Bluetooth Controlkey. This sends commands that most Bluetooth connected devices "understand"

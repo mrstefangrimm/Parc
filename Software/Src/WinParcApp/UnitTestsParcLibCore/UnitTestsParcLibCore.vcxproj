@@ -77,19 +77,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\ParcLib;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\ParcLib</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\ParcLib</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\ParcLib;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\ParcLib;..\..\..\TemplateStateMachine\src</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -153,12 +153,16 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +176,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BitTimerTest.cpp" />
+    <ClCompile Include="BitCounterTest.cpp" />
     <ClCompile Include="HidAoTest.cpp" />
     <ClCompile Include="KeypadAoTest.cpp" />
     <ClCompile Include="pch.cpp">
@@ -187,11 +191,13 @@
     <ClCompile Include="ValueQueueTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ParcLib\Core\BitTimer.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Ao.h" />
+    <ClInclude Include="..\..\ParcLib\Core\BitCounter.h" />
     <ClInclude Include="..\..\ParcLib\Core\HidAo.h" />
     <ClInclude Include="..\..\ParcLib\Core\KeypadAo.h" />
+    <ClInclude Include="..\..\ParcLib\Core\Messages.h" />
     <ClInclude Include="..\..\ParcLib\Core\Program.h" />
-    <ClInclude Include="..\..\ParcLib\Core\Registers.h" />
+    <ClInclude Include="..\..\ParcLib\Core\ProgramStep.h" />
     <ClInclude Include="..\..\ParcLib\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Core\StringParc.h" />
     <ClInclude Include="..\..\ParcLib\Core\SystemMonitorAo.h" />
@@ -199,11 +205,11 @@
     <ClInclude Include="..\..\ParcLib\Core\ValueQueue.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\BitTimerTest\BitTimerTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\HidAoTest\HidAoTest.h" />
-    <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\Core\Shared.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\KeypadAoTest\KeypadAoTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\StringParcTest\StringParcTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\SystemMonitorAoTest\SystemMonitorAoTest.h" />
-    <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoTest.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoTestShared.h" />
+    <ClInclude Include="..\..\ParcLib\Tests\Core\TerminalAoTest\TerminalAoVariousTest\TerminalAoVariousTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\Core\ValueQueueTest\ValueQueueTest.h" />
     <ClInclude Include="..\..\ParcLib\Tests\NotquiteBDD.h" />
     <ClInclude Include="pch.h" />

@@ -1,7 +1,8 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_MESSAGES_H
+#define PARCLIB_MESSAGES_H
 
 #include "ValueQueue.h"
 
@@ -10,7 +11,7 @@ namespace parclib {
   using MessageData_t = uint8_t;
 
   struct Messages {
-    ValueQueue<1, MessageData_t> fromKeypadToTerminalQueue;
+    ValueQueue<1, MessageData_t> toTerminalQueue;
     ValueQueue<1, MessageData_t> fromTerminalToKeypadQueue;
     ValueQueue<1, MessageData_t> fromKeypadToHidQueue;
     ValueQueue<1, MessageData_t> fromKeypadToServiceMonitorQueue;
@@ -18,7 +19,6 @@ namespace parclib {
   };
 
   using TimerRegData = MessageData_t;
-  using PinAlreadyDefinedRegData = MessageData_t;
   using ProgramChangedRegData = MessageData_t;
 
 struct KeypadRegData {
@@ -68,4 +68,23 @@ struct PinRegData {
   };
 };
 
+struct TerminalData {
+  TerminalData() : raw(0) {}
+  explicit TerminalData(MessageData_t rawValue) : raw(rawValue) {}
+  TerminalData(bool isPinMessage, bool isPinDefined) : isPinMessage(isPinMessage), isPinDefined(isPinDefined), invalidProgramCode(0), gotPin(0), gotProgramSteps(0) {}
+
+  union {
+    struct {
+      MessageData_t isPinMessage : 1;
+      MessageData_t isPinDefined : 1;
+      MessageData_t invalidProgramCode : 1;
+      MessageData_t gotPin : 1;
+      MessageData_t gotProgramSteps : 1;
+    };
+    MessageData_t raw;
+  };
+};
+
 }
+
+#endif

@@ -1,7 +1,8 @@
 // Copyright (c) 2021-2023 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-#pragma once
+#ifndef PARCLIB_SHARED_H
+#define PARCLIB_SHARED_H
 
 namespace parclib {
 
@@ -103,4 +104,10 @@ struct TypeAt<Typelist<HEAD, TAIL>, INDEX>
 //  enum { Result = Temp == -1 ? -1 : 1 + Temp };
 //};
 
+// From Stackoverflow
+template<typename T>
+struct Identity { typedef T type; };
+
 }
+
+#endif
