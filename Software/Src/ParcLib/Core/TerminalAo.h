@@ -629,6 +629,7 @@ protected:
         return true;
       }
     }
+    return false;
   }
 
   void clearReadBuffer() {
