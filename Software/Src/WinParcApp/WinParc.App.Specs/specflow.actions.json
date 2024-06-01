@@ -1,8 +1,13 @@
 {
-  "windowsAppDriver": {
-    "capabilities": {
-      "app": "../../../../Debug/WinParc.App.exe"
+  "flaui": {
+    "settings": {
+      "uia": "UIA3"
     },
-    "WindowsAppDriverPath": "C:/Program Files (x86)/Windows Application Driver/WinAppDriver.exe"
+    "profiles": {
+      "Futile Calculator": {
+        "app": "../../../../Debug/WinParc.App.exe",
+        "launch": "Exe"
+      }
+    }
   }
 }
