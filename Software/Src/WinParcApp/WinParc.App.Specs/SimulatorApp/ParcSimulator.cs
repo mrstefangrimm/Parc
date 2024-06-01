@@ -1,7 +1,7 @@
-﻿// Copyright (c) 2023 Stefan Grimm. All rights reserved.
+﻿// Copyright (c) 2023-2024 Stefan Grimm. All rights reserved.
 // Licensed under the LGPL. See LICENSE file in the project root for full license information.
 //
-using SpecFlow.Actions.WindowsAppDriver;
+using Futile.Specflow.Actions.FlaUI;
 
 namespace WinParc.App.Specs.SimulatorApp {
 
@@ -9,12 +9,12 @@ namespace WinParc.App.Specs.SimulatorApp {
 
     private readonly ParcSimulatorElements _elements;
 
-    public ParcSimulator(AppDriver appDriver) {
-      _elements = new ParcSimulatorElements(appDriver);
+    public ParcSimulator(FlaUIDriver driver) {
+      _elements = new ParcSimulatorElements(driver);
     }
 
     public void SendCommand(string command) {
-      _elements.SendText.SendKeys(command);
+      _elements.SendText.Text = command;
       _elements.SendPressCmd.Click();
     }
 
