@@ -194,7 +194,7 @@ template<class TLOGGERFAC, class THIDUSBFAC>
 class ProgramStepUsbKeyboardCode : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCode(KeyCode keyCode)
-      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode) {}
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCode<TLOGGERFAC, THIDUSBFAC>, false>(5), _keyCode(keyCode) {}
 
     void doTick(uint8_t tick) {
       if (tick == 0) {
@@ -231,11 +231,10 @@ template<class TLOGGERFAC, class THIDUSBFAC>
 class ProgramStepUsbKeyboardCodeRepeated : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCodeRepeated(KeyCode keyCode, uint8_t numRepetitions)
-      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false>(numRepetitions), _keyCode(keyCode) {}
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodeRepeated<TLOGGERFAC, THIDUSBFAC>, false>(5 * numRepetitions), _keyCode(keyCode) {}
 
     void doTick(uint8_t tick) {
-      // _duration is equal to number of repetitions
-      if (tick < ProgramStep<TLOGGERFAC>::_duration) {
+      if (tick % 5 == 0) {
         auto log = TLOGGERFAC::create();
         log->print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);
@@ -269,11 +268,10 @@ template<class TLOGGERFAC, class THIDUSBFAC>
 class ProgramStepUsbKeyboardCodes : public ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false> {
   public:
     ProgramStepUsbKeyboardCodes(KeyCode keyCode, char secondKey)
-      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false>(1), _keyCode(keyCode), _secondKey(secondKey) {}
+      : ProgramStepBase<TLOGGERFAC, ProgramStepUsbKeyboardCodes<TLOGGERFAC, THIDUSBFAC>, false>(5), _keyCode(keyCode), _secondKey(secondKey) {}
 
     void doTick(uint8_t tick) {
-      // _duration is equal to number of repetitions
-      if (tick < ProgramStep<TLOGGERFAC>::_duration) {
+      if (tick == 0) {
         auto log = TLOGGERFAC::create();
         log->print(F("UK "));
         //ProgramStep<TLOGGER>::_log.println(_keyCode.ctrl);

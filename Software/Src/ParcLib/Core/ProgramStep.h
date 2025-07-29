@@ -67,7 +67,7 @@ inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::play(uint8_t& tick) {
 
 template<class TLOGGERFAC>
 inline size_t ProgramStep<TLOGGERFAC>::duration() const {
-  if (_next != 0) {
+  if (_next != nullptr) {
     return _duration + _next->duration();
   }
   else {
@@ -77,7 +77,7 @@ inline size_t ProgramStep<TLOGGERFAC>::duration() const {
 
 template<class TLOGGERFAC>
 inline ProgramStep<TLOGGERFAC>* ProgramStep<TLOGGERFAC>::appendStep(ProgramStep<TLOGGERFAC>* step) {
-  if (_next == 0) {
+  if (_next == nullptr) {
     _next = step; return _next;
   }
   else {

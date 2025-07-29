@@ -46,6 +46,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
         uint8_t progIdx = args.programIndex();
         _program = &_programs[progIdx];
         _ticksRemaining = _program->duration();
+        _repeat = progIdx == 19;
 
         auto log = TLOGGERFAC::create();
         log->print(F("HidAo:stateIdle() Received Mode: ")); log->print(args.mode); log->print(F(" Button: ")); log->print(args.button);
@@ -68,8 +69,16 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
         auto log = TLOGGERFAC::create();
         log->println(F("}"));
         _program->rewind();
-        _program = 0;
-        _state = State::Idle;
+
+        if (_repeat)
+        {
+          _ticksRemaining = _program->duration();
+        }
+        else
+        {
+          _program = 0;
+          _state = State::Idle;
+        }
       }
     }
 
@@ -87,6 +96,7 @@ class HidAo : public Ao<HidAo<TLOGGERFAC, TPROGRAM>> {
     size_t _ticksRemaining = 0;
     BitCounter<0> _timer;
     MessageData_t _inputMsg = 0;
+    bool _repeat = false;
 };
 
 }
