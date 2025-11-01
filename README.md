@@ -48,6 +48,8 @@ Unit tests cover the functionality of the domain model classes. Some are part of
 
 ## Software Toolchain
 
+**Built Applications**
+
 | Application | License |
 | ----------- | ------- |
 | ParcApp     | LGPL    |
@@ -55,15 +57,7 @@ Unit tests cover the functionality of the domain model classes. Some are part of
 | UnoParcApp  | LGPL    |
 | WinParcApp  | LGPL    |
 
-| Tool                         | License                                                      |
-| ---------------------------- | ------------------------------------------------------------ |
-| Arduino IDE                  | GPL                                                          |
-| Adafruit AVR Boards          | [Learn more]([Arduino IDE Setup \| Adafruit Feather 32u4 Bluefruit LE \| Adafruit Learning System](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup)) |
-| avrdude                      | GPL                                                          |
-| gcc                          | GPL                                                          |
-| Visual Studio Community 2022 | Microsoft license                                            |
-
-Libraries
+**Used Libraries**
 
 | Library                           | Licence           |
 | :-------------------------------- | ----------------- |
@@ -77,7 +71,15 @@ Libraries
 | TemplateStateMachine              | Apache License    |
 | .NET 4.8.1                        | Microsoft license |
 
+**Used Software Development Tools**
 
+| Tool                         | License                                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| Arduino IDE                  | GPL                                                          |
+| Adafruit AVR Boards [Learn more](https://learn.adafruit.com/adafruit-feather-32u4-bluefruit-le/setup) | Adafruit license |
+| avrdude                      | GPL                                                          |
+| gcc                          | GPL                                                          |
+| Visual Studio Community 2022 | Microsoft license                                            |
 
 ## License
 
