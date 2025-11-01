@@ -42,8 +42,9 @@ A user manual and a programming guide can be found in the [Parc Wiki](https://gi
 
 ## Tests
 
-Unit tests cover the functionality of the domain model classes. Some are part of the ParcLib software package. The WinParcApp Visual Studio solution contains all the unit tests. These for programming convenience and because the software architecture allows it.
+Unit tests cover the functionality of the domain model classes. All unit tests are part of the WinParcApp Visual Studio solution. Some test are can be executed with ArduinoUnit too.
 
+Manual tests are defined in the [Test Specification](https://github.com/mrstefangrimm/Parc/blob/main/BuildVerificationTest-Specification.md).
 
 
 ## Software Toolchain
